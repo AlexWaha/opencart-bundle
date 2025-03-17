@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @author  Alexander Vakhovski (AlexWaha)
+  ~ @link    https://alexwaha.com
+  ~ @email   support@alexwaha.com
+  ~ @license GPLv3
+  -->
+<modification>
+    <name>alexwaha.com - Core</name>
+    <code>aw_core_init</code>
+    <version>1.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="system/engine/{router,front}.php">
+        <operation>
+            <search><![CDATA[public function __construct($registry) {]]></search>
+            <add position="after"><![CDATA[
+            $file = DIR_SYSTEM . 'library/Alexwaha/Init.php';
+
+            if (file_exists($file)) {
+              include_once($file);
+
+              new Alexwaha\Init($registry);
+            }
+            ]]></add>
+        </operation>
+    </file>
+</modification>

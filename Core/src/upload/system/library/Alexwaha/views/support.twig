@@ -1,0 +1,46 @@
+<div style="background: #f8f8f8; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; max-width: 700px; margin: auto;">
+
+    <div style="background: #1ec679; color: white; padding: 15px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold;">
+        {{ title }}
+    </div>
+
+    <p style="font-size:15px; color: #3d3d3d; text-align: center; margin-top: 15px;">{{ desc_1 }}</p>
+    <p style="font-size:15px; color: #3d3d3d; text-align: center; margin-top: 15px;">{{ desc_2 }}</p>
+
+    <hr style="border: none; height: 1px; background: #e5e7eb; margin: 20px 0;">
+
+    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size:15px; border-left: 4px solid #0d6efd;">
+        {{ github_text }}
+        <a href="{{ github_url }}" target="_blank" style="color: #0937cc; text-decoration: none; font-weight: bold;">GitHub</a>.
+    </div>
+
+    <div style="background: white; padding: 15px; border-radius: 8px; font-size:15px; border-left: 4px solid #0937cc;">
+        {{ review_text }}
+        <a href="{{ review_url }}" target="_blank" style="color: #0937cc; text-decoration: none; font-weight: bold;">{{ review_link_text }}</a>.
+    </div>
+
+    <hr style="border: none; height: 1px; background: #e5e7eb; margin: 20px 0;">
+
+    <div style="text-align: center; font-size: 18px; font-weight: bold; color: #1c2749;">
+        {{ contacts_title }}
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px;">
+        <a href="{{ telegram_url }}" target="_blank" style="background: #0d6efd; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; width: 80%; text-align: center;">
+            Telegram: {{ telegram_handle }}
+        </a>
+        <a href="mailto:{{ email }}" target="_blank" style="background: #0937cc; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; width: 80%; text-align: center;">
+            E-mail: {{ email }}
+        </a>
+        <a href="{{ bug_report_url }}" target="_blank" style="background: #1c2749; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; width: 80%; text-align: center;">
+            {{ bug_report_text }}
+        </a>
+    </div>
+    <hr style="border: none; height: 1px; background: #e5e7eb; margin: 20px 0;">
+
+    <div style="text-align: center;">
+        <a href="{{ website_url }}" target="_blank">
+            <img src="{{ website_logo }}" alt="alexwaha.com" style="max-width: 150px; display: block; margin: auto;">
+        </a>
+    </div>
+</div>
