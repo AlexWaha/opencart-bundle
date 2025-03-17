@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @author  Alexander Vakhovski (AlexWaha)
+  ~ @link    https://alexwaha.com
+  ~ @email   support@alexwaha.com
+  ~ @license GPLv3
+  -->
+<modification>
+    <name>alexwaha.com - SMS Notify</name>
+    <code>aw_sms_notify</code>
+    <version>1.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search><![CDATA[$this->response->setOutput($this->load->view('sale/order_info', $data));]]></search>
+            <add position="before"><![CDATA[
+                $data['sms_notify_info'] = $this->load->controller('extension/module/aw_sms_notify/orderInfoForm');
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->response->setOutput($this->load->view('sale/order_info.tpl', $data));]]></search>
+            <add position="before"><![CDATA[
+                $data['sms_notify_info'] = $this->load->controller('extension/module/aw_sms_notify/orderInfoForm');
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/language/{en,en-gb,english}/sale/order.php">
+        <operation>
+            <search><![CDATA[$_['column_order_id']]]></search>
+            <add position="before"><![CDATA[
+                    $_['entry_sendsms'] = 'Send SMS when order status changes:';
+                    ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/language/{ru,ru-ru,russian}/sale/order.php">
+        <operation>
+            <search><![CDATA[$_['column_order_id']]]></search>
+            <add position="before"><![CDATA[
+                    $_['entry_sendsms'] = 'Отправить смс при смене статуса:';
+                    ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/view/template/sale/order_info.twig">
+        <operation>
+            <search><![CDATA[<div class="tab-pane" id="tab-additional">]]></search>
+            <add position="before" offset="5"><![CDATA[{{ sms_notify_info }}]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$('input[name=\'notify\']').prop('checked') ? 1 : 0)]]></search>
+            <add position="replace"><![CDATA[$('input[name=\'notify\']').prop('checked') ? 1 : 0) + '&sendsms=' + ($('input[name=\'sendsms\']').prop('checked') ? 1 : 0) + '&admin_order=' + $('input[name=\'admin_order\']')]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/view/template/sale/order_info.tpl">
+        <operation>
+            <search><![CDATA[<div class="tab-pane" id="tab-additional">]]></search>
+            <add position="before" offset="5"><![CDATA[<?php echo $sms_notify_info; ?>]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$('input[name=\'notify\']').prop('checked') ? 1 : 0)]]></search>
+            <add position="replace">
+                <![CDATA[$('input[name=\'notify\']').prop('checked') ? 1 : 0) + '&sendsms=' + ($('input[name=\'sendsms\']').prop('checked') ? 1 : 0) + '&admin_order=' + $('input[name=\'admin_order\']')]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/api/order.php">
+        <operation>
+            <search><![CDATA[$this->model_checkout_order->addOrderHistory($json['order_id'], $order_status_id);]]></search>
+            <add position="replace"><![CDATA[
+                if(isset($this->request->post['admin_order'])){
+                    $this->model_checkout_order->addOrderHistory($json['order_id'], $order_status_id, '', '', '', '', true);
+                }else{
+                    $this->model_checkout_order->addOrderHistory($json['order_id'], $order_status_id);
+                }
+                ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $order_status_id);]]></search>
+            <add position="replace"><![CDATA[
+
+                    if(isset($this->request->post['sendsms'])){
+                        $send_sms = $this->request->post['sendsms'];
+                    }elseif($this->config->get('sms_notify_force')){
+                        $send_sms = true;
+                    }else{
+                        $send_sms = false;
+                    }
+
+                    if(isset($this->request->post['admin_order'])){
+                        $admin_order = true;
+                    }else{
+                        $admin_order = false;
+                    }
+
+                    $this->model_checkout_order->addOrderHistory($order_id, $order_status_id, $order_data['comment'], '', '', $send_sms, $admin_order);
+                ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA['notify',]]></search>
+            <add position="after"><![CDATA[
+                'sendsms',
+                ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $this->request->post['order_status_id'], $this->request->post['comment'], $this->request->post['notify'], $this->request->post['override']);]]></search>
+            <add position="replace"><![CDATA[
+
+                if(isset($this->request->post['sendsms'])){
+                    $send_sms = $this->request->post['sendsms'];
+                }elseif($this->config->get('sms_notify_force')){
+                    $send_sms = true;
+                }else{
+                    $send_sms = false;
+                }
+
+                if(isset($this->request->post['admin_order'])){
+                    $admin_order = true;
+                }else{
+                    $admin_order = false;
+                }
+
+                $this->model_checkout_order->addOrderHistory($order_id, $this->request->post['order_status_id'], $this->request->post['comment'], $this->request->post['notify'], $this->request->post['override'], $send_sms, $admin_order);]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/model/checkout/order.php">
+        <operation>
+            <search><![CDATA[$override = false]]></search>
+            <add position="replace"><![CDATA[$override = false, $sendsms = false, $admin_order = false]]>
+            </add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,77 @@
+<div id="smsForm">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-sendsms">{{ entry_sendsms }}</label>
+            <div class="col-sm-10">
+                <input type="hidden" name="admin_order" value="1" />
+                <input type="checkbox" name="sendsms" value="1" id="input-sendsms" class="form-control"/>
+            </div>
+        </div>
+        <fieldset>
+            <legend>{{ text_sms_form }}</legend>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-sms-message">{{ entry_sms_message }}</label>
+                <div class="col-sm-10">
+                    <textarea name="input-sms-message" placeholder="{{ entry_sms_message }}" id="input-sms-message" class="form-control sms_template"/></textarea>
+                    <span class="text_length">{{ text_length }}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                {% if sms_template %}
+                    <div class="col-sm-12">
+                        <div class="well well-lg">
+                            {{ sms_template }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-sm-12 text-right">
+                    <button type="button" id="button-send-sms" class="btn btn-warning">
+                        <i class="fa fa-paper-plane"></i> {{ button_send }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script>
+  $('#button-send-sms').on('click', function () {
+    $.ajax({
+      url: '{{ sendMessage }}&{{ token_param }}&order_id={{ order_id }}',
+      type: 'post',
+      data: 'sms_message=' + $('#input-sms-message').val(),
+      dataType: 'json',
+      crossDomain: true,
+      beforeSend: function () {
+        $('#button-send_sms').button('loading');
+      },
+      complete: function () {
+        $('#button-send_sms').button('reset');
+      },
+      success: function (json) {
+        $('.alert').remove();
+
+        if (json['error']) {
+          $('#smsForm .form-horizontal legend').after('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' +
+            json['error'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        }
+        if (json['success']) {
+          $('#smsForm .form-horizontal legend').after('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' +
+            json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+      },
+    });
+  });
+  $('.sms_template').on('input click', function () {
+    let obj = $(this);
+    let target = obj.siblings('.text_length').find('.lenght');
+    smsLength(obj, target);
+  });
+
+  function smsLength(obj, target) {
+    let linetext = obj.val();
+    let textLength = linetext.length;
+    target.html(textLength);
+  }
+</script>
