@@ -493,7 +493,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     {
         $order_id = $this->request->get['order_id'] ?? 0;
 
-        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'] . '&type='.$order_id, true);
+        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'] . '&order_id='.$order_id, true);
 
         if (isset($this->request->post['sms_notify_sms_template'])) {
             $this->params['sms_template'] = $this->request->post['sms_notify_sms_template'];
