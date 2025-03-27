@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @author  Alexander Vakhovski (AlexWaha)
  *
@@ -9,6 +8,9 @@
  *
  * @license GPLv3
  */
+
+use Alexwaha\SmsDispatcher;
+
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
     private $language;
@@ -584,7 +586,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
                 'viber' => $viber_options,
             ];
 
-            $dispatcher = new Alexwaha\SmsDispatcher(
+            $dispatcher = new SmsDispatcher(
                 $this->config->get('sms_notify_gatename'),
                 $options,
                 $this->config->get('sms_notify_log_filename')
