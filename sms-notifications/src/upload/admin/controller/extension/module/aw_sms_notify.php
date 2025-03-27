@@ -56,9 +56,9 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->params['cancel'] = $this->url->link('marketplace/extension', $this->tokenData['param'] . '&type=module', true);
 
-        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage');
+        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'], true);
 
-        $this->params['clearLog'] = $this->url->link('extension/module/aw_sms_notify/clearLog');
+        $this->params['clearLog'] = $this->url->link('extension/module/aw_sms_notify/clearLog', $this->tokenData['param'], true);
 
         if (isset($this->error['warning'])) {
             $this->params['error_warning'] = $this->error['warning'];
@@ -491,13 +491,9 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
     public function orderInfoForm()
     {
-        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage');
+        $order_id = $this->request->get['order_id'] ?? 0;
 
-        if (isset($this->request->get['order_id'])) {
-            $this->params['order_id'] = $this->request->get['order_id'];
-        } else {
-            $this->params['order_id'] = 0;
-        }
+        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'] . '&type='.$order_id, true);
 
         if (isset($this->request->post['sms_notify_sms_template'])) {
             $this->params['sms_template'] = $this->request->post['sms_notify_sms_template'];
