@@ -20,6 +20,8 @@
                 if (is_file($autoloadFile)) {
                     require_once($autoloadFile);
 
+                    new \Alexwaha\Autoload();
+
                     if (class_exists(\Alexwaha\Init::class)) {
                         new \Alexwaha\Init($registry);
                     } else {
