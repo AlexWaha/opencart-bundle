@@ -25,7 +25,7 @@
                     </div>
                 {% endif %}
                 <div class="col-sm-12 text-right">
-                    <button type="button" id="button-send-sms" class="btn btn-warning">
+                    <button type="button" id="button-send-sms" data-url="{{ sendMessage }}" class="btn btn-warning">
                         <i class="fa fa-paper-plane"></i> {{ button_send }}</button>
                 </div>
             </div>
@@ -35,7 +35,7 @@
 <script>
   $('#button-send-sms').on('click', function () {
     $.ajax({
-      url: '{{ sendMessage }}&{{ token_param }}&order_id={{ order_id }}',
+      url: $(this).data('url'),
       type: 'post',
       data: 'sms_message=' + $('#input-sms-message').val(),
       dataType: 'json',
