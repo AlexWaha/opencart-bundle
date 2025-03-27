@@ -15,13 +15,19 @@
         <operation>
             <search><![CDATA[public function __construct($registry) {]]></search>
             <add position="after"><![CDATA[
-            $file = DIR_SYSTEM . 'library/Alexwaha/Autoload.php';
+                $autoloadFile = DIR_SYSTEM . 'library/Alexwaha/Autoload.php';
 
-            if (file_exists($file)) {
-              include_once($file);
+                if (is_file($autoloadFile)) {
+                    require_once($autoloadFile);
 
-              new \Alexwaha\Init($registry);
-            }
+                    if (class_exists(\Alexwaha\Init::class)) {
+                        new \Alexwaha\Init($registry);
+                    } else {
+                        trigger_error('Class \Alexwaha\Init not found.', E_USER_ERROR);
+                    }
+                } else {
+                    trigger_error('Autoload file not found: ' . $autoloadFile, E_USER_ERROR);
+                }
             ]]></add>
         </operation>
     </file>
