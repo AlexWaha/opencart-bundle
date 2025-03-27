@@ -15,12 +15,12 @@
         <operation>
             <search><![CDATA[public function __construct($registry) {]]></search>
             <add position="after"><![CDATA[
-            $file = DIR_SYSTEM . 'library/Alexwaha/Init.php';
+            $file = DIR_SYSTEM . 'library/Alexwaha/Autoload.php';
 
             if (file_exists($file)) {
               include_once($file);
 
-              new Alexwaha\Init($registry);
+              new \Alexwaha\Init($registry);
             }
             ]]></add>
         </operation>
