@@ -196,6 +196,10 @@ final class Core
      */
     public function getConfig($code)
     {
+        if(!$this->isDbReady()) {
+            return new Config(['exception' => 'Config table is not exists. Please re-install awCore module.']);
+        }
+
         $result = $this->model->getConfig($code);
 
         $decoded = json_decode($result, true);
