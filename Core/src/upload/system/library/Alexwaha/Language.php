@@ -94,8 +94,22 @@ final class Language
             require $fileDefault;
         }
 
-        $coreLangFile = __DIR__ . '/lang/' . $this->code . '.php';
-        $fallbackCoreLangFile = __DIR__ . '/lang/' . substr($this->default, 0, 2) . '.php';
+        $this->loadSupport();
+
+        $this->loadException();
+
+        $this->data = array_merge($_, $this->data);
+
+        return $this->data;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function loadSupport()
+    {
+        $coreLangFile = __DIR__ . '/lang/' . $this->code . '/support.php';
+        $fallbackCoreLangFile = __DIR__ . '/lang/' . substr($this->default, 0, 2) . '/support.php';
 
         $renderData = [];
 
@@ -114,9 +128,32 @@ final class Language
             $render = $this->core->render($content, $renderData, true);
             $this->set('text_aw_support', $render);
         }
+    }
 
-        $this->data = array_merge($_, $this->data);
+    /**
+     * @throws Exception
+     */
+    private function loadException()
+    {
+        $coreLangFile = __DIR__ . '/lang/' . $this->code . '/exception.php';
+        $fallbackCoreLangFile = __DIR__ . '/lang/' . substr($this->default, 0, 2) . '/exception.php';
 
-        return $this->data;
+        $renderData = [];
+
+        if (file_exists($coreLangFile)) {
+            $renderData = include $coreLangFile;
+        }
+
+        if (! file_exists($coreLangFile) && file_exists($fallbackCoreLangFile)) {
+            $renderData = include $fallbackCoreLangFile;
+        }
+
+        $template = __DIR__ . '/views/exception.twig';
+
+        if (is_file($template)) {
+            $content = file_get_contents($template);
+            $render = $this->core->render($content, $renderData, true);
+            $this->set('text_aw_exception', $render);
+        }
     }
 }

@@ -196,8 +196,8 @@ final class Core
      */
     public function getConfig($code)
     {
-        if(!$this->isDbReady()) {
-            return new Config(['exception' => 'Config table is not exists. Please re-install awCore module.']);
+        if (!$this->isDbReady()) {
+            return new Config(['exception' => true]);
         }
 
         $result = $this->model->getConfig($code);
@@ -210,10 +210,14 @@ final class Core
     /**
      * @param  string  $code
      * @param  array  $data
-     * @return void
+     * @return Config|void
      */
-    public function setConfig(string $code, array $data): void
+    public function setConfig(string $code, array $data)
     {
+        if (!$this->isDbReady()) {
+            return new Config(['exception' => true]);
+        }
+
         $this->model->setConfig($code, json_encode($data));
     }
 
