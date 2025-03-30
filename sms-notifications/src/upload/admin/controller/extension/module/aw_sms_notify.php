@@ -40,10 +40,6 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
     public function index()
     {
-        if ($this->moduleConfig->get('exception')) {
-            $this->params['error_exception'] = $this->moduleConfig->get('exception');
-        }
-
         $this->document->setTitle($this->language->get('heading_main_title'));
 
         $this->load->model('extension/module/' . $this->moduleName);
