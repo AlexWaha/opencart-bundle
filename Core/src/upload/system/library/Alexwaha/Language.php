@@ -96,8 +96,6 @@ final class Language
 
         $this->loadSupport();
 
-        $this->loadException();
-
         $this->data = array_merge($_, $this->data);
 
         return $this->data;
@@ -127,33 +125,6 @@ final class Language
             $content = file_get_contents($template);
             $render = $this->core->render($content, $renderData, true);
             $this->set('text_aw_support', $render);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function loadException()
-    {
-        $coreLangFile = __DIR__ . '/lang/' . $this->code . '/exception.php';
-        $fallbackCoreLangFile = __DIR__ . '/lang/' . substr($this->default, 0, 2) . '/exception.php';
-
-        $renderData = [];
-
-        if (file_exists($coreLangFile)) {
-            $renderData = include $coreLangFile;
-        }
-
-        if (! file_exists($coreLangFile) && file_exists($fallbackCoreLangFile)) {
-            $renderData = include $fallbackCoreLangFile;
-        }
-
-        $template = __DIR__ . '/views/exception.twig';
-
-        if (is_file($template)) {
-            $content = file_get_contents($template);
-            $render = $this->core->render($content, $renderData, true);
-            $this->set('text_aw_exception', $render);
         }
     }
 }

@@ -27,31 +27,24 @@ final class Model
         $this->config = $registry->get('config');
     }
 
-    public function checkTables(): bool
-    {
-        $query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "aw_module_config'");
-
-        if (!$query->num_rows) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * @return void
      */
     public function createTables()
     {
-        $this->db->query("
-            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_module_config` (
-                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `code` VARCHAR(255) NOT NULL,
-                `config` JSON NOT NULL,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `code_unique` (`code`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-        ");
+        $query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "aw_module_config'");
+
+        if (!$query->num_rows) {
+            $this->db->query("
+                CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_module_config` (
+                    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                    `code` VARCHAR(255) NOT NULL,
+                    `config` JSON NOT NULL,
+                    PRIMARY KEY (`id`),
+                    UNIQUE KEY `code_unique` (`code`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ");
+        }
     }
 
     /**

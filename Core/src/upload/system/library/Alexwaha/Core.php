@@ -186,30 +186,12 @@ final class Core
     }
 
     /**
-     * @return void
-     */
-    public function install()
-    {
-        $this->model->createTables();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDbReady(): bool
-    {
-        return $this->model->checkTables();
-    }
-
-    /**
      * @param $code
      * @return Config
      */
     public function getConfig($code)
     {
-        if (!$this->isDbReady()) {
-            return new Config(['exception' => true]);
-        }
+        $this->model->createTables();
 
         $result = $this->model->getConfig($code);
 
@@ -221,14 +203,10 @@ final class Core
     /**
      * @param  string  $code
      * @param  array  $data
-     * @return Config|void
+     * @return void
      */
     public function setConfig(string $code, array $data)
     {
-        if (!$this->isDbReady()) {
-            return new Config(['exception' => true]);
-        }
-
         $this->model->setConfig($code, json_encode($data));
     }
 
