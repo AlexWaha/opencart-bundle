@@ -263,7 +263,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
             if ($this->moduleConfig->get('sms_notify_register_alert')) {
                 $template = $this->moduleConfig->get('sms_notify_register_template');
 
-                $language_id = $this->moduleConfig->get('config_language_id');
+                $language_id = $this->config->get('config_language_id');
 
                 $text = $this->awCore->render($template[$language_id], $data, true);
 
