@@ -26,11 +26,11 @@ final class Config
 
     /**
      * @param $key
-     * @return mixed|string
+     * @return string|null
      */
-    public function get($key)
+    public function get($key): ?string
     {
-        return $this->data[$key] ?? '';
+        return $this->data[$key] ?? null;
     }
 
     /**
