@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author  Alexander Vakhovski (AlexWaha)
  *
@@ -493,7 +494,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     {
         $order_id = $this->request->get['order_id'] ?? 0;
 
-        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'] . '&order_id='.$order_id, true);
+        $this->params['sendMessage'] = $this->url->link('extension/module/aw_sms_notify/sendMessage', $this->tokenData['param'] . '&order_id=' . $order_id, true);
 
         if (isset($this->request->post['sms_notify_sms_template'])) {
             $this->params['sms_template'] = $this->request->post['sms_notify_sms_template'];
@@ -661,17 +662,26 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $model = 'model_extension_event';
         }
 
-        $this->{$model}->addEvent('aw_sms_notify_order_alert',
+        $this->{$model}->addEvent(
+            'aw_sms_notify_order_alert',
             'catalog/model/checkout/order/addOrderHistory/before',
-            'extension/module/aw_sms_notify/order', 1);
+            'extension/module/aw_sms_notify/order',
+            1
+        );
 
-        $this->{$model}->addEvent('aw_sms_notify_review_alert',
+        $this->{$model}->addEvent(
+            'aw_sms_notify_review_alert',
             'catalog/model/catalog/review/addReview/before',
-            'extension/module/aw_sms_notify/review', 1);
+            'extension/module/aw_sms_notify/review',
+            1
+        );
 
-        $this->{$model}->addEvent('aw_sms_notify_register_alert',
+        $this->{$model}->addEvent(
+            'aw_sms_notify_register_alert',
             'catalog/model/account/customer/addCustomer/after',
-            'extension/module/aw_sms_notify/register', 1);
+            'extension/module/aw_sms_notify/register',
+            1
+        );
     }
 
     /**

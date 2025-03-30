@@ -61,7 +61,8 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         }
     }
 
-    public function register(&$route, &$args, &$output) {
+    public function register(&$route, &$args, &$output)
+    {
         $customer_id = $output ?? 0;
 
         if (isset($args[0])) {
