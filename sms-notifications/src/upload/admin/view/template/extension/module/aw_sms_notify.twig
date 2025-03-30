@@ -16,6 +16,10 @@
         </div>
     </div>
     <div class="container-fluid">
+        {% if error_exception %}
+            {{ text_aw_exception }}
+        {% endif %}
+        {% if not error_exception %}
         {% if error_warning %}
             <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -775,6 +779,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {{ footer }}
