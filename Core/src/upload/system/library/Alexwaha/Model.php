@@ -39,6 +39,22 @@ final class Model
     }
 
     /**
+     * @return void
+     */
+    public function createTables()
+    {
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_module_config` (
+                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `code` VARCHAR(255) NOT NULL,
+                `config` JSON NOT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `code_unique` (`code`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ");
+    }
+
+    /**
      * @param $code
      * @return string|null
      */

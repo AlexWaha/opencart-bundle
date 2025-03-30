@@ -185,6 +185,17 @@ final class Core
         return preg_replace('/\D/', '', $number);
     }
 
+    /**
+     * @return void
+     */
+    public function install()
+    {
+        $this->model->createTables();
+    }
+
+    /**
+     * @return bool
+     */
     public function isDbReady(): bool
     {
         return $this->model->checkTables();
