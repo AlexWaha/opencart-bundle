@@ -104,17 +104,14 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params['sms_notify_gatename'] = $this->moduleConfig->get('sms_notify_gatename');
         $this->params['sms_notify_to'] = $this->moduleConfig->get('sms_notify_to');
         $this->params['sms_notify_from'] = $this->moduleConfig->get('sms_notify_from');
-        $this->params['sms_notify_message'] = $this->moduleConfig->get('sms_notify_message');
         $this->params['sms_notify_gate_username'] = $this->moduleConfig->get('sms_notify_gate_username');
         $this->params['sms_notify_gate_password'] = $this->moduleConfig->get('sms_notify_gate_password');
-        $this->params['sms_notify_alert'] = $this->moduleConfig->get('sms_notify_alert');
         $this->params['sms_notify_copy'] = $this->moduleConfig->get('sms_notify_copy');
         $this->params['admin_alert'] = $this->moduleConfig->get('sms_notify_admin_alert');
         $this->params['client_alert'] = $this->moduleConfig->get('sms_notify_client_alert');
         $this->params['register_alert'] = $this->moduleConfig->get('sms_notify_register_alert');
         $this->params['order_alert'] = $this->moduleConfig->get('sms_notify_order_alert');
         $this->params['reviews'] = $this->moduleConfig->get('sms_notify_reviews');
-        $this->params['payment_alert'] = $this->moduleConfig->get('sms_notify_payment_alert');
         $this->params['translit'] = $this->moduleConfig->get('sms_notify_translit') ?? false;
         $this->params['force'] = $this->moduleConfig->get('sms_notify_force');
         $this->params['admin_template'] = $this->moduleConfig->get('sms_notify_admin_template');
@@ -123,7 +120,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params['reviews_template'] = $this->moduleConfig->get('sms_notify_reviews_template');
         $this->params['sms_payment'] = $this->moduleConfig->get('sms_notify_payment') ?? [];
         $this->params['payment_template'] = $this->moduleConfig->get('sms_notify_payment_template') ?? [];
-        $this->params['sms_customer_group'] = $this->moduleConfig->get('sms_notify_customer_group');
+        $this->params['sms_customer_group'] = $this->moduleConfig->get('sms_notify_customer_group') ?? [];
         $this->params['viber_alert'] = $this->moduleConfig->get('sms_notify_viber_alert');
         $this->params['viber_sender'] = $this->moduleConfig->get('sms_notify_viber_sender');
         $this->params['viber_ttl'] = $this->moduleConfig->get('sms_notify_viber_ttl') ?? '3600';
