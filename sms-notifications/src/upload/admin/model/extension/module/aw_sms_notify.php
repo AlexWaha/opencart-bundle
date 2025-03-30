@@ -26,14 +26,12 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
         if ($query->num_rows) {
             foreach ($query->rows as $payment) {
-                if ($this->awCore->getVersion() > 23) {
-                    $this->load->language('extension/payment/' . $payment['code'], 'extension');
-                    $heading_title = $this->language->get('extension')->get('heading_title');
-                }
-
-                if ($this->awCore->getVersion() <= 23) {
+                if ($this->awCore->isLegacy()) {
                     $this->load->language('extension/payment/' . $payment['code']);
                     $heading_title = $this->language->get('heading_title');
+                } else {
+                    $this->load->language('extension/payment/' . $payment['code'], 'extension');
+                    $heading_title = $this->language->get('extension')->get('heading_title');
                 }
 
                 $payments[] = [

@@ -83,10 +83,11 @@
         <operation>
             <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $order_status_id);]]></search>
             <add position="replace"><![CDATA[
+                    $awModuleConfig = $this->awCore->getConfig('aw_sms_notify');
 
                     if(isset($this->request->post['sendsms'])){
                         $send_sms = $this->request->post['sendsms'];
-                    }elseif($this->config->get('sms_notify_force')){
+                    }elseif($awModuleConfig->get('sms_notify_force')){
                         $send_sms = true;
                     }else{
                         $send_sms = false;
@@ -112,10 +113,11 @@
         <operation>
             <search><![CDATA[$this->model_checkout_order->addOrderHistory($order_id, $this->request->post['order_status_id'], $this->request->post['comment'], $this->request->post['notify'], $this->request->post['override']);]]></search>
             <add position="replace"><![CDATA[
+                $awModuleConfig = $this->awCore->getConfig('aw_sms_notify');
 
                 if(isset($this->request->post['sendsms'])){
                     $send_sms = $this->request->post['sendsms'];
-                }elseif($this->config->get('sms_notify_force')){
+                }elseif($awModuleConfig->get('sms_notify_force')){
                     $send_sms = true;
                 }else{
                     $send_sms = false;
