@@ -2,11 +2,8 @@
 
 /**
  * @author  Alexander Vakhovski (AlexWaha)
- *
  * @link    https://alexwaha.com
- *
  * @email   support@alexwaha.com
- *
  * @license GPLv3
  */
 

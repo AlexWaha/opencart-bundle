@@ -18,7 +18,7 @@ $_['heading_main_title'] = 'alexwaha.com - Смс уведомления';
 $_['lang'] = 'ru-RU';
 
 // Text
-$_['text_extension'] = 'Модули';
+$_['text_extension']   = 'Расширения';
 $_['text_success'] = 'Настройки модуля обновлены!';
 $_['text_success_sms'] = 'Смс успешно отправлено!';
 $_['text_success_log'] = 'Лог очищен!';
