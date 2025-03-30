@@ -12,7 +12,9 @@
 
 namespace Alexwaha;
 
-class Language
+use Exception;
+
+final class Language
 {
     private $default = 'en-gb';
 
@@ -65,6 +67,7 @@ class Language
     /**
      * @param $filename
      * @return array
+     * @throws Exception
      */
     public function load($filename): array
     {
@@ -108,7 +111,7 @@ class Language
 
         if (is_file($template)) {
             $content = file_get_contents($template);
-            $render = $this->core->view($content, $renderData, true);
+            $render = $this->core->render($content, $renderData, true);
             $this->set('text_aw_support', $render);
         }
 

@@ -21,6 +21,7 @@ final class Core
     private $registry;
 
     public $model;
+    public $view;
 
     /**
      * @param $registry
@@ -29,6 +30,7 @@ final class Core
     {
         $this->registry = $registry;
         $this->model = new Model($registry);
+        $this->view = new View();
     }
 
     /**
@@ -46,11 +48,9 @@ final class Core
      * @return string
      * @throws Exception
      */
-    public function view(string $template, array $data = [], bool $isString = false): string
+    public function render(string $template, array $data = [], bool $isString = false): string
     {
-        $view = new View();
-
-        return $view->render($template, $data, $isString);
+        return $this->view->render($template, $data, $isString);
     }
 
     /**
@@ -192,13 +192,15 @@ final class Core
 
     /**
      * @param $code
-     * @return false|string
+     * @return Config
      */
     public function getConfig($code)
     {
         $result = $this->model->getConfig($code);
 
-        return json_encode($result, true);
+        $decoded = json_decode($result, true);
+
+        return new Config(is_array($decoded) ? $decoded : []);
     }
 
     /**

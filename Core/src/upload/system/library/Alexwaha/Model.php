@@ -12,7 +12,7 @@
 
 namespace Alexwaha;
 
-class Model
+final class Model
 {
     private $db;
 
