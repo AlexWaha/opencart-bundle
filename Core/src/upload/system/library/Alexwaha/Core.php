@@ -44,6 +44,7 @@ final class Core
      * @param  array  $data
      * @param  bool  $isString
      * @return string
+     * @throws Exception
      */
     public function view(string $template, array $data = [], bool $isString = false): string
     {
@@ -55,19 +56,13 @@ final class Core
     /**
      * @return int
      */
-    public function getVersion(): int
+    public function isLegacy(): int
     {
-        if (defined('VERSION')) {
-            $version = VERSION;
-        } elseif (is_file(DIR_SYSTEM . 'engine/router.php')) {
-            $version = '3.0';
+        if (is_file(DIR_SYSTEM . 'engine/router.php')) {
+            return false;
         } elseif (is_file(DIR_SYSTEM . 'framework.php')) {
-            $version = '2.3';
-        } else {
-            $version = '2.1';
+            return true;
         }
-
-        return (int) substr(str_replace('.', '', $version), 0, 2);
     }
 
     /**
@@ -77,7 +72,7 @@ final class Core
     {
         $session = $this->registry->get('session');
 
-        if ($this->getVersion() <= 23) {
+        if ($this->isLegacy()) {
             $token = $session->data['token'];
             $tokenData = [
                 'param' => 'token=' . $token,
@@ -188,6 +183,22 @@ final class Core
     public function prepareNumber(string $number): string
     {
         return preg_replace('/\D/', '', $number);
+    }
+
+    public function isDbReady(): bool
+    {
+        return $this->model->checkTables();
+    }
+
+    /**
+     * @param $code
+     * @return false|string
+     */
+    public function getConfig($code)
+    {
+        $result = $this->model->getConfig($code);
+
+        return json_encode($result, true);
     }
 
     /**

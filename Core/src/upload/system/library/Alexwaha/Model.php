@@ -27,6 +27,33 @@ class Model
         $this->config = $registry->get('config');
     }
 
+    public function checkTables(): bool
+    {
+        $query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "aw_module_config'");
+
+        if (!$query->num_rows) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $code
+     * @return string|null
+     */
+    public function getConfig($code): ?string
+    {
+        $query = $this->db->query(
+            "SELECT `config`
+         FROM `" . DB_PREFIX . "aw_module_config`
+         WHERE `code` = '" . $this->db->escape($code) . "'
+         LIMIT 1"
+        );
+
+        return $query->row['config'] ?? null;
+    }
+
     /**
      * @return string
      */
