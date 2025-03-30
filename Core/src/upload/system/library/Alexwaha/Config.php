@@ -26,9 +26,9 @@ final class Config
 
     /**
      * @param $key
-     * @return string|null
+     * @return mixed
      */
-    public function get($key): ?string
+    public function get($key)
     {
         return $this->data[$key] ?? null;
     }
