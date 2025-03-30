@@ -186,6 +186,17 @@ final class Core
     }
 
     /**
+     * @param  string  $code
+     * @param  array  $data
+     * @param  int  $moduleId
+     * @return void
+     */
+    public function saveModule(string $code, array $data, int $moduleId = 0): void
+    {
+        $this->model->saveModule($code, $data, $moduleId);
+    }
+
+    /**
      * @param $code
      * @return Config
      */

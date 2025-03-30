@@ -28,6 +28,33 @@ final class Model
     }
 
     /**
+     * @param  string  $code
+     * @param  array  $data
+     * @param  int  $moduleId
+     * @return void
+     */
+    public function saveModule(string $code, array $data, int $moduleId = 0): void
+    {
+        $json = $this->db->escape(json_encode($data));
+
+        if ($moduleId) {
+            $this->db->query(
+                "UPDATE `" . DB_PREFIX . "module`
+             SET `name` = '" . $this->db->escape($data['name']) . "',
+                 `setting` = '" . $json . "'
+             WHERE `module_id` = '" . $moduleId . "'"
+            );
+        } else {
+            $this->db->query(
+                "INSERT INTO `" . DB_PREFIX . "module`
+             SET `name` = '" . $this->db->escape($data['name']) . "',
+                 `code` = '" . $this->db->escape($code) . "',
+                 `setting` = '" . $json . "'"
+            );
+        }
+    }
+
+    /**
      * @return void
      */
     public function createTables()
