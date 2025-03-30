@@ -55,6 +55,36 @@ class Model
     }
 
     /**
+     * @param  string  $code
+     * @param  string  $json
+     * @return void
+     */
+    public function setConfig(string $code, string $json): void
+    {
+        $exists = $this->db->query(
+            "SELECT `id`
+             FROM `" . DB_PREFIX . "aw_module_config`
+             WHERE `code` = '" . $this->db->escape($code) . "'
+             LIMIT 1"
+        );
+
+        if ($exists->num_rows) {
+            $this->db->query(
+                "UPDATE `" . DB_PREFIX . "aw_module_config`
+                 SET `config` = '" . $this->db->escape($json) . "'
+                 WHERE `code` = '" . $this->db->escape($code) . "'"
+            );
+        } else {
+            $this->db->query(
+                "INSERT INTO `" . DB_PREFIX . "aw_module_config`
+                 SET `code` = '" . $this->db->escape($code) . "',
+                     `config` = '" . $this->db->escape($json) . "'"
+            );
+        }
+    }
+
+
+    /**
      * @return string
      */
     public function getLanguageCode(): string

@@ -202,6 +202,16 @@ final class Core
     }
 
     /**
+     * @param  string  $code
+     * @param  array  $data
+     * @return void
+     */
+    public function setConfig(string $code, array $data): void
+    {
+        $this->model->setConfig($code, json_encode($data));
+    }
+
+    /**
      * @param  string  $path
      * @param  bool  $force
      * @return void
