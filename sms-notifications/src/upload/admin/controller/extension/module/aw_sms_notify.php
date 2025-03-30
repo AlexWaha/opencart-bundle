@@ -15,15 +15,11 @@ use Alexwaha\SmsDispatcher;
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
     private $moduleName = 'aw_sms_notify';
-
     private $moduleConfig;
-
     private $language;
-
-    private $params;
-
     private $error = [];
-
+    private $routeExtension;
+    private $params;
     private $tokenData;
 
     public function __construct($registry)
@@ -36,6 +32,9 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
+        $this->routeExtension = $this->awCore->isLegacy()
+            ? 'extension/extension'
+            : 'marketplace/extension';
     }
 
     public function index()
@@ -44,54 +43,32 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->load->model('extension/module/' . $this->moduleName);
 
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            $this->awCore->setConfig($this->moduleName, $this->request->post);
+        $this->params['success'] = isset($this->session->data['success']) ?? '';
 
-            $this->session->data['success'] = $this->language->get('text_success');
+        $this->params['error'] = $this->error;
 
-            $this->response->redirect($this->url->link(
-                'extension/module/' . $this->moduleName,
-                $this->tokenData['param'] . '&type=module',
-                true
-            ));
-        }
+        $this->params['breadcrumbs'] = [
+            [
+                'text' => $this->language->get('text_home'),
+                'href' => $this->url->link('common/dashboard', $this->tokenData['param'], true)
+            ],
+            [
+                'text' => $this->language->get('text_extension'),
+                'href' => $this->url->link($this->routeExtension, $this->tokenData['param'] . '&type=module', true)
+            ],
+            [
+                'text' => $this->language->get('heading_title'),
+                'href' => $this->url->link('extension/module/' . $this->moduleName, $this->tokenData['param'], true)
+            ]
+        ];
 
-        $this->params['action'] = $this->url->link('extension/module/' . $this->moduleName, $this->tokenData['param'], true);
+        $this->params['action'] = $this->url->link('extension/module/' . $this->moduleName . '/store', $this->tokenData['param'], true);
 
-        $this->params['cancel'] = $this->url->link('marketplace/extension', $this->tokenData['param'] . '&type=module', true);
+        $this->params['cancel'] = $this->url->link($this->routeExtension, $this->tokenData['param'] . '&type=module', true);
 
         $this->params['sendMessage'] = $this->url->link('extension/module/' . $this->moduleName . '/sendMessage', $this->tokenData['param'], true);
 
         $this->params['clearLog'] = $this->url->link('extension/module/' . $this->moduleName . '/clearLog', $this->tokenData['param'], true);
-
-        if (isset($this->error['warning'])) {
-            $this->params['error_warning'] = $this->error['warning'];
-        } else {
-            $this->params['error_warning'] = '';
-        }
-
-        if (isset($this->error['name'])) {
-            $this->params['error_name'] = $this->error['name'];
-        } else {
-            $this->params['error_name'] = '';
-        }
-
-        $this->params['breadcrumbs'] = [];
-
-        $this->params['breadcrumbs'][] = [
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', $this->tokenData['param'], true),
-        ];
-
-        $this->params['breadcrumbs'][] = [
-            'text' => $this->language->get('text_extension'),
-            'href' => $this->url->link('marketplace/extension', $this->tokenData['param'] . '&type=module', true),
-        ];
-
-        $this->params['breadcrumbs'][] = [
-            'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/module/' . $this->moduleName, $this->tokenData['param'], true),
-        ];
 
         $this->params['sms_gatenames'] = [];
 
@@ -228,13 +205,30 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName, $this->params));
     }
 
+    public function store()
+    {
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+            $this->awCore->setConfig($this->moduleName, $this->request->post);
+
+            $this->session->data['success'] = $this->language->get('text_success');
+
+            $this->response->redirect($this->url->link(
+                'extension/module/' . $this->moduleName,
+                $this->tokenData['param'] . '&type=module',
+                true
+            ));
+        }
+
+        $this->index();
+    }
+
     public function order()
     {
         $this->load->model('localisation/order_status');
 
         $this->params['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
-        return $this->awCore->render('extension/module/aw_sms_notify_list', $this->params);
+        return $this->awCore->render('extension/module/' . $this->moduleName . '_list', $this->params);
     }
 
     public function orderInfoForm()
@@ -251,7 +245,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->params['force'] = $this->moduleConfig->get('sms_notify_force');
 
-        return $this->awCore->render('extension/module/aw_sms_notify_info', $this->params);
+        return $this->awCore->render('extension/module/' . $this->moduleName . '_info', $this->params);
     }
 
     /**
@@ -382,7 +376,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     public function install()
     {
         $this->load->model('setting/setting');
-        $this->model_setting_setting->editSetting('module_' . $this->moduleName, ['module_aw_sms_notify_status' => '1']);
+        $this->model_setting_setting->editSetting('module_' . $this->moduleName, ['module_' . $this->moduleName . '_status' => '1']);
 
         $this->awCore->removeLegacyFiles($this->getLegacyList());
         $this->uninstallLegacyEvents();
