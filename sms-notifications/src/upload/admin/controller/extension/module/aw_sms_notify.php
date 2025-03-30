@@ -43,7 +43,8 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->load->model('extension/module/' . $this->moduleName);
 
-        $this->params['success'] = isset($this->session->data['success']) ?? '';
+        $this->params['success'] = $this->session->data['success'] ?? '';
+        unset($this->session->data['success']);
 
         $this->params['error'] = $this->error;
 
@@ -466,7 +467,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
      */
     public function uninstallLegacyEvents()
     {
-        if ($this->awCore->getLegacy()) {
+        if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
 
             $this->model_extension_event->deleteEvent('ocd_sms_notify_order_alert');
