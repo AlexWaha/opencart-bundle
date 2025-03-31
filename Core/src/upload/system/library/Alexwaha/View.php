@@ -40,9 +40,7 @@ final class View
      */
     public function render(string $template, array $data = [], bool $isString = false): string
     {
-        $templateDirectory = $this->config->get('template_directory');
-
-        $template = $templateDirectory . $template;
+        $isAdmin = defined('DIR_CATALOG');
 
         $config = [
             'autoescape' => false,
@@ -59,22 +57,33 @@ final class View
                 return $twig->render('template', $data);
             }
 
-            $file = DIR_TEMPLATE . $template . '.twig';
+            if ($isAdmin) {
+                $baseDir = DIR_TEMPLATE;
+            } else {
+                $theme = $this->config->get('config_theme') === 'theme_default'
+                    ? $this->config->get('theme_default_directory')
+                    : $this->config->get('config_theme');
 
-            if (! file_exists($file)) {
-                throw new Exception('Template not found: ' . $file);
+                $baseDir = DIR_TEMPLATE . $theme . '/template/';
             }
 
-            $content = file_get_contents($file);
+            $templateFile = $template . '.twig';
+            $fullPath = $baseDir . $templateFile;
+
+            if (!is_file($fullPath)) {
+                throw new Exception('Template not found: ' . $fullPath);
+            }
+
+            $content = file_get_contents($fullPath);
 
             $loader = new ChainLoader([
-                new FilesystemLoader(DIR_TEMPLATE),
+                new FilesystemLoader($baseDir),
                 new ArrayLoader(['template' => $content]),
             ]);
 
             $twig = new Environment($loader, $config);
 
-            return $twig->render($template . '.twig', $data);
+            return $twig->render($templateFile, $data);
         } catch (LoaderError|RuntimeError|SyntaxError $e) {
             throw new Exception('Twig Rendering Error: ' . $e->getMessage());
         }
