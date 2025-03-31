@@ -202,7 +202,7 @@ final class Core
      */
     public function getModule(int $moduleId): array
     {
-        $this->model->getModule($moduleId);
+        return $this->model->getModule($moduleId);
     }
 
     /**
