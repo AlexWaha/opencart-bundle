@@ -60,9 +60,9 @@ final class Model
      */
     public function getModule($moduleId)
     {
-        $query = $this->db->query("SELECT setting FROM `" . DB_PREFIX . "module` WHERE `module_id` = '" . $moduleId . "'");
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "module` WHERE `module_id` = '" . $moduleId . "'");
 
-        return $query->row['setting'] ? json_decode($query->row['setting'], true) : [];
+        return $query->row ? json_decode($query->row['setting'], true) : [];
     }
 
     /**
