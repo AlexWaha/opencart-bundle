@@ -30,7 +30,7 @@ final class Core
     {
         $this->registry = $registry;
         $this->model = new Model($registry);
-        $this->view = new View();
+        $this->view = new View($registry);
     }
 
     /**

@@ -21,10 +21,13 @@ use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 use Exception;
 
-class View
+final class View
 {
-    public function __construct()
+    private $config;
+
+    public function __construct($registry)
     {
+        $this->config = $registry->get('config');
         require_once __DIR__ . '/vendor/autoload.php';
     }
 
@@ -37,6 +40,9 @@ class View
      */
     public function render(string $template, array $data = [], bool $isString = false): string
     {
+        $templateDirectory = $this->config->get('template_directory');
+
+        $template = $templateDirectory . $template;
 
         $config = [
             'autoescape' => false,
