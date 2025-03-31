@@ -33,7 +33,7 @@ final class Model
      * @param  int  $moduleId
      * @return void
      */
-    public function saveModule(string $code, array $data, int $moduleId = 0): void
+    public function setModule(string $code, array $data, int $moduleId = 0): void
     {
         $json = $this->db->escape(json_encode($data));
 
@@ -52,6 +52,13 @@ final class Model
                  `setting` = '" . $json . "'"
             );
         }
+    }
+
+    public function getModule($moduleId)
+    {
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "module` WHERE `module_id` = '" . $moduleId . "'");
+
+        return $query->rows;
     }
 
     /**

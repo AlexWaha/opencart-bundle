@@ -191,9 +191,18 @@ final class Core
      * @param  int  $moduleId
      * @return void
      */
-    public function saveModule(string $code, array $data, int $moduleId = 0): void
+    public function setModule(string $code, array $data, int $moduleId = 0): void
     {
-        $this->model->saveModule($code, $data, $moduleId);
+        $this->model->setModule($code, $data, $moduleId);
+    }
+
+    /**
+     * @param  int  $moduleId
+     * @return array
+     */
+    public function getModule(int $moduleId): array
+    {
+        $this->model->getModule($moduleId);
     }
 
     /**
