@@ -57,6 +57,8 @@ final class View
                 return $twig->render('template', $data);
             }
 
+            $templateFile = $template . '.twig';
+
             if ($isAdmin) {
                 $baseDir = DIR_TEMPLATE;
             } else {
@@ -67,11 +69,18 @@ final class View
                 $baseDir = DIR_TEMPLATE . $theme . '/template/';
             }
 
-            $templateFile = $template . '.twig';
             $fullPath = $baseDir . $templateFile;
 
             if (!is_file($fullPath)) {
-                throw new Exception('Template not found: ' . $fullPath);
+                $fallbackDir = DIR_TEMPLATE . 'default/template/';
+                $fallbackPath = $fallbackDir . $templateFile;
+
+                if (is_file($fallbackPath)) {
+                    $baseDir = $fallbackDir;
+                    $fullPath = $fallbackPath;
+                } else {
+                    throw new Exception('Template not found: ' . $fullPath);
+                }
             }
 
             $content = file_get_contents($fullPath);
