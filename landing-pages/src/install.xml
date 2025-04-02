@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @author  Alexander Vakhovski (AlexWaha)
+  ~ @link    https://alexwaha.com
+  ~ @email   support@alexwaha.com
+  ~ @license GPLv3
+  -->
+<modification>
+    <name>alexwaha.com - Landing pages</name>
+    <code>landing_page</code>
+    <version>1.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="admin/language/en-gb/common/column_left.php">
+        <operation>
+            <search><![CDATA[$_['text_catalog']]]></search>
+            <add position="before"><![CDATA[
+            $_['text_aw_landing_page'] = 'Landing pages';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/language/ru-ru/common/column_left.php">
+        <operation>
+            <search><![CDATA[$_['text_catalog']]]></search>
+            <add position="before"><![CDATA[
+            $_['text_aw_landing_page'] = 'Посадочные страницы';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="admin/controller/common/column_left.php">
+        <operation>
+            <search><![CDATA[if ($this->user->hasPermission('access', 'catalog/download')) {]]></search>
+            <add position="before"><![CDATA[
+			if ($this->user->hasPermission('access', 'extension/module/aw_landing_page')) {
+			    $awTokenData = $this->awCore->getToken();
+				$catalog[] = [
+					'name'	   => $this->language->get('text_aw_landing_page'),
+					'href'     => $this->url->link('extension/module/aw_landing_page', $awTokenData['param'], true),
+					'children' => []
+				];
+			}
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/startup/seo_url.php">
+        <operation>
+            <search><![CDATA[if ($url[0] == 'information_id') {]]></search>
+            <add position="before"><![CDATA[
+                if ($url[0] == 'landing_page_id') {
+                    $this->request->get['landing_page_id'] = $url[1];
+                }
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[if ($query->row['query']]]></search>
+            <add position="replace"><![CDATA[
+                if ($query->row['query'] && $url[0] != 'landing_page_id'
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[} elseif (isset($this->request->get['information_id'])) {]]></search>
+            <add position="replace"><![CDATA[
+                } elseif (isset($this->request->get['landing_page_id'])) {
+					$this->request->get['route'] = 'extension/module/aw_landing_page';
+                } elseif (isset($this->request->get['information_id'])) {
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[($data['route'] == 'information/information' && $key == 'information_id')]]></search>
+            <add position="replace"><![CDATA[
+                ($data['route'] == 'extension/module/aw_landing_page' && $key == 'landing_page_id') || ($data['route'] == 'information/information' && $key == 'information_id')
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/startup/seo_pro.php">
+        <operation>
+            <search><![CDATA[} elseif (isset($this->request->get['information_id'])) {]]></search>
+            <add position="replace"><![CDATA[
+                } elseif (isset($this->request->get['landing_page_id'])) {
+				    $this->request->get['route'] = 'extension/module/aw_landing_page';
+                } elseif (isset($this->request->get['information_id'])) {
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[case 'information_id':]]></search>
+            <add position="before"><![CDATA[
+                case 'landing_page_id':
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="system/library/seopro.php">
+        <operation>
+            <search><![CDATA[if(!in_array($url[0], ['category_id',]]></search>
+            <add position="replace"><![CDATA[
+                if(!in_array($url[0], ['category_id','landing_page_id',
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[case 'information_id':]]></search>
+            <add position="before"><![CDATA[
+                case 'landing_page_id':
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[} elseif (isset($this->request->get['information_id'])) {]]></search>
+            <add position="replace"><![CDATA[
+                } elseif (isset($this->request->get['landing_page_id'])) {
+				    $this->request->get['route'] = 'extension/module/aw_landing_page';
+                } elseif (isset($this->request->get['information_id'])) {
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[case 'information_id':]]></search>
+            <add position="replace"><![CDATA[
+                case 'landing_page_id':
+                    $landing_page_id = (int)$value;
+                    $queries[] = 'landing_page_id=' . $landing_page_id;
+                    $postfix = true;
+                    unset($data[$key]);
+                    break;
+                case 'information_id':
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/extension/feed/google_sitemap.php">
+        <operation>
+            <search><![CDATA[$this->load->model('catalog/information');]]></search>
+            <add position="before"><![CDATA[
+            $this->load->model('extension/module/aw_landing_page');
+
+            $landingPages = $this->model_extension_module_aw_landing_page->getAllPages();
+
+            foreach ($landingPages as $page) {
+                $output .= '<url>';
+                $output .= '  <loc>' . $this->url->link('extension/module/aw_landing_page', 'landing_page_id=' . $page['landing_page_id']) . '</loc>';
+                $output .= '  <changefreq>weekly</changefreq>';
+                $output .= '  <priority>0.5</priority>';
+                $output .= '</url>';
+            }
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,113 @@
+{% if links and status %}
+    <div class="landing-links-block">
+        <div class="landing-links-title">
+            <span class="title-text">{{ title }}</span>
+            <i class="fa fa-angle-down visible-xs toggle-icon"></i>
+        </div>
+        <div class="landing-links-dropdown hidden-xs">
+            <div class="row">
+                {% for column in links %}
+                    <div class="landing-links-column col-sm-3">
+                        <ul class="list-unstyled">
+                            {% for link in column %}
+                                <li><a href="{{ link.href }}">{{ link.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+      $(document).ready(function () {
+          $('.landing-links-title').on('click', function () {
+            const dropdown = $('.landing-links-dropdown');
+            const icon = $(this).find('.toggle-icon');
+
+            if (dropdown.hasClass('hidden-xs')) {
+              dropdown.removeClass('hidden-xs').slideDown(200);
+              icon.removeClass('fa-angle-down').addClass('fa-angle-up');
+            } else {
+              dropdown.slideUp(200, function () {
+                dropdown.addClass('hidden-xs');
+              });
+              icon.removeClass('fa-angle-up').addClass('fa-angle-down');
+            }
+          });
+      });
+    </script>
+    <style>
+        .landing-links-block {
+            margin-top: 30px;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .landing-links-title {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+            cursor: pointer;
+        }
+
+        .landing-links-title .title-text{
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .landing-links-title .toggle-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .landing-links-title i {
+            margin-left: 8px;
+        }
+
+        .landing-links-dropdown {
+            margin: 0 auto;
+        }
+
+        .landing-links-column {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .landing-links-column ul {
+            padding-left: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .landing-links-column li {
+            margin-bottom: 10px;
+        }
+
+        .landing-links-column li a {
+            font-size: 15px;
+            color: #0074b6;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .landing-links-column li a:hover {
+            color: #555;
+        }
+        @media (max-width: 767px) {
+            .landing-links-title {
+                cursor: pointer;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+            }
+
+            .landing-links-dropdown {
+                display: none;
+                margin-top: 15px;
+            }
+        }
+
+    </style>
+{% endif %}

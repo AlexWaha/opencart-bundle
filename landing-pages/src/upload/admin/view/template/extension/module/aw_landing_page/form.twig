@@ -1,0 +1,236 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-page" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ button_save }}</button>
+                <a href="{{ cancel }}" class="btn btn-default"><i class="fa fa-reply"></i> {{ button_cancel }}</a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-page" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        {% for language in languages %}
+                            <li class="{% if loop.first %}active{% endif %}">
+                                <a href="#lang{{ language.language_id }}" data-toggle="tab">
+                                    <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/> {{ language.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                        {% for language in languages %}
+                            <div class="tab-pane {% if loop.first %}active{% endif %}" id="lang{{ language.language_id }}">
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label">{{ entry_name }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="description[{{ language.language_id }}][name]" value="{{ description[language.language_id].name ?? '' }}" class="form-control"/>
+                                        {% if error.name[language.language_id] %}
+                                            <div class="text-danger">{{ error.name[language.language_id] }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_meta_title }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="description[{{ language.language_id }}][meta_title]" value="{{ description[language.language_id].meta_title ?? '' }}" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_meta_h1 }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="description[{{ language.language_id }}][meta_h1]" value="{{ description[language.language_id].meta_h1 ?? '' }}" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_meta_description }}</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="description[{{ language.language_id }}][meta_description]" rows="3" class="form-control">{{ description[language.language_id].meta_description ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_short_description }}</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="description[{{ language.language_id }}][short_description]" class="form-control useeditor">{{ description[language.language_id].short_description ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_description }}</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="description[{{ language.language_id }}][description]" class="form-control useeditor">{{ description[language.language_id].description ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <div class="table-responsive">
+                            <label class="col-sm-2 control-label">{{ entry_seo_url }}</label>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <td class="text-left">{{ entry_store }}</td>
+                                        <td class="text-left">{{ entry_seo_url }}</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for store in store_list %}
+                                        <tr>
+                                            <td class="text-left">{{ store.name }}</td>
+                                            <td class="text-left">
+                                                {% for language in languages %}
+                                                    <label><b class="label label-warning">{{ language.name }}</b></label>
+                                                    <input type="text" name="seo_url[{{ store.store_id }}][{{ language.language_id }}]"
+                                                           value="{% if seo_url[store.store_id][language.language_id] %}{{ seo_url[store.store_id][language.language_id] }}{% endif %}"
+                                                           placeholder="{{ entry_seo_url }}"
+                                                           class="form-control"/>
+                                                    {% if error.seo_url[store.store_id][language.language_id] %}
+                                                        <div class="text-danger">{{ error.seo_url[store.store_id][language.language_id] }}</div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-product"><span data-toggle="tooltip">{{ entry_products }}</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="autocomplete_product" value="" placeholder="{{ entry_product }}" id="input-product" class="form-control" />
+                            <div id="product-list" class="well well-sm" style="height: 150px; overflow: auto;">
+                                {% for product in products %}
+                                    <div id="product-list{{ product.product_id }}"><i class="fa fa-minus-circle text-danger remove-product"></i> {{ product.name }}
+                                        <i class="fa fa-hand-grab-o handle"></i>
+                                        <input type="hidden" name="products[]" value="{{ product.product_id }}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_store }}</label>
+                        <div class="col-sm-10">
+                            <div class="well well-sm" style="height: 150px; overflow: auto;">
+                                {% for store in store_list %}
+                                    <div class="checkbox">
+                                        <label>
+                                            {% if store.store_id in stores or store.store_id == 0 %}
+                                                <input type="checkbox" name="store[]" value="{{ store.store_id }}" checked="checked"/>
+                                                {{ store.name }}
+                                            {% else %}
+                                                <input type="checkbox" name="store[]" value="{{ store.store_id }}"/>
+                                                {{ store.name }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control">
+                                <option value="1" {% if status %}selected{% endif %}>{{ text_enabled }}</option>
+                                <option value="0" {% if not status %}selected{% endif %}>{{ text_disabled }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% if ckeditor %}
+    <script>
+      $(document).ready(function () {
+        $('.useeditor').each(function () {
+          if (!CKEDITOR.instances[this.id]) {
+            CKEDITOR.replace(this.id);
+          }
+        });
+      });
+    </script>
+{% endif %}
+{% if not ckeditor %}
+    <script>
+      $('.useeditor').summernote({
+        height: 150,
+        lang: '{{ lang }}',
+      });
+    </script>
+{% endif %}
+<script>
+  $(document).ready(function () {
+    new Sortable(document.getElementById('product-list'), {
+      handle: '.handle',
+      animation: 150,
+      chosenClass: 'handle-active'
+    });
+  });
+
+  $('input[name=\'autocomplete_product\']').autocomplete({
+    source: function(request, response) {
+      $.ajax({
+        url: 'index.php?route=catalog/product/autocomplete&{{ token_param }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['product_id']
+            }
+          }));
+        }
+      });
+    },
+    select: function(item) {
+      $('input[name=\'autocomplete_product\']').val('');
+
+      $('#product-list' + item['value']).remove();
+
+      $('#product-list').append(
+        '<div class="product-row">' +
+        '<i class="fa fa-minus-circle text-danger remove-product" style="cursor:pointer;"></i> ' + item.label +
+        '<input type="hidden" name="products[]" value="' + item.value + '" />' +
+        '  <i class="fa fa-hand-grab-o handle"></i>',
+        '</div>',
+      );
+      this.value = '';
+      return false;
+    },
+  });
+
+  $(document).on('click', '.remove-product', function () {
+    $(this).parent().remove();
+  });
+</script>
+{{ footer }}
