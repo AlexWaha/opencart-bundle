@@ -135,14 +135,23 @@ class ModelExtensionModuleAwLandingPage extends Model
 
     /**
      * @param  int  $landingPageId
+     * @param  bool  $isLegacy
      * @return void
      */
-    public function deletePage(int $landingPageId)
+    public function deletePage(int $landingPageId, $isLegacy = false)
     {
+        $queryParam = 'landing_page_id=' . $landingPageId;
+
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page` WHERE landing_page_id = '" . $landingPageId . "'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_description` WHERE landing_page_id = '" . $landingPageId . "'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_to_store` WHERE landing_page_id = '" . $landingPageId . "'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_to_product` WHERE landing_page_id = '" . $landingPageId . "'");
+
+        if ($isLegacy) {
+            $this->db->query("DELETE FROM `" . DB_PREFIX . "url_alias` WHERE query = '" . $this->db->escape($queryParam) . "'");
+        } else {
+            $this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE query = '" . $this->db->escape($queryParam) . "'");
+        }
     }
 
     /**
@@ -180,9 +189,9 @@ class ModelExtensionModuleAwLandingPage extends Model
                rd.name,
                COUNT(rpp.product_id) AS product_count
         FROM `" . DB_PREFIX . "aw_landing_page` r
-        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` rd 
+        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` rd
             ON r.landing_page_id = rd.landing_page_id
-        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_to_product` rpp 
+        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_to_product` rpp
             ON r.landing_page_id = rpp.landing_page_id
         LEFT JOIN `" . DB_PREFIX . "aw_landing_page_to_store` rps
             ON r.landing_page_id = rps.landing_page_id
@@ -237,7 +246,7 @@ class ModelExtensionModuleAwLandingPage extends Model
 
         $sql = "SELECT COUNT(DISTINCT r.landing_page_id) AS total
         FROM `" . DB_PREFIX . "aw_landing_page` r
-        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` rd 
+        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` rd
             ON r.landing_page_id = rd.landing_page_id
         LEFT JOIN `" . DB_PREFIX . "aw_landing_page_to_store` rps
             ON r.landing_page_id = rps.landing_page_id";

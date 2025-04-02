@@ -299,7 +299,7 @@ class ControllerExtensionModuleAwLandingPage extends Controller
 
         if (isset($this->request->post['selected']) && $this->validate()) {
             foreach ($this->request->post['selected'] as $landingPageId) {
-                $this->model_extension_module_aw_landing_page->deletePage((int) $landingPageId);
+                $this->model_extension_module_aw_landing_page->deletePage((int) $landingPageId, $this->awCore->isLegacy());
             }
 
             $this->session->data['success'] = $this->language->get('text_success_delete');
