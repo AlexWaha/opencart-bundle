@@ -23,7 +23,8 @@ For detailed installation instructions, please refer to the ***/readme/index.htm
 ## Avalaible extensions:
 
 1. [Sms Notifications for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip)
-2. More extensions will be added soon (approx 30+)
+2. [Landing pages and links for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip)
+3. More extensions will be added soon (approx 30+)
 ---
 
 ## Reporting Issues
