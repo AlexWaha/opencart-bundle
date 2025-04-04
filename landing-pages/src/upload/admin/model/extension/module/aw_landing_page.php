@@ -90,6 +90,8 @@ class ModelExtensionModuleAwLandingPage extends Model
             }
         }
 
+        $this->cache->delete('seo_pro');
+
         return $landingPageId;
     }
 
@@ -131,6 +133,8 @@ class ModelExtensionModuleAwLandingPage extends Model
                 $this->db->query("INSERT INTO `" . DB_PREFIX . "aw_landing_page_to_product` SET landing_page_id = '" . $landingPageId . "', product_id = '" . (int) $productId . "'");
             }
         }
+
+        $this->cache->delete('seo_pro');
     }
 
     /**
@@ -146,6 +150,8 @@ class ModelExtensionModuleAwLandingPage extends Model
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_description` WHERE landing_page_id = '" . $landingPageId . "'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_to_store` WHERE landing_page_id = '" . $landingPageId . "'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_landing_page_to_product` WHERE landing_page_id = '" . $landingPageId . "'");
+
+        $this->cache->delete('seo_pro');
 
         if ($isLegacy) {
             $this->db->query("DELETE FROM `" . DB_PREFIX . "url_alias` WHERE query = '" . $this->db->escape($queryParam) . "'");
