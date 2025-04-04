@@ -47,8 +47,8 @@ class ControllerExtensionModuleAwLandingPage extends Controller
             $this->document->setTitle($pageInfo['meta_title']);
             $this->document->setDescription($pageInfo['meta_description']);
 
-            $this->params['heading_title'] = $pageInfo['name'];
-            $this->params['meta_h1'] = $pageInfo['meta_h1'];
+            $this->params['heading_title'] = $pageInfo['meta_h1'] ?? $pageInfo['name'];
+
             $this->params['short_description'] = html_entity_decode(
                 $pageInfo['short_description'],
                 ENT_QUOTES,
