@@ -18,7 +18,7 @@ class ModelExtensionModuleAwLandingPage extends Model
                 `landing_page_id` INT(11) NOT NULL AUTO_INCREMENT,
                 `status` TINYINT(1) NOT NULL DEFAULT 1,
                 PRIMARY KEY (`landing_page_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_landing_page_description` (
                 `landing_page_id` INT(11) NOT NULL,
@@ -30,19 +30,19 @@ class ModelExtensionModuleAwLandingPage extends Model
                 `meta_description` TEXT,
                 `meta_h1` VARCHAR(255) NOT NULL,
                 PRIMARY KEY (`landing_page_id`, `language_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_landing_page_to_store` (
                 `landing_page_id` INT(11) NOT NULL,
                 `store_id` INT(11) NOT NULL,
                 PRIMARY KEY (`landing_page_id`, `store_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_landing_page_to_product` (
                 `landing_page_id` INT(11) NOT NULL,
                 `product_id` INT(11) NOT NULL,
                 PRIMARY KEY (`landing_page_id`, `product_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 
     /**
