@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @author  Alexander Vakhovski (AlexWaha)
+  ~ @link    https://alexwaha.com
+  ~ @email   support@alexwaha.com
+  ~ @license GPLv3
+  -->
+<modification>
+    <name>alexwaha.com - Global layout</name>
+    <code>aw_global_layout</code>
+    <version>1.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="catalog/controller/common/content_top.php">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[foreach ($modules as $module) {]]></search>
+            <add position="before"><![CDATA[
+            $this->load->model('extension/module/aw_global_layout');
+
+            $globalLayoutModules = $this->model_extension_module_aw_global_layout->getModules('content_top');
+
+            $modules = array_merge($modules, $globalLayoutModules);
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/content_bottom.php">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[foreach ($modules as $module) {]]></search>
+            <add position="before"><![CDATA[
+            $this->load->model('extension/module/aw_global_layout');
+
+            $globalLayoutModules = $this->model_extension_module_aw_global_layout->getModules('content_bottom');
+
+            $modules = array_merge($modules, $globalLayoutModules);
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/column_left.php">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[foreach ($modules as $module) {]]></search>
+            <add position="before"><![CDATA[
+            $this->load->model('extension/module/aw_global_layout');
+
+            $globalLayoutModules = $this->model_extension_module_aw_global_layout->getModules('column_left');
+
+            $modules = array_merge($modules, $globalLayoutModules);
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/common/column_right.php">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[foreach ($modules as $module) {]]></search>
+            <add position="before"><![CDATA[
+            $this->load->model('extension/module/aw_global_layout');
+
+            $globalLayoutModules = $this->model_extension_module_aw_global_layout->getModules('column_right');
+
+            $modules = array_merge($modules, $globalLayoutModules);
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/controller/*/*.php">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[$data['header'] = $this->load->controller('common/header');]]></search>
+            <add position="after"><![CDATA[
+            $data['aw_content_top'] = $this->load->controller('extension/aw_position/aw_content_top');
+            $data['aw_content_bottom'] = $this->load->controller('extension/aw_position/aw_content_bottom');
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/*/*.twig">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[{{ aw_content_top }}]]>
+            </add>
+        </operation>
+        <operation>
+            <search error="skip" trim="true"><![CDATA[{{ footer }}]]></search>
+            <add position="before"><![CDATA[{{ aw_content_bottom }}]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/{account,affiliate,checkout,common,information,product}/*.tpl">
+        <operation>
+            <search error="skip" trim="true"><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[<?php echo $aw_content_top; ?>]]>
+            </add>
+        </operation>
+        <operation>
+            <search error="skip" trim="true"><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[<?php echo $aw_content_bottom; ?>]]>
+            </add>
+        </operation>
+    </file>
+</modification>
