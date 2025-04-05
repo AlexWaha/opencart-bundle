@@ -85,7 +85,7 @@
             </add>
         </operation>
     </file>
-    <file path="catalog/view/theme/*/template/{account,affiliate,checkout,common,information,product}/*.tpl">
+    <file path="catalog/view/theme/*/template/*/*.tpl">
         <operation>
             <search error="skip" trim="true"><![CDATA[<?php echo $header; ?>]]></search>
             <add position="after"><![CDATA[<?php echo $aw_content_top; ?>]]>
