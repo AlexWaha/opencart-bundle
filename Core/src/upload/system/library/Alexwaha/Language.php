@@ -94,20 +94,21 @@ final class Language
             require $fileDefault;
         }
 
-        $this->loadSupport();
-
-        $this->data = array_merge($_, $this->data);
+        $this->data = array_merge($_, $this->loadSupport());
 
         return $this->data;
     }
 
     /**
+     * @return array
      * @throws Exception
      */
-    private function loadSupport()
+    private function loadSupport(): array
     {
         $coreLangFile = __DIR__ . '/lang/' . $this->code . '/support.php';
         $fallbackCoreLangFile = __DIR__ . '/lang/' . substr($this->default, 0, 2) . '/support.php';
+
+        $params = [];
 
         $renderData = [];
 
@@ -124,7 +125,9 @@ final class Language
         if (is_file($template)) {
             $content = file_get_contents($template);
             $render = $this->core->render($content, $renderData, true);
-            $this->set('text_aw_support', $render);
+            $params['text_aw_support'] = $render;
         }
+
+        return $params;
     }
 }
