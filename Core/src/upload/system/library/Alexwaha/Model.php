@@ -156,34 +156,46 @@ final class Model
              WHERE query = '".$this->db->escape($queryParam)."'");
 
             $seoUrl = $seoUrls[$defaultStoreId][$languageId];
+            $keyword = mb_strtolower(trim((string) $seoUrl));
 
             if ($exists->num_rows) {
                 $this->db->query("UPDATE `".DB_PREFIX."url_alias`
-                 SET keyword = '".$this->db->escape($seoUrl)."'
+                 SET keyword = '".$this->db->escape($keyword)."'
                  WHERE query = '".$this->db->escape($queryParam)."'");
             } else {
                 $this->db->query("INSERT INTO `".DB_PREFIX."url_alias`
                  SET query = '".$this->db->escape($queryParam)."',
-                     keyword = '".$this->db->escape($seoUrl)."'");
+                     keyword = '".$this->db->escape($keyword)."'");
             }
         } else {
             foreach ($seoUrls as $storeId => $languages) {
                 foreach ($languages as $languageId => $seoUrl) {
-                    $exists = $this->db->query("SELECT seo_url_id
-                     FROM `".DB_PREFIX."seo_url`
-                     WHERE query = '".$this->db->escape($queryParam)."'");
+                    $keyword = mb_strtolower(trim((string) $seoUrl));
+
+                    $exists = $this->db->query("
+                        SELECT seo_url_id
+                        FROM `".DB_PREFIX."seo_url`
+                        WHERE store_id = '".$storeId."'
+                          AND language_id = '".$languageId."'
+                          AND query = '".$this->db->escape($queryParam)."'
+                        LIMIT 1
+                    ");
 
                     if ($exists->num_rows) {
-                        $this->db->query("UPDATE `".DB_PREFIX."seo_url`
-                         SET keyword = '".$this->db->escape($seoUrl)."'
-                         WHERE query = '".$this->db->escape($queryParam)."'
-                          AND language_id = '".$languageId."'");
+                        $this->db->query("
+                            UPDATE `".DB_PREFIX."seo_url`
+                            SET keyword = '".$this->db->escape($keyword)."'
+                            WHERE seo_url_id = '".$exists->row['seo_url_id']."'
+                            LIMIT 1
+                        ");
                     } else {
-                        $this->db->query("INSERT INTO `".DB_PREFIX."seo_url`
-                        SET store_id = '".$storeId."',
-                         language_id = '".$languageId."',
-                         query = '".$this->db->escape($queryParam)."',
-                         keyword = '".$this->db->escape($seoUrl)."'");
+                        $this->db->query("
+                            INSERT INTO `".DB_PREFIX."seo_url`
+                            SET store_id   = '".$storeId."',
+                                language_id= '".$languageId."',
+                                query      = '".$this->db->escape($queryParam)."',
+                                keyword    = '".$this->db->escape($keyword)."'
+                        ");
                     }
                 }
             }
@@ -245,7 +257,7 @@ final class Model
         if ($isLegacy) {
             $sql = "SELECT query FROM `".DB_PREFIX."url_alias` WHERE keyword = '".$this->db->escape($seoUrl)."'";
         } else {
-            $sql = "SELECT query FROM `".DB_PREFIX."seo_url` 
+            $sql = "SELECT query FROM `".DB_PREFIX."seo_url`
               WHERE keyword = '".$this->db->escape($seoUrl)."'
               AND store_id = '".$storeId."'
               AND language_id = '".$languageId."'";
