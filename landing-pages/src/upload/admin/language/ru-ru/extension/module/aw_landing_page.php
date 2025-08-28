@@ -54,3 +54,4 @@ $_['error_warning'] = 'Внимательно проверьте форму на
 $_['error_name'] = 'Название не может быть пустым!';
 $_['error_seo_url'] = 'SEO URL не может быть пустым!';
 $_['error_seo_url_exists'] = 'SEO URL уже используется!';
+$_['error_seo_url_unique'] = 'SEO URL должен быть уникальным!';

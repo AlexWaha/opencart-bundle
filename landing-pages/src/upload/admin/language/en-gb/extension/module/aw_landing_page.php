@@ -54,3 +54,4 @@ $_['error_warning'] = 'Warning: Please check the form carefully for errors!';
 $_['error_name'] = 'Field Name can not be empty!';
 $_['error_seo_url'] = 'SEO URL can not be empty!';
 $_['error_seo_url_exists'] = 'SEO URL is already in use!';
+$_['error_seo_url_unique'] = 'SEO URL must be unique!';
