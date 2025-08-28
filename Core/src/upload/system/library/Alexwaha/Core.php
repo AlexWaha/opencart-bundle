@@ -2,11 +2,8 @@
 
 /**
  * @author  Alexander Vakhovski (AlexWaha)
- *
  * @link    https://alexwaha.com
- *
  * @email   support@alexwaha.com
- *
  * @license GPLv3
  */
 
@@ -21,6 +18,7 @@ final class Core
     private $registry;
 
     public $model;
+
     public $view;
 
     /**
@@ -58,9 +56,9 @@ final class Core
      */
     public function isLegacy(): int
     {
-        if (is_file(DIR_SYSTEM . 'engine/router.php')) {
+        if (is_file(DIR_SYSTEM.'engine/router.php')) {
             return false;
-        } elseif (is_file(DIR_SYSTEM . 'framework.php')) {
+        } elseif (is_file(DIR_SYSTEM.'framework.php')) {
             return true;
         }
     }
@@ -75,13 +73,13 @@ final class Core
         if ($this->isLegacy()) {
             $token = $session->data['token'];
             $tokenData = [
-                'param' => 'token=' . $token,
+                'param' => 'token='.$token,
                 'token' => $token,
             ];
         } else {
             $token = $session->data['user_token'];
             $tokenData = [
-                'param' => 'user_token=' . $token,
+                'param' => 'user_token='.$token,
                 'token' => $token,
             ];
         }
@@ -97,6 +95,27 @@ final class Core
         $code = $this->model->getLanguageCode();
 
         return new Language($this->registry, $code);
+    }
+
+    public function getSeoUrls(string $entityQuery, int $entityId = 0)
+    {
+        return $this->model->getSeoUrls($entityQuery, $entityId, $this->isLegacy());
+    }
+
+    public function setSeoUrls(array $seoUrls, string $entityQuery, int $entityId = 0)
+    {
+        $this->model->setSeoUrls($seoUrls, $entityQuery, $entityId, $this->isLegacy());
+    }
+
+
+    public function seoUrlExists(
+        string $seoUrl,
+        int $storeId,
+        int $languageId,
+        string $entityQuery,
+        int $entityId = 0
+    ) {
+        return $this->model->seoUrlExists($seoUrl, $storeId, $languageId, $entityQuery, $entityId, $this->isLegacy());
     }
 
     /**
@@ -238,7 +257,7 @@ final class Core
      */
     protected function removeByPath(string $path, bool $force = false): void
     {
-        if (! $force) {
+        if (!$force) {
             throw new Exception("Dangerous deletion method: you must set force=true to delete '{$path}'.");
         }
 
@@ -256,10 +275,8 @@ final class Core
      */
     protected function recursiveDelete($path): void
     {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
-            $path,
-            RecursiveDirectoryIterator::SKIP_DOTS
-        ), RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path,
+            RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isDir()) {
