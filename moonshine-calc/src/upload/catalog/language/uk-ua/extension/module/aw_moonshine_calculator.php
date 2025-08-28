@@ -1,4 +1,5 @@
 <?php
+
 // Text
 $_['text_calculator_title']  = 'Калькулятор розбавлення самогону';
 $_['text_initial_strength']  = 'Початкова міцність (%)';
@@ -39,4 +40,3 @@ $_['text_description_default']     = 'Введіть вихідні дані:';
 $_['text_calculating']             = 'Розрахунок...';
 $_['text_error_unknown']           = 'Сталася невідома помилка при розрахунку';
 $_['text_error_general']           = 'Сталася помилка при розрахунку. Спробуйте ще раз.';
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Moonshine Calculator Module - Catalog Controller
  *
@@ -8,8 +9,8 @@
  * @license GPLv3
  */
 
-class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
-
+class ControllerExtensionModuleAwMoonshineCalculator extends Controller
+{
     private $moduleName = 'aw_moonshine_calculator';
     private $params;
     private $language;
@@ -19,7 +20,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
     /**
      * @param $registry
      */
-    public function __construct($registry) {
+    public function __construct($registry)
+    {
         parent::__construct($registry);
 
         $this->language = $this->awCore->getLanguage();
@@ -30,7 +32,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
     /**
      * @return void
      */
-    public function index() {
+    public function index()
+    {
         $this->load->model('extension/module/' . $this->moduleName);
 
         $languageId = $this->config->get('config_language_id');
@@ -93,7 +96,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
     /**
      * @return void
      */
-    public function calculate() {
+    public function calculate()
+    {
         $this->load->model('extension/module/' . $this->moduleName);
 
         $json = [];

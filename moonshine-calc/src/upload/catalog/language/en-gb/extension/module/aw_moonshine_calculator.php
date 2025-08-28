@@ -1,4 +1,5 @@
 <?php
+
 // Text
 $_['text_calculator_title']  = 'Moonshine Dilution Calculator';
 $_['text_initial_strength']  = 'Initial Strength (%)';

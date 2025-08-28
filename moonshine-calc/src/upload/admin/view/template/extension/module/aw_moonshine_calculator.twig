@@ -149,17 +149,33 @@
                                                 <tr>
                                                     <td class="text-left">{{ store.name }}</td>
                                                     <td class="text-left">
-                                                        {% for language in languages %}
-                                                            <label><b class="label label-warning">{{ language.name }}</b></label>
-                                                            <input type="text" name="seo_url[{{ store.store_id }}][{{ language.language_id }}]"
-                                                                   value="{% if seo_url[store.store_id][language.language_id] %}{{ seo_url[store.store_id][language.language_id] }}{% endif %}"
+                                                        {% if is_legacy %}
+                                                            {% set lang = languages|filter(l => l.language_id == config_language_id)|first %}
+                                                            <label><b class="label label-warning">{{ lang.name }}</b></label>
+                                                            <input type="text"
+                                                                   name="seo_url[{{ store.store_id }}][{{ lang.language_id }}]"
+                                                                   value="{% if seo_url[store.store_id][lang.language_id] %}{{ seo_url[store.store_id][lang.language_id] }}{% endif %}"
                                                                    placeholder="{{ entry_seo_url }}"
                                                                    class="form-control"/>
-                                                            {% if error.seo_url[store.store_id][language.language_id] %}
-                                                                <div class="text-danger">{{ error.seo_url[store.store_id][language.language_id] }}</div>
+                                                            {% if error.seo_url[store.store_id][lang.language_id] %}
+                                                                <div class="text-danger">{{ error.seo_url[store.store_id][lang.language_id] }}</div>
                                                             {% endif %}
-                                                        {% endfor %}
+                                                        {% endif %}
+                                                        {% if not is_legacy %}
+                                                            {% for language in languages %}
+                                                                <label><b class="label label-warning">{{ language.name }}</b></label>
+                                                                <input type="text"
+                                                                       name="seo_url[{{ store.store_id }}][{{ language.language_id }}]"
+                                                                       value="{% if seo_url[store.store_id][language.language_id] %}{{ seo_url[store.store_id][language.language_id] }}{% endif %}"
+                                                                       placeholder="{{ entry_seo_url }}"
+                                                                       class="form-control"/>
+                                                                {% if error.seo_url[store.store_id][language.language_id] %}
+                                                                    <div class="text-danger">{{ error.seo_url[store.store_id][language.language_id] }}</div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
                                                     </td>
+
                                                 </tr>
                                             {% endfor %}
                                             </tbody>

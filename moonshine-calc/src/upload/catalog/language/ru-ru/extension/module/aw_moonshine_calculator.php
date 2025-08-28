@@ -1,4 +1,5 @@
 <?php
+
 // Text
 $_['text_calculator_title']  = 'Калькулятор разбавления самогона';
 $_['text_initial_strength']  = 'Начальная крепость (%)';

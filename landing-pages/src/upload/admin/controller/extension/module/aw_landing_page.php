@@ -27,7 +27,7 @@ class ControllerExtensionModuleAwLandingPage extends Controller
 
         $this->language = $this->awCore->getLanguage();
         $this->tokenData = $this->awCore->getToken();
-        $this->params = $this->language->load('extension/module/'.$this->moduleName);
+        $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
@@ -37,7 +37,7 @@ class ControllerExtensionModuleAwLandingPage extends Controller
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
 
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
 
         $this->params['success'] = $this->session->data['success'] ?? '';
         unset($this->session->data['success']);
@@ -51,11 +51,11 @@ class ControllerExtensionModuleAwLandingPage extends Controller
             ],
             [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link($this->routeExtension, $this->tokenData['param'].'&type=module', true)
+                'href' => $this->url->link($this->routeExtension, $this->tokenData['param'] . '&type=module', true)
             ],
             [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/module/'.$this->moduleName, $this->tokenData['param'], true)
+                'href' => $this->url->link('extension/module/' . $this->moduleName, $this->tokenData['param'], true)
             ]
         ];
 
@@ -102,58 +102,73 @@ class ControllerExtensionModuleAwLandingPage extends Controller
                 'name' => $result['name'],
                 'product_count' => $result['product_count'],
                 'seo_urls' => $keywords,
-                'edit' => $this->url->link('extension/module/'.$this->moduleName.'/create',
-                    $this->tokenData['param'].'&landing_page_id='.$result['landing_page_id'], true)
+                'edit' => $this->url->link(
+                    'extension/module/' . $this->moduleName . '/create',
+                    $this->tokenData['param'] . '&landing_page_id=' . $result['landing_page_id'],
+                    true
+                )
             ];
         }
 
         $url = '';
 
         if (isset($this->request->get['sort'])) {
-            $url .= '&sort='.$this->request->get['sort'];
+            $url .= '&sort=' . $this->request->get['sort'];
         }
         if (isset($this->request->get['order'])) {
-            $url .= '&order='.$this->request->get['order'];
+            $url .= '&order=' . $this->request->get['order'];
         }
         if (isset($this->request->get['limit'])) {
-            $url .= '&limit='.$this->request->get['limit'];
+            $url .= '&limit=' . $this->request->get['limit'];
         }
 
         $pagination = new Pagination();
         $pagination->total = $total;
         $pagination->page = $page;
         $pagination->limit = $limit;
-        $pagination->url = $this->url->link('extension/module/'.$this->moduleName,
-            $this->tokenData['param'].$url.'&page={page}', true);
+        $pagination->url = $this->url->link(
+            'extension/module/' . $this->moduleName,
+            $this->tokenData['param'] . $url . '&page={page}',
+            true
+        );
 
         $this->params['pagination'] = $pagination->render();
 
-        $this->params['results'] = sprintf($this->language->get('text_pagination'),
+        $this->params['results'] = sprintf(
+            $this->language->get('text_pagination'),
             ($total) ? (($page - 1) * $limit) + 1 : 0,
-            (((($page - 1) * $limit) > ($total - $limit)) ? $total : ((($page - 1) * $limit) + $limit)), $total,
-            ceil($total / $limit));
+            (((($page - 1) * $limit) > ($total - $limit)) ? $total : ((($page - 1) * $limit) + $limit)),
+            $total,
+            ceil($total / $limit)
+        );
 
         $this->params['sort'] = $sort;
         $this->params['order'] = $order;
         $this->params['limit'] = $limit;
 
-        $this->params['add'] = $this->url->link('extension/module/'.$this->moduleName.'/create',
-            $this->tokenData['param'], true);
-        $this->params['delete'] = $this->url->link('extension/module/'.$this->moduleName.'/delete',
-            $this->tokenData['param'], true);
+        $this->params['add'] = $this->url->link(
+            'extension/module/' . $this->moduleName . '/create',
+            $this->tokenData['param'],
+            true
+        );
+        $this->params['delete'] = $this->url->link(
+            'extension/module/' . $this->moduleName . '/delete',
+            $this->tokenData['param'],
+            true
+        );
 
         $this->params['header'] = $this->load->controller('common/header');
         $this->params['column_left'] = $this->load->controller('common/column_left');
         $this->params['footer'] = $this->load->controller('common/footer');
 
-        $this->response->setOutput($this->awCore->render('extension/module/'.$this->moduleName.'/list', $this->params));
+        $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName . '/list', $this->params));
     }
 
     public function create($postData = [])
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
 
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
         $this->load->model('catalog/product');
         $this->load->model('localisation/language');
 
@@ -162,7 +177,7 @@ class ControllerExtensionModuleAwLandingPage extends Controller
             $this->document->addScript('view/javascript/ckeditor/ckeditor_init.js');
         } else {
             $this->document->addScript('view/javascript/summernote/summernote.js');
-            $this->document->addScript('view/javascript/summernote/lang/summernote-'.$this->language->get('lang').'.js');
+            $this->document->addScript('view/javascript/summernote/lang/summernote-' . $this->language->get('lang') . '.js');
             $this->document->addScript('view/javascript/summernote/opencart.js');
             $this->document->addStyle('view/javascript/summernote/summernote.css');
         }
@@ -182,11 +197,11 @@ class ControllerExtensionModuleAwLandingPage extends Controller
             ],
             [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link($this->routeExtension, $this->tokenData['param'].'&type=module', true)
+                'href' => $this->url->link($this->routeExtension, $this->tokenData['param'] . '&type=module', true)
             ],
             [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/module/'.$this->moduleName, $this->tokenData['param'], true)
+                'href' => $this->url->link('extension/module/' . $this->moduleName, $this->tokenData['param'], true)
             ]
         ];
 
@@ -226,27 +241,30 @@ class ControllerExtensionModuleAwLandingPage extends Controller
             $this->params['stores'] = $postData['stores'] ?? [];
         }
 
-        $actionUrl = 'extension/module/'.$this->moduleName.'/store';
+        $actionUrl = 'extension/module/' . $this->moduleName . '/store';
 
         if ($landingPageId) {
-            $actionUrl .= '&landing_page_id='.$landingPageId;
+            $actionUrl .= '&landing_page_id=' . $landingPageId;
         }
 
         $this->params['action'] = $this->url->link($actionUrl, $this->tokenData['param'], true);
-        $this->params['cancel'] = $this->url->link('extension/module/'.$this->moduleName, $this->tokenData['param'],
-            true);
+        $this->params['cancel'] = $this->url->link(
+            'extension/module/' . $this->moduleName,
+            $this->tokenData['param'],
+            true
+        );
 
         $this->params['header'] = $this->load->controller('common/header');
         $this->params['column_left'] = $this->load->controller('common/column_left');
         $this->params['footer'] = $this->load->controller('common/footer');
 
-        $this->response->setOutput($this->awCore->render('extension/module/'.$this->moduleName.'/form', $this->params));
+        $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName . '/form', $this->params));
     }
 
     public function store()
     {
-        $this->load->language('extension/module/'.$this->moduleName);
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->language('extension/module/' . $this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
 
         $landingPageId = (int) ($this->request->get['landing_page_id'] ?? 0);
 
@@ -261,8 +279,11 @@ class ControllerExtensionModuleAwLandingPage extends Controller
 
             $this->awCore->setSeoUrls($this->request->post['seo_url'], 'landing_page_id', $landingPageId);
 
-            $this->response->redirect($this->url->link('extension/module/'.$this->moduleName, $this->tokenData['param'],
-                true));
+            $this->response->redirect($this->url->link(
+                'extension/module/' . $this->moduleName,
+                $this->tokenData['param'],
+                true
+            ));
         }
 
         $this->create($this->request->post);
@@ -270,19 +291,24 @@ class ControllerExtensionModuleAwLandingPage extends Controller
 
     public function delete()
     {
-        $this->load->language('extension/module/'.$this->moduleName);
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->language('extension/module/' . $this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
 
         if (isset($this->request->post['selected']) && $this->validate()) {
             foreach ($this->request->post['selected'] as $landingPageId) {
-                $this->model_extension_module_aw_landing_page->deletePage((int) $landingPageId,
-                    $this->awCore->isLegacy());
+                $this->model_extension_module_aw_landing_page->deletePage(
+                    (int) $landingPageId,
+                    $this->awCore->isLegacy()
+                );
             }
 
             $this->session->data['success'] = $this->language->get('text_success_delete');
 
-            $this->response->redirect($this->url->link('extension/module/'.$this->moduleName, $this->tokenData['param'],
-                true));
+            $this->response->redirect($this->url->link(
+                'extension/module/' . $this->moduleName,
+                $this->tokenData['param'],
+                true
+            ));
         }
 
         $this->index();
@@ -293,7 +319,7 @@ class ControllerExtensionModuleAwLandingPage extends Controller
         $json = [];
 
         if (isset($this->request->get['filter_name'])) {
-            $this->load->model('extension/module/'.$this->moduleName);
+            $this->load->model('extension/module/' . $this->moduleName);
 
             $filterName = $this->request->get['filter_name'] ?? '';
 
@@ -323,11 +349,11 @@ class ControllerExtensionModuleAwLandingPage extends Controller
     {
         $landingPageId = (int) ($this->request->get['landing_page_id'] ?? 0);
 
-        if (!$this->user->hasPermission('modify', 'extension/module/'.$this->moduleName)) {
+        if (!$this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
 
         if (isset($this->request->post['description'])) {
             foreach ($this->request->post['description'] as $languageId => $value) {
@@ -346,8 +372,13 @@ class ControllerExtensionModuleAwLandingPage extends Controller
                             $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url_unique');
                         }
 
-                        $seoUrlExists = $this->awCore->seoUrlExists($seo_url, $storeId, $languageId,
-                            'landing_page_id', $landingPageId);
+                        $seoUrlExists = $this->awCore->seoUrlExists(
+                            $seo_url,
+                            $storeId,
+                            $languageId,
+                            'landing_page_id',
+                            $landingPageId
+                        );
 
 
                         if ($seoUrlExists) {
@@ -371,31 +402,39 @@ class ControllerExtensionModuleAwLandingPage extends Controller
 
     public function install()
     {
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
         $this->model_extension_module_aw_landing_page->install();
 
         $this->load->model('setting/setting');
-        $this->model_setting_setting->editSetting('module_'.$this->moduleName,
-            ['module_'.$this->moduleName.'_status' => '1']);
+        $this->model_setting_setting->editSetting(
+            'module_' . $this->moduleName,
+            ['module_' . $this->moduleName . '_status' => '1']
+        );
         $this->installPermissions();
     }
 
     public function uninstall()
     {
-        $this->load->model('extension/module/'.$this->moduleName);
+        $this->load->model('extension/module/' . $this->moduleName);
         $this->model_extension_module_aw_landing_page->uninstall();
 
         $this->load->model('setting/setting');
-        $this->model_setting_setting->deleteSetting('module_'.$this->moduleName);
+        $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
     }
 
     protected function installPermissions()
     {
         $this->load->model('user/user_group');
 
-        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access',
-            'extension/module/'.$this->moduleName);
-        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify',
-            'extension/module/'.$this->moduleName);
+        $this->model_user_user_group->addPermission(
+            $this->user->getGroupId(),
+            'access',
+            'extension/module/' . $this->moduleName
+        );
+        $this->model_user_user_group->addPermission(
+            $this->user->getGroupId(),
+            'modify',
+            'extension/module/' . $this->moduleName
+        );
     }
 }

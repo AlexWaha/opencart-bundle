@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Moonshine Calculator Module - Model
  *
@@ -8,16 +9,18 @@
  * @license GPLv3
  */
 
-class ModelExtensionModuleAwMoonshineCalculator extends Model {
-
+class ModelExtensionModuleAwMoonshineCalculator extends Model
+{
     private $moduleName = 'aw_moonshine_calculator';
 
-    public function __construct($registry) {
+    public function __construct($registry)
+    {
         parent::__construct($registry);
         $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
     }
 
-    public function getAllModuleData() {
+    public function getAllModuleData()
+    {
         $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "module WHERE code = '" . $this->moduleName . "' ORDER BY sort_order ASC");
 
         $modules = [];
@@ -43,7 +46,8 @@ class ModelExtensionModuleAwMoonshineCalculator extends Model {
         ];
     }
 
-    public function getTemperatureCorrection($temperature) {
+    public function getTemperatureCorrection($temperature)
+    {
         $corrections = [
             10 => 1.013,
             15 => 1.006,
@@ -75,11 +79,13 @@ class ModelExtensionModuleAwMoonshineCalculator extends Model {
         return $corrections[end($keys)];
     }
 
-    public function validateStrength($strength) {
+    public function validateStrength($strength)
+    {
         return is_numeric($strength) && $strength >= 0 && $strength <= 100;
     }
 
-    public function validateVolume($volume) {
+    public function validateVolume($volume)
+    {
         return is_numeric($volume) && $volume > 0;
     }
 }

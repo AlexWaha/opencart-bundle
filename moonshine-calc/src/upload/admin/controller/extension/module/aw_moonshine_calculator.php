@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Moonshine Calculator Module
  *
@@ -8,8 +9,8 @@
  * @license GPLv3
  */
 
-class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
-
+class ControllerExtensionModuleAwMoonshineCalculator extends Controller
+{
     private $moduleName = 'aw_moonshine_calculator';
     private $language;
     private $error = [];
@@ -17,7 +18,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
     private $params;
     private $tokenData;
 
-    public function __construct($registry) {
+    public function __construct($registry)
+    {
         parent::__construct($registry);
 
         $this->language = $this->awCore->getLanguage();
@@ -31,7 +33,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
             : 'marketplace/extension';
     }
 
-    public function index() {
+    public function index()
+    {
         $this->document->setTitle($this->language->get('heading_main_title'));
 
         if ($this->config->get('config_editor_default')) {
@@ -60,6 +63,9 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
             true
         );
 
+        $this->params['is_legacy'] = $this->awCore->isLegacy();
+        $this->params['config_language_id'] = $this->config->get('config_language_id');
+
         $this->load->model('localisation/language');
 
         $this->params['languages'] = $this->model_localisation_language->getLanguages();
@@ -87,7 +93,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
         $this->params['h1'] = $this->request->post['h1'] ?? $moduleConfig->get('h1') ?? [];
         $this->params['description'] = $this->request->post['description'] ?? $moduleConfig->get('description') ?? [];
         $this->params['instructions'] = $this->request->post['instructions'] ?? $moduleConfig->get('instructions') ?? [];
-        $this->params['seo_url'] = $this->awCore->getSeoUrls('extension/module/'.$this->moduleName) ?? [];
+        $this->params['seo_url'] = $this->awCore->getSeoUrls('extension/module/' . $this->moduleName) ?? [];
 
         $this->params['breadcrumbs'] = [
             [
@@ -111,7 +117,8 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
         $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName, $this->params));
     }
 
-    public function store() {
+    public function store()
+    {
         if ($this->request->server['REQUEST_METHOD'] === 'POST' && $this->validate()) {
 
             $configData = [
@@ -124,7 +131,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
 
             $this->awCore->setConfig($this->moduleName, $configData);
 
-            $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/module/'.$this->moduleName);
+            $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/module/' . $this->moduleName);
 
             $this->session->data['success'] = $this->language->get('text_success');
 
@@ -171,8 +178,12 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
                             $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url_unique');
                         }
 
-                        $seoUrlExists = $this->awCore->seoUrlExists($seo_url, $storeId, $languageId,
-                            'extension/module/'.$this->moduleName);
+                        $seoUrlExists = $this->awCore->seoUrlExists(
+                            $seo_url,
+                            $storeId,
+                            $languageId,
+                            'extension/module/' . $this->moduleName
+                        );
 
 
                         if ($seoUrlExists) {
@@ -194,18 +205,21 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller {
         return !$this->error;
     }
 
-    public function install() {
+    public function install()
+    {
         $this->load->model('setting/setting');
         $this->model_setting_setting->editSetting('module_' . $this->moduleName, ['module_' . $this->moduleName . '_status' => '1']);
         $this->installPermissions();
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
     }
 
-    protected function installPermissions() {
+    protected function installPermissions()
+    {
         $this->load->model('user/user_group');
 
         $this->model_user_user_group->addPermission(
