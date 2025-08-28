@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @author  Alexander Vakhovski (AlexWaha)
+  ~ @link    https://alexwaha.com
+  ~ @email   support@alexwaha.com
+  ~ @license GPLv3
+  -->
+<modification>
+    <name>alexwaha.com - Moonshine calculator</name>
+    <code>moonshine_calculator</code>
+    <version>1.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="catalog/controller/extension/feed/google_sitemap.php">
+        <operation>
+            <search><![CDATA[$this->load->model('catalog/information');]]></search>
+            <add position="before"><![CDATA[
+                $output .= '<url>';
+                $output .= '  <loc>' . $this->url->link('extension/module/aw_moonshine_calculator') . '</loc>';
+                $output .= '  <changefreq>yearly</changefreq>';
+                $output .= '  <priority>0.5</priority>';
+                $output .= '</url>';
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

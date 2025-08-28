@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/favicon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Instruction Alexwaha.com Moonshine Calculator">
+    <meta name="author" content="Alexwaha">
+    <title>Readme | Alexwaha.com Moonshine Calculator</title>
+    <meta name="theme-color" content="#0937cc">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+    <link href="assets/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="wrapper">
+    <nav id="navbar" class="navbar">
+        <div class="navbar-brand"><img src="assets/logo.png" alt="Alexwaha.com"></div>
+        <ul class="nav nav-pills list-inline">
+            <li class="nav-item">
+                <a class="nav-link active" href="#tab_en" data-toggle="pill" role="tab" aria-selected="true">EN</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab_ru" data-toggle="pill" role="tab" aria-selected="false">RU</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="tab-content">
+        <div id="tab_en" class="tab-pane show active" role="tabpanel">
+            <div class="slider">
+                <div class="container-fluid">
+                    <p class="lead text-center">Instruction | Alexwaha.com - Moonshine Calculator
+                        <span class="badge bg-light">for Opencart v2.3  -3.x</span></p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_1" class="mt-12 mb-12" data-toggle="collapse"><span><i class="far fa-info"></i> Installation Instructions</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_1" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-4 mb-4 alert bg-primary">This module provides a moonshine dilution calculator that automatically calculates the amount of water needed to achieve desired alcohol strength</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><b>1.</b> Make sure you have installed the module <b>aw_core_oc2.3-3.x.ocmod.zip</b>
+                                            <span class="badge bg-warning">This is an auxiliary function for all my modules</span>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Make sure you have a module installed that disables FTP uploads for extensions in Opencart 2.x, or that your FTP settings in the store config are correct –
+                                            <a href="https://www.opencart.com/index.php?route=extension/extension/info&extension_id=18892" rel="external nofollow noopener" target="_blank">
+                                                <span class="badge bg-warning">Link to module disabling FTP upload for Opencart v2.3 only (<b>Not required for Opencart 3.x</b>)</span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Install the module files to your OpenCart installation:
+                                            <ul class="mt-2">
+                                                <li>Admin controller: <code>admin/controller/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Admin template: <code>admin/view/template/extension/module/aw_moonshine_calculator.twig</code></li>
+                                                <li>Admin language files: <code>admin/language/*/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Catalog controller: <code>catalog/controller/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Catalog model: <code>catalog/model/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Catalog template: <code>catalog/view/theme/default/template/extension/module/aw_moonshine_calculator.twig</code></li>
+                                                <li>Catalog language files: <code>catalog/language/*/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>CSS styles: <code>catalog/view/javascript/aw_moonshine_calculator.min.css</code></li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>4.</b> Refresh the modification cache</li>
+                                        <li class="list-group-item"><b>5.</b> Go to: Extensions <i class="ti ti-arrow-right"></i> Modules <i class="ti ti-arrow-right"></i> Enable the module –
+                                            <b><span style="color:#0937cc;">alexwaha.com</span> -
+                                                <i class="ti ti-calculator"></i> Moonshine Calculator</b>
+                                            <span class="badge bg-warning">When enabled, the module will automatically grant view/edit permissions</span>
+                                        </li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-primary">Self-check after installation:</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">Check for the module in the list of extensions</li>
+                                        <li class="list-group-item">Refresh the modification cache</li>
+                                        <li class="list-group-item">Test the calculator functionality on the frontend</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_2" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-cog"></i> Configuration</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_2" class="collapse">
+                                <div class="item_content">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <p><b>1.</b> Go to <b>Extensions</b> <i class="ti ti-arrow-right"></i> <b>Modules</b> <i class="ti ti-arrow-right"></i> <b><span style="color:#0937cc;">alexwaha.com</span> - Moonshine Calculator</b></p>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Configure the module settings:
+                                            <ul class="mt-2">
+                                                <li><b>Status:</b> Enable/Disable the calculator</li>
+                                                <li><b>Page Title:</b> Set the page title for each language</li>
+                                                <li><b>H1 Heading:</b> Set the main heading for each language</li>
+                                                <li><b>Description:</b> Add page description content (supports HTML)</li>
+                                                <li><b>Instructions:</b> Add usage instructions (supports HTML)</li>
+                                                <li><b>SEO URL:</b> Set the friendly URL (default: moonshine-calculator)</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Save the configuration</li>
+                                        <li class="list-group-item"><b>4.</b> The calculator will be accessible at: <code>your-site.com/moonshine-calculator</code> (or your custom SEO URL)</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-warning">The calculator page is automatically added to the sitemap <b>sitemap.xml</b></p>
+                                    <p class="mt-4 mb-4 alert bg-info">The module supports AJAX calculations for instant results without page reload</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_3" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-user"></i> Usage</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_3" class="collapse">
+                                <div class="item_content">
+                                    <p><b>The calculator helps determine how much water to add when diluting moonshine to achieve desired alcohol strength.</b></p>
+                                    <ol class="list-group list-group-numbered">
+                                        <li class="list-group-item"><b>Initial Strength (%):</b> Enter the current alcohol strength (0-100%)</li>
+                                        <li class="list-group-item"><b>Desired Final Strength (%):</b> Enter the target alcohol strength (must be lower than initial)</li>
+                                        <li class="list-group-item"><b>Moonshine Volume (L):</b> Enter the volume of moonshine to be diluted</li>
+                                        <li class="list-group-item"><b>Click "Calculate"</b> to get results</li>
+                                    </ol>
+                                    <p class="mt-4 mb-4 alert bg-success">
+                                        <b>Results will show:</b><br>
+                                        • Amount of water to add (L)<br>
+                                        • Final total volume (L)
+                                    </p>
+                                    <p class="mt-4 mb-4 alert bg-warning">
+                                        <i class="fa fa-exclamation-triangle"></i> <b>Important:</b> All calculations are accurate for component temperature of 20°C
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_4" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-code"></i> For Developers</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_4" class="collapse">
+                                <div class="item_content">
+                                    <p>The module uses the Twig templating engine, and does not require declaring language variables inside the controller, just add the variable to the language file.</p>
+                                    <p>The module's language files are always located in the <b>en-gb, ru-ru</b> folders regardless of the Opencart version.</p>
+                                    <p>Template file location: <b>catalog/view/theme/default/template/extension/module/aw_moonshine_calculator.twig</b></p>
+                                    <p>CSS styles location: <b>catalog/view/javascript/aw_moonshine_calculator.min.css</b></p>
+                                    <p><b>Key Functions:</b></p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><code>calculate($initial_strength, $final_strength, $moonshine_volume)</code> - Main calculation method</li>
+                                        <li class="list-group-item"><code>getTemperatureCorrection($temperature)</code> - Temperature correction (for future updates)</li>
+                                        <li class="list-group-item"><code>validateStrength($strength)</code> - Validates alcohol strength input</li>
+                                        <li class="list-group-item"><code>validateVolume($volume)</code> - Validates volume input</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-danger">Use of the module is only possible together with the system module <b>alexwaha.com - Core</b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mt-4 mb-4 alert bg-light">
+                            <span class="badge bg-danger">Attention!</span> Technical support for this module is only available on a paid basis.
+                            Bug fixes in the main repository are done without a schedule as long as the developer has free time.
+                            If you can offer a solution to any problem, a
+                            <a href="https://github.com/AlexWaha/opencart-bundle/pulls">pull-request on
+                                <i class="ti ti-brand-github"></i> GitHub</a> is welcome.
+                        </p>
+                        <p class="mt-4 mb-4 alert bg-primary">Setting up the module by the author, customization, resolving conflicts with other modules, integration with a template, integration with another module in your project - only on a
+                            <b>paid basis</b>, please contact us below.
+                        </p>
+                        <p class="mt-4 mb-4">Tested on a clean <b>Opencart</b> and on the default theme (Default).
+                        </p>
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#licence_en" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-file-certificate"></i> License</span>
+                                    <i class="ti ti-caret-down"></i></a>
+                            </div>
+                            <div id="licence_en" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        This project is licensed under the
+                                        <a href="https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE" target="_blank">GNU General Public License version 3 (GPLv3)</a>.
+                                    </p>
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        The rights and authorship of this software belong to the developer Oleksandr Vakhovskyi, also known as: Alexwaha, Ocdev.pro, website https://alexwaha.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron">
+                <div class="container">
+                    <p class="lead">Contacts:</p>
+                    <ul class="list-group list-group-horizontal text-center">
+                        <li class="list-group-item flex-fill"><i class="ti ti-brand-telegram"></i> Telegram:
+                            <a class="btn btn-primary btn-sm" href="https://t.me/alexwaha_dev" target="_blank" role="button">alexwaha_dev</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-mail"></i> Email:
+                            <a class="btn btn-primary btn-sm" href="mailto:support@alexwaha.com" target="_blank" role="button">support@alexwaha.com</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-bug"></i> Bug report:
+                            <a class="btn btn-primary btn-sm" href="https://alexwaha.com/bug-report" target="_blank" role="button">https://alexwaha.com/bug-report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="tab_ru" class="tab-pane show" role="tabpanel">
+            <div class="slider">
+                <div class="container-fluid">
+                    <p class="lead text-center">Инструкция | Alexwaha.com - Калькулятор разбавления самогона
+                        <span class="badge bg-light">для Opencart v2.3 - 3.x</span></p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_1" class="mt-12 mb-12" data-toggle="collapse"><span><i
+                                        class="far fa-info"></i> Инструкция по установке</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_1" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-4 mb-4 alert bg-primary">Данный модуль предоставляет калькулятор разбавления самогона, который автоматически рассчитывает количество воды, необходимое для получения желаемой крепости алкоголя</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <b>1.</b> Убедитесь в том, что у Вас установлен модуль <b>aw_core_oc2.3-3.x.ocmod.zip</b>
+                                            <span class="badge bg-warning">Это вспомагательный фунционал для работы всех моих модулей</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>2.</b> Убедитесь в том, что у Вас установлен модуль отключающий
+                                            ftp-загрузку дополнений в Opencart 2.x или у Вас корректные настройки FTP в настройках
+                                            магазина -
+                                            <a href="https://www.opencart.com/index.php?route=extension/extension/info&extension_id=18892"
+                                               rel="external nofollow noopener" target="_blank"><span
+                                                    class="badge bg-warning">Ссылка на модуль отключающий ftp-загрузку только для Opencart v2.3 (<b>Для Opencart 3.x не требуется</b>)</span></a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>3.</b> Установите файлы модуля в вашу установку OpenCart:
+                                            <ul class="mt-2">
+                                                <li>Контроллер админки: <code>admin/controller/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Шаблон админки: <code>admin/view/template/extension/module/aw_moonshine_calculator.twig</code></li>
+                                                <li>Языковые файлы админки: <code>admin/language/*/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Контроллер каталога: <code>catalog/controller/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Модель каталога: <code>catalog/model/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>Шаблон каталога: <code>catalog/view/theme/default/template/extension/module/aw_moonshine_calculator.twig</code></li>
+                                                <li>Языковые файлы каталога: <code>catalog/language/*/extension/module/aw_moonshine_calculator.php</code></li>
+                                                <li>CSS стили: <code>catalog/view/javascript/aw_moonshine_calculator.min.css</code></li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>4.</b> Обновите кеш модификаций</li>
+                                        <li class="list-group-item">
+                                            <b>5.</b> В разделе: Расширения <i class="ti ti-arrow-right"></i> Модули <i class="ti ti-arrow-right"></i> Включите модуль -
+                                            <b><span style="color:#0937cc;">alexwaha.com</span> -
+                                                <i class="ti ti-calculator"></i> Калькулятор самогона</b>
+                                            <span class="badge bg-warning">При включении модуль автоматически выдаст права на просмотр и редактирование</span>
+                                        </li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-primary">Самопроверка после установки:</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">Проверить наличие модуля в списке дополнений</li>
+                                        <li class="list-group-item">Обновить кеш модификаций</li>
+                                        <li class="list-group-item">Проверить работоспособность калькулятора на сайте</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_2" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-cog"></i> Настройка</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_2" class="collapse">
+                                <div class="item_content">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <p><b>1.</b> Зайдите в раздел <b>Дополнения</b> <i class="ti ti-arrow-right"></i> <b>Модули</b> <i class="ti ti-arrow-right"></i> <b><span style="color:#0937cc;">alexwaha.com</span> - Калькулятор самогона</b></p>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Настройте параметры модуля:
+                                            <ul class="mt-2">
+                                                <li><b>Статус:</b> Включить/Отключить калькулятор</li>
+                                                <li><b>Заголовок страницы:</b> Задайте заголовок страницы для каждого языка</li>
+                                                <li><b>Заголовок H1:</b> Задайте основной заголовок для каждого языка</li>
+                                                <li><b>Описание:</b> Добавьте описание страницы (поддерживает HTML)</li>
+                                                <li><b>Инструкция:</b> Добавьте инструкцию по использованию (поддерживает HTML)</li>
+                                                <li><b>SEO URL:</b> Задайте дружественный URL (по умолчанию: moonshine-calculator)</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Сохраните конфигурацию</li>
+                                        <li class="list-group-item"><b>4.</b> Калькулятор будет доступен по адресу: <code>ваш-сайт.com/moonshine-calculator</code> (или ваш SEO URL)</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-warning">Страница калькулятора автоматически добавляется в карту сайта <b>sitemap.xml</b></p>
+                                    <p class="mt-4 mb-4 alert bg-info">Модуль поддерживает AJAX-расчеты для мгновенного получения результатов без перезагрузки страницы</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_3" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-user"></i> Использование</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_3" class="collapse">
+                                <div class="item_content">
+                                    <p><b>Калькулятор помогает определить, сколько воды добавить при разбавлении самогона для получения желаемой крепости.</b></p>
+                                    <ol class="list-group list-group-numbered">
+                                        <li class="list-group-item"><b>Начальная крепость (%):</b> Введите текущую крепость алкоголя (0-100%)</li>
+                                        <li class="list-group-item"><b>Желаемая итоговая крепость (%):</b> Введите целевую крепость алкоголя (должна быть меньше начальной)</li>
+                                        <li class="list-group-item"><b>Объем самогона (л):</b> Введите объем самогона для разбавления</li>
+                                        <li class="list-group-item"><b>Нажмите "Рассчитать"</b> для получения результатов</li>
+                                    </ol>
+                                    <p class="mt-4 mb-4 alert bg-success">
+                                        <b>Результаты покажут:</b><br>
+                                        • Количество воды для добавления (л)<br>
+                                        • Итоговый общий объем (л)
+                                    </p>
+                                    <p class="mt-4 mb-4 alert bg-warning">
+                                        <i class="fa fa-exclamation-triangle"></i> <b>Важно:</b> Все расчеты актуальны для температуры компонентов 20°C
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_4" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-code"></i> Разработчикам</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_4" class="collapse">
+                                <div class="item_content">
+                                    <p>Модуль использует шаблонизатор Twig, а также не требует обьявления языковых переменных внутри контроллера,
+                                        достаточно просто добавить переменную в языковой файл.</p>
+                                    <p>Языковые файлы модуля всегда в папках <b>en-gb, ru-ru</b> вне зависимости от версии Opencart.</p>
+                                    <p>Расположение файла шаблона: <b>catalog/view/theme/default/template/extension/module/aw_moonshine_calculator.twig</b></p>
+                                    <p>Расположение CSS стилей: <b>catalog/view/javascript/aw_moonshine_calculator.min.css</b></p>
+                                    <p><b>Основные функции:</b></p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><code>calculate($initial_strength, $final_strength, $moonshine_volume)</code> - Основной метод расчета</li>
+                                        <li class="list-group-item"><code>getTemperatureCorrection($temperature)</code> - Коррекция по температуре (для будущих обновлений)</li>
+                                        <li class="list-group-item"><code>validateStrength($strength)</code> - Проверка корректности крепости</li>
+                                        <li class="list-group-item"><code>validateVolume($volume)</code> - Проверка корректности объема</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-danger">Использование модуля возможно только совместно с системным модулем <b>alexwaha.com - Core</b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mt-4 mb-4 alert bg-light">
+                            <span class="badge bg-danger">Внимание!</span> Техническая поддержка модуля оказывается только на платной основе.
+                            Устранение ошибок в основном репозитории проводиться без регламента при наличии свободного времени у разработчика.
+                            Если Вы можете предложить решение какой-то проблемы,
+                            <a href="https://github.com/AlexWaha/opencart-bundle/pulls">pull-request на
+                                <i class="ti ti-brand-github"></i> GitHub</a> приветствуется.
+                        </p>
+                        <p class="mt-4 mb-4 alert bg-primary">Настройка модуля автором, доработка, исправление
+                            конфликтов с другими модулями, интеграция с шаблоном, интеграция с другим модулем в Вашем проекте - только на
+                            <b>платной основе</b>, обращайтесь по контактам ниже.
+                        </p>
+                        <p class="mt-4 mb-4">Протестировано на чистом
+                            <b>Opencart</b> и на шаблоне по-умолчанию (Default).
+                        </p>
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#licence" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-file-certificate"></i> Лицензия</span>
+                                    <i class="ti ti-caret-down"></i></a>
+                            </div>
+                            <div id="licence" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        Этот проект распространяется под лицензией
+                                        <a href="https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE" target="_blank">GNU General Public License version 3 (GPLv3)</a>.
+                                    </p>
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        Права и авторство на ПО принадлежат разработчику Ваховскому Александру Витальевичу, он же: Alexwaha, Ocdev.pro, сайт https://alexwaha.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron">
+                <div class="container">
+                    <p class="lead">Контакты:</p>
+                    <ul class="list-group list-group-horizontal text-center">
+                        <li class="list-group-item flex-fill"><i class="ti ti-brand-telegram"></i> Telegram:
+                            <a class="btn btn-primary btn-sm" href="https://t.me/alexwaha_dev" target="_blank" role="button">alexwaha_dev</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-mail"></i> Email:
+                            <a class="btn btn-primary btn-sm" href="mailto:support@alexwaha.com" target="_blank" role="button">support@alexwaha.com</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-bug"></i> Bug report:
+                            <a class="btn btn-primary btn-sm" href="https://alexwaha.com/bug-report" target="_blank" role="button">https://alexwaha.com/bug-report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <div class="container">
+        <div class="text-center"><a href="https://alexwaha.com">Alexwaha.com</a> Made with
+            <i class="ti ti-coffee"></i>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

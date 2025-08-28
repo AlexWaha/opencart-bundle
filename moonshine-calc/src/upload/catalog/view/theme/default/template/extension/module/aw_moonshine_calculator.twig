@@ -1,0 +1,303 @@
+{{ header }}
+<div id="moonshine-calculator" class="container">
+    <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="row">{{ column_left }}
+        {% if column_left and column_right %}
+            {% set class = 'col-sm-6' %}
+        {% elseif column_left or column_right %}
+            {% set class = 'col-sm-9' %}
+        {% else %}
+            {% set class = 'col-sm-12' %}
+        {% endif %}
+        <div id="content" class="{{ class }}">{{ content_top }}
+            <h1>{{ h1 }}</h1>
+
+            {% if description %}
+                <div class="moonshine-calculator-description">
+                    {{ description }}
+                </div>
+            {% endif %}
+
+            <div class="moonshine-calculator-form">
+                <div class="calculator-main-container">
+                    <div class="calculator-left">
+                        <div class="calculator-container">
+                            <div class="calculator-header">
+                                <h3><i class="fa fa-edit"></i> {{ text_description_default }}</h3>
+                            </div>
+
+                            <div class="calculator-body">
+                                <form id="moonshine-calculator-form" class="calculator-form">
+                                    <div class="input-row">
+                                        <div class="input-group-modern">
+                                            <label for="initial_strength" class="form-label">
+                                                <i class="fa fa-fire text-danger"></i>
+                                                {{ entry_initial_strength }}
+                                            </label>
+                                            <div class="input-wrapper">
+                                                <input type="number" id="initial_strength" class="form-input" placeholder="70" min="0" max="100" step="0.1" />
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                            <small class="help-text">{{ help_initial_strength }}</small>
+                                            <span class="field-error" id="error-initial-strength"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="input-row">
+                                        <div class="input-group-modern">
+                                            <label for="final_strength" class="form-label">
+                                                <i class="fa fa-adjust text-success"></i>
+                                                {{ entry_final_strength }}
+                                            </label>
+                                            <div class="input-wrapper">
+                                                <input type="number" id="final_strength" class="form-input" placeholder="40" min="0" max="100" step="0.1" />
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                            <small class="help-text">{{ help_final_strength }}</small>
+                                            <span class="field-error" id="error-final-strength"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="input-row">
+                                        <div class="input-group-modern">
+                                            <label for="moonshine_volume" class="form-label">
+                                                <i class="fa fa-tint text-info"></i>
+                                                {{ entry_moonshine_volume }}
+                                            </label>
+                                            <div class="input-wrapper">
+                                                <input type="number" id="moonshine_volume" class="form-input" placeholder="1.0" min="0.001" step="0.001" />
+                                                <span class="input-unit">л</span>
+                                            </div>
+                                            <small class="help-text">{{ help_moonshine_volume }}</small>
+                                            <span class="field-error" id="error-moonshine-volume"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="button-row">
+                                        <button type="submit" class="btn-calculate">
+                                            <i class="fa fa-calculator"></i>
+                                            {{ text_calculate }}
+                                        </button>
+                                        <button type="button" id="reset-calculator" class="btn-reset">
+                                            <i class="fa fa-refresh"></i>
+                                            {{ text_reset }}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-right">
+                        <div class="calc-cont-result">
+                            <div class="result-header">
+                                <h3 class="h3-result"><i class="fa fa-calculator"></i> {{ text_result }}</h3>
+                            </div>
+
+                            <div class="results-grid">
+                                <div class="result-card water-card">
+                                    <div class="result-icon-wrapper">
+                                        <i class="fa fa-tint"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <div class="result-label">{{ text_water_volume }}</div>
+                                        <div class="result-value">
+                                            <span id="water-amount">0.000</span>
+                                            <span class="unit">л</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="result-card total-card">
+                                    <div class="result-icon-wrapper">
+                                        <i class="fa fa-flask"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <div class="result-label">{{ text_final_volume }}</div>
+                                        <div class="result-value">
+                                            <span id="final-amount">0.000</span>
+                                            <span class="unit">л</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="result-note">
+                                <i class="fa fa-info-circle"></i>
+                                {{ text_calculator_note }}
+                            </div>
+
+                            <div id="calculation-error" class="error-message">
+                                <div id="error-content" class="error-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if show_result and calculation_result %}
+                <div class="moonshine-calculator-result">
+                    <div class="alert alert-success">
+                        <h4>{{ text_result }}</h4>
+                        <p><strong>{{ text_water_volume }}:</strong> {{ calculation_result.water_volume }} л</p>
+                        <p><strong>{{ text_final_volume }}:</strong> {{ calculation_result.final_volume }} л</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if instructions %}
+                <div class="moonshine-calculator-instructions">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-info-circle"></i> {{ text_instructions }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {{ instructions|raw }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {{ content_bottom }}
+        </div>
+        {{ column_right }}
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    function clearErrors() {
+      $('.form-input').removeClass('error');
+      $('.field-error').hide().text('');
+    }
+
+    function showFieldError(fieldId, message) {
+      $('#' + fieldId).addClass('error');
+      $('#error-' + fieldId.replace('_', '-')).text(message).show();
+    }
+
+    function stopCalculationAnimation() {
+      $('.btn-calculate').removeClass('calculating').prop('disabled', false);
+      $('.btn-calculate i').show();
+      $('.btn-calculate').html('<i class="fa fa-calculator"></i> {{ text_calculate }}');
+      $('.calc-cont-result').removeClass('calculating');
+    }
+
+    function validateForm() {
+      clearErrors();
+
+      let initial_strength = parseFloat($('#initial_strength').val());
+      let final_strength = parseFloat($('#final_strength').val());
+      let moonshine_volume = parseFloat($('#moonshine_volume').val());
+      let hasErrors = false;
+
+      if (!$('#initial_strength').val()) {
+        showFieldError('initial_strength', '{{ error_initial_strength }}');
+        hasErrors = true;
+      } else if (initial_strength < 0 || initial_strength > 100) {
+        showFieldError('initial_strength', '{{ error_initial_strength_range }}');
+        hasErrors = true;
+      }
+
+      if (!$('#final_strength').val()) {
+        showFieldError('final_strength', '{{ error_final_strength }}');
+        hasErrors = true;
+      } else if (final_strength < 0 || final_strength > 100) {
+        showFieldError('final_strength', '{{ error_final_strength_range }}');
+        hasErrors = true;
+      } else if (!isNaN(initial_strength) && final_strength >= initial_strength) {
+        showFieldError('final_strength', '{{ error_final_strength_less }}');
+        hasErrors = true;
+      }
+
+      if (!$('#moonshine_volume').val()) {
+        showFieldError('moonshine_volume', '{{ error_moonshine_volume }}');
+        hasErrors = true;
+      } else if (moonshine_volume <= 0) {
+        showFieldError('moonshine_volume', '{{ error_moonshine_volume_positive }}');
+        hasErrors = true;
+      }
+
+      return !hasErrors;
+    }
+
+    $('#moonshine-calculator-form').on('submit', function(e) {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        return false;
+      }
+
+      $('.btn-calculate').addClass('calculating').prop('disabled', true);
+      $('.btn-calculate i').hide();
+      $('.btn-calculate').text(' {{ text_calculating }}');
+      $('.calc-cont-result').addClass('calculating');
+
+      let initial_strength = $('#initial_strength').val();
+      let final_strength = $('#final_strength').val();
+      let moonshine_volume = $('#moonshine_volume').val();
+
+      $('#calculation-error').hide();
+      $('#final-volume-block').hide();
+
+      $.ajax({
+        url: 'index.php?route=extension/module/aw_moonshine_calculator/calculate',
+        type: 'POST',
+        data: {
+          initial_strength: initial_strength,
+          final_strength: final_strength,
+          moonshine_volume: moonshine_volume
+        },
+        dataType: 'json',
+        success: function(json) {
+          setTimeout(function() {
+            stopCalculationAnimation();
+
+            if (json.success) {
+              let result = json.result;
+              $('#water-amount').text(result.water_volume.toFixed(3));
+              $('#final-amount').text(result.final_volume.toFixed(3));
+              $('#final-volume-block').show();
+            } else {
+              clearErrors();
+              if (json.errors) {
+                for (let key in json.errors) {
+                  if (key === 'initial_strength') {
+                    showFieldError('initial_strength', json.errors[key]);
+                  } else if (key === 'final_strength') {
+                    showFieldError('final_strength', json.errors[key]);
+                  } else if (key === 'moonshine_volume') {
+                    showFieldError('moonshine_volume', json.errors[key]);
+                  }
+                }
+              } else {
+                $('#error-content').html('<p>{{ text_error_unknown }}</p>');
+                $('#calculation-error').show();
+              }
+            }
+          }, 500);
+        },
+        error: function() {
+          stopCalculationAnimation();
+
+          $('#error-content').html('<p>{{ text_error_general }}</p>');
+          $('#calculation-error').show();
+        }
+      });
+    });
+
+    $('#reset-calculator').on('click', function() {
+      $('#moonshine-calculator-form')[0].reset();
+      $('#calculation-error').hide();
+      $('#final-volume-block').hide();
+      $('#water-amount').text('0.000');
+      $('#final-amount').text('0.000');
+      clearErrors();
+    });
+  });
+</script>
+
+{{ footer }}
