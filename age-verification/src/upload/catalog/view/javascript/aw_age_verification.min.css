@@ -1,0 +1,29 @@
+.age-verification-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000c;z-index:99999;display:flex;justify-content:center;align-items:center}
+.age-verification-overlay.hidden{display:none!important}
+.popup-inner{background:#fff;border-radius:12px;max-width:500px;width:90%;padding:0;box-shadow:0 10px 30px #0000004d;animation:popup-appear .3s ease-out}
+@keyframes popup-appear {
+from{opacity:0;transform:scale(0.7) translateY(-50px)}
+to{opacity:1;transform:scale(1) translateY(0)}
+}
+.popup-header{padding:30px 30px 20px;text-align:center;border-bottom:1px solid #eee}
+.popup-img-alert{display:inline-block;width:80px;height:80px;background:linear-gradient(135deg,#ff6b6b,#ee5a24);border-radius:50%;line-height:80px;font-size:28px;font-weight:700;color:#fff;margin-bottom:20px;box-shadow:0 4px 15px #ff6b6b4d}
+.popup-title{font-size:24px;font-weight:600;color:#333;margin:0;line-height:1.3}
+.popup-body{padding:25px 30px;text-align:center}
+.popup-body p{font-size:16px;line-height:1.5;color:#666;margin:0}
+.popup-buttons{padding:20px 30px 30px;display:flex;flex-direction:column;gap:12px}
+.popup-buttons .btn{padding:15px 25px;border:none;border-radius:8px;font-size:16px;font-weight:500;cursor:pointer;transition:all .3s ease;text-align:center;text-decoration:none;display:block;width:100%}
+.popup-buttons .btn.btn-special{background:linear-gradient(135deg,#4CAF50,#45a049);color:#fff;box-shadow:0 4px 15px #4caf504d}
+.popup-buttons .btn.btn-special:hover{background:linear-gradient(135deg,#45a049,#3d8b40);transform:translateY(-2px);box-shadow:0 6px 20px #4caf5066}
+.popup-buttons .btn:not(.btn-special){background:#f8f9fa;color:#666;border:2px solid #e9ecef}
+.popup-buttons .btn:not(.btn-special):hover{background:#e9ecef;color:#333;transform:translateY(-1px)}
+.popup-buttons .btn-content{display:block}
+@media (max-width: 480px) {
+.popup-inner{width:95%;margin:20px}
+.popup-header{padding:25px 20px 15px}
+.popup-img-alert{width:60px;height:60px;line-height:60px;font-size:22px;margin-bottom:15px}
+.popup-title{font-size:20px}
+.popup-body{padding:20px}
+.popup-body p{font-size:14px}
+.popup-buttons{padding:15px 20px 25px}
+.popup-buttons .btn{padding:12px 20px;font-size:14px}
+}

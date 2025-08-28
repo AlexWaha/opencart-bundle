@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>AW Age Verification - Footer Integration</name>
+    <code>aw_age_verification_footer</code>
+    <version>1.0.0</version>
+    <author>Alexander Vakhovski (AlexWaha)</author>
+    <link>https://alexwaha.com</link>
+
+    <file path="catalog/controller/common/footer.php">
+        <operation>
+            <search><![CDATA[return $this->load->view('common/footer', $data);]]></search>
+            <add position="before"><![CDATA[
+            $aw_age_verification_config = $this->awCore->getConfig('aw_age_verification');
+
+            if ($aw_age_verification_config->get('status')) {
+                $data['aw_age_verification'] = $this->load->controller('extension/module/aw_age_verification');
+            } else {
+                $data['aw_age_verification'] = '';
+            }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/default/template/common/footer.tpl">
+        <operation>
+            <search><![CDATA[</body></html>]]></search>
+            <add position="before"><![CDATA[<?php echo $aw_age_verification; ?>]]></add>
+        </operation>
+    </file>
+        <file path="catalog/view/theme/default/template/common/footer.twig">
+        <operation>
+            <search><![CDATA[</body></html>]]></search>
+            <add position="before"><![CDATA[{{ aw_age_verification }}]]></add>
+        </operation>
+    </file>
+</modification>

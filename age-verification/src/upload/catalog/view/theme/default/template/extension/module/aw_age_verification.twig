@@ -1,0 +1,67 @@
+{% if status and not verified %}
+    <div id="age-verification-popup" class="age-verification-overlay">
+        <div class="popup-inner">
+            <div class="popup-header">
+                <div class="popup-img popup-img-alert">
+                    18+
+                </div>
+                <div class="popup-title">
+                    {{ title }}
+                </div>
+            </div>
+            <div class="popup-body">
+                <p>{{ message }}</p>
+            </div>
+            <div class="popup-buttons">
+                <button class="btn btn-special btn-block age-confirm">
+                    <span class="btn-content">{{ btn_confirm }}</span>
+                </button>
+                <button class="btn btn-block age-decline">
+                    <span class="btn-content">{{ btn_decline }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#age-verification-popup').show();
+
+            $('.age-confirm').on('click', function() {
+                let $popup = $('#age-verification-popup');
+                $popup.addClass('hidden');
+
+                $.ajax({
+                    url: '{{ action_confirm }}',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function(json) {
+                        if (json['success']) {
+                            $popup.remove();
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+                        $popup.removeClass('hidden');
+                    }
+                });
+            });
+
+            $('.age-decline').on('click', function() {
+                $.ajax({
+                    url: '{{ action_decline }}',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function(json) {
+                        if (json['redirect']) {
+                            window.location.href = json['redirect'];
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+{% endif %}

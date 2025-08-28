@@ -1,0 +1,163 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-age-verification" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ button_save }}
+                </button>
+                <a href="{{ cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i> {{ button_cancel }}
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-pencil"></i> {{ text_edit }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-age-verification" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab-settings" data-toggle="tab">{{ tab_settings }}</a></li>
+                        <li><a href="#tab-support" data-toggle="tab">{{ tab_support }}</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-settings">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <select name="status" id="input-status" class="form-control">
+                                        <option value="1" {{ age_verification_status ? 'selected' : '' }}>{{ text_enabled }}</option>
+                                        <option value="0" {{ not age_verification_status ? 'selected' : '' }}>{{ text_disabled }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ entry_title }}</label>
+                                <div class="col-sm-10">
+                                    {% for language in languages %}
+                                        <div class="input-group" style="margin-bottom: 10px;">
+                                    <span class="input-group-addon">
+                                        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" width="16" height="11"/>
+                                    </span>
+                                            <input type="text" name="title[{{ language.language_id }}]" value="{{ age_verification_title[language.language_id] ?? '' }}" placeholder="{{ entry_title }}" class="form-control"/>
+                                        </div>
+                                        {% if error.title[language.language_id] %}
+                                            <div class="text-danger">{{ error.title[language.language_id] }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="help-block">{{ help_title }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ entry_description }}</label>
+                                <div class="col-sm-10">
+                                    <ul class="nav nav-tabs" id="language-description">
+                                        {% for language in languages %}
+                                            <li{% if loop.first %} class="active"{% endif %}>
+                                                <a href="#language-desc{{ language.language_id }}" data-toggle="tab">
+                                                    <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/> {{ language.name }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="tab-content">
+                                        {% for language in languages %}
+                                            <div class="tab-pane{% if loop.first %} active{% endif %}" id="language-desc{{ language.language_id }}">
+                                                <textarea name="description[{{ language.language_id }}]" rows="5" placeholder="{{ entry_description }}" id="input-description{{ language.language_id }}" class="form-control summernote">{{ age_verification_description[language.language_id] ?? '' }}</textarea>
+                                                {% if error.description[language.language_id] %}
+                                                    <div class="text-danger">{{ error.description[language.language_id] }}</div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="help-block">{{ help_description }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-cookie-days">{{ entry_cookie_days }}</label>
+                                <div class="col-sm-10">
+                                    <input type="number" name="cookie_days" value="{{ age_verification_cookie_days }}" placeholder="30" id="input-cookie-days" class="form-control" min="1" max="365"/>
+                                    {% if error.cookie_days %}
+                                        <div class="text-danger">{{ error.cookie_days }}</div>
+                                    {% endif %}
+                                    <div class="help-block">{{ help_cookie_days }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-redirect-url">{{ entry_redirect_url }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="redirect_url" value="{{ age_verification_redirect_url }}" placeholder="https://google.com" id="input-redirect-url" class="form-control"/>
+                                    <div class="help-block">{{ help_redirect_url }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab-support">
+                            <div class="panel-body">
+                                {{ text_aw_support }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $('#language-description a:first').tab('show');
+
+  $('.summernote').summernote({
+    height: 300,
+    callbacks: {
+      onImageUpload: function (files) {
+        uploadImage(files[0], $(this));
+      },
+    },
+  });
+
+  function uploadImage (file, editor) {
+    let data = new FormData();
+    data.append('image', file);
+    $.ajax({
+      url: 'index.php?route=common/filemanager/upload&{{ token_param }}',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: data,
+      type: 'post',
+      success: function (json) {
+        if (json['success']) {
+          $(editor).summernote('insertImage', json['success']['url']);
+        }
+      },
+    });
+  }
+</script>
+{{ footer }}
