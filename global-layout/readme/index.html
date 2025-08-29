@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/favicon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Instruction Alexwaha.com Global Layout">
+    <meta name="author" content="Alexwaha">
+    <title>Readme | Alexwaha.com Global Layout</title>
+    <meta name="theme-color" content="#0937cc">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+    <link href="assets/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="wrapper">
+    <nav id="navbar" class="navbar">
+        <div class="navbar-brand"><img src="assets/logo.png" alt="Alexwaha.com"></div>
+        <ul class="nav nav-pills list-inline">
+            <li class="nav-item">
+                <a class="nav-link active" href="#tab_en" data-toggle="pill" role="tab" aria-selected="true">EN</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab_ru" data-toggle="pill" role="tab" aria-selected="false">RU</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="tab-content">
+        <div id="tab_en" class="tab-pane show active" role="tabpanel">
+            <div class="slider">
+                <div class="container-fluid">
+                    <p class="lead text-center">Instruction | Alexwaha.com - Global Layout
+                        <span class="badge bg-light">for Opencart v2.3 - 3.x</span></p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_1" class="mt-12 mb-12" data-toggle="collapse"><span><i class="far fa-info"></i> Installation Instructions</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_1" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-4 mb-4 alert bg-primary">This module creates one global layout that allows you to place modules in this layout, and these modules will be displayed on all pages of your OpenCart store</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><b>1.</b> Make sure you have installed the module <b>aw_core_oc2.3-3.x.ocmod.zip</b>
+                                            <span class="badge bg-warning">This is an auxiliary function for all my modules</span>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Make sure you have a module installed that disables FTP uploads for extensions in Opencart 2.x, or that your FTP settings in the store config are correct –
+                                            <a href="https://www.opencart.com/index.php?route=extension/extension/info&extension_id=18892" rel="external nofollow noopener" target="_blank">
+                                                <span class="badge bg-warning">Link to module disabling FTP upload for Opencart v2.3 only (<b>Not required for Opencart 3.x</b>)</span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Install the module files to your OpenCart installation:
+                                            <ul class="mt-2">
+                                                <li>Admin controller: <code>admin/controller/extension/module/aw_global_layout.php</code></li>
+                                                <li>Admin template: <code>admin/view/template/extension/module/aw_global_layout.twig</code></li>
+                                                <li>Admin model: <code>admin/model/extension/module/aw_global_layout.php</code></li>
+                                                <li>Admin language files: <code>admin/language/*/extension/module/aw_global_layout.php</code></li>
+                                                <li>Catalog controllers: <code>catalog/controller/extension/aw_position/aw_content_top.php</code>, <code>aw_content_bottom.php</code></li>
+                                                <li>Catalog model: <code>catalog/model/extension/module/aw_global_layout.php</code></li>
+                                                <li>Catalog templates: <code>catalog/view/theme/default/template/extension/aw_position/aw_content_top.twig</code>, <code>aw_content_bottom.twig</code></li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>4.</b> Refresh the modification cache</li>
+                                        <li class="list-group-item"><b>5.</b> Go to: Extensions <i class="ti ti-arrow-right"></i> Modules <i class="ti ti-arrow-right"></i> Enable the module –
+                                            <b><span style="color:#0937cc;">alexwaha.com</span> -
+                                                <i class="ti ti-puzzle-piece"></i> Global layout</b>
+                                            <span class="badge bg-warning">When enabled, the module will automatically grant view/edit permissions and create necessary database tables</span>
+                                        </li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-primary">Self-check after installation:</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">Check for the module in the list of extensions</li>
+                                        <li class="list-group-item">Refresh the modification cache</li>
+                                        <li class="list-group-item">Verify that the global layout interface is accessible</li>
+                                        <li class="list-group-item">Test module positioning on the frontend</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_2" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-cog"></i> Configuration</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_2" class="collapse">
+                                <div class="item_content">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <p><b>1.</b> Go to <b>Extensions</b> <i class="ti ti-arrow-right"></i> <b>Modules</b> <i class="ti ti-arrow-right"></i> <b><span style="color:#0937cc;">alexwaha.com</span> - Global layout</b></p>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Configure the module settings:
+                                            <ul class="mt-2">
+                                                <li><b>Layout Name:</b> Set a name for your global layout (default: "All pages")</li>
+                                                <li><b>Status:</b> Enable/Disable the global layout</li>
+                                                <li><b>Add Modules:</b> Add modules to the global layout from dropdown lists</li>
+                                                <li><b>Sort Order:</b> Drag modules by the handle to change their order within the same position</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Save the configuration</li>
+                                        <li class="list-group-item"><b>4.</b> When enabled, all modules in the global layout will appear on every page of your store</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-warning">The global layout displays its modules on all pages when the layout is active</p>
+                                    <p class="mt-4 mb-4 alert bg-info">The module supports drag-and-drop reordering of modules within each position using visual sorting handles</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_3" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-user"></i> Usage</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_3" class="collapse">
+                                <div class="item_content">
+                                    <p><b>The Global Layout module creates a single global layout where you can add modules that will appear on all pages of your store.</b></p>
+                                    <ol class="list-group list-group-numbered">
+                                        <li class="list-group-item"><b>Access the Module:</b> Go to Extensions → Modules → Global Layout</li>
+                                        <li class="list-group-item"><b>Choose Modules:</b> Select any installed module from the dropdown lists</li>
+                                        <li class="list-group-item"><b>Add to Layout:</b> Add modules to the global layout positions (Content Top/Bottom, Left/Right columns, Full Width Top/Bottom)</li>
+                                        <li class="list-group-item"><b>Reorder Modules:</b> Use drag-and-drop handle to reorder modules within the same position only</li>
+                                        <li class="list-group-item"><b>Remove Modules:</b> Click the remove button to delete modules from positions</li>
+                                        <li class="list-group-item"><b>Save Configuration:</b> Click "Save" to make modules appear on all pages</li>
+                                    </ol>
+                                    <p class="mt-4 mb-4 alert bg-success">
+                                        <b>Available Layout Positions:</b><br>
+                                        • Full Width Top - spans entire page width<br>
+                                        • Content Top - above main content area<br>
+                                        • Column Left - left sidebar<br>
+                                        • Column Right - right sidebar<br>
+                                        • Content Bottom - below main content area<br>
+                                        • Full Width Bottom - spans entire page width
+                                    </p>
+                                    <p class="mt-4 mb-4 alert bg-warning">
+                                        <i class="fa fa-exclamation-triangle"></i> <b>Important:</b> Modules added to the global layout will appear on all pages of your store. Remove modules from the layout if you don't want them on all pages.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_en_4" data-toggle="collapse" class="accordion-toggle"><span><i class="far fa-code"></i> For Developers</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_en_4" class="collapse">
+                                <div class="item_content">
+                                    <p>The module uses the Twig templating engine, and does not require declaring language variables inside the controller, just add the variable to the language file.</p>
+                                    <p>The module's language files are always located in the <b>en-gb, ru-ru</b> folders regardless of the Opencart version.</p>
+                                    <p>Template file locations: <b>admin/view/template/extension/module/aw_global_layout.twig</b></p>
+                                    <p>Position template files: <b>catalog/view/theme/default/template/extension/aw_position/aw_content_top.twig</b>, <b>aw_content_bottom.twig</b></p>
+                                    <p><b>Key Functions:</b></p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><code>getLayout($route)</code> - Retrieves layout configuration for a specific route</li>
+                                        <li class="list-group-item"><code>getModules($id)</code> - Gets all modules assigned to a layout position</li>
+                                        <li class="list-group-item"><code>editLayout($id, $data)</code> - Updates layout configuration and module assignments</li>
+                                        <li class="list-group-item"><code>install($name, $route)</code> - Creates database tables and initial layout</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-danger">Use of the module is only possible together with the system module <b>alexwaha.com - Core</b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mt-4 mb-4 alert bg-light">
+                            <span class="badge bg-danger">Attention!</span> Technical support for this module is only available on a paid basis.
+                            Bug fixes in the main repository are done without a schedule as long as the developer has free time.
+                            If you can offer a solution to any problem, a
+                            <a href="https://github.com/AlexWaha/opencart-bundle/pulls">pull-request on
+                                <i class="ti ti-brand-github"></i> GitHub</a> is welcome.
+                        </p>
+                        <p class="mt-4 mb-4 alert bg-primary">Setting up the module by the author, customization, resolving conflicts with other modules, integration with a template, integration with another module in your project - only on a
+                            <b>paid basis</b>, please contact us below.
+                        </p>
+                        <p class="mt-4 mb-4">Tested on a clean <b>Opencart</b> and on the default theme (Default).
+                        </p>
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#licence_en" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-file-certificate"></i> License</span>
+                                    <i class="ti ti-caret-down"></i></a>
+                            </div>
+                            <div id="licence_en" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        This project is licensed under the
+                                        <a href="https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE" target="_blank">GNU General Public License version 3 (GPLv3)</a>.
+                                    </p>
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        The rights and authorship of this software belong to the developer Oleksandr Vakhovskyi, also known as: Alexwaha, Ocdev.pro, website https://alexwaha.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron">
+                <div class="container">
+                    <p class="lead">Contacts:</p>
+                    <ul class="list-group list-group-horizontal text-center">
+                        <li class="list-group-item flex-fill"><i class="ti ti-brand-telegram"></i> Telegram:
+                            <a class="btn btn-primary btn-sm" href="https://t.me/alexwaha_dev" target="_blank" role="button">alexwaha_dev</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-mail"></i> Email:
+                            <a class="btn btn-primary btn-sm" href="mailto:support@alexwaha.com" target="_blank" role="button">support@alexwaha.com</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-bug"></i> Bug report:
+                            <a class="btn btn-primary btn-sm" href="https://alexwaha.com/bug-report" target="_blank" role="button">https://alexwaha.com/bug-report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="tab_ru" class="tab-pane show" role="tabpanel">
+            <div class="slider">
+                <div class="container-fluid">
+                    <p class="lead text-center">Инструкция | Alexwaha.com - Глобальный макет
+                        <span class="badge bg-light">для Opencart v2.3 - 3.x</span></p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_1" class="mt-12 mb-12" data-toggle="collapse"><span><i
+                                        class="far fa-info"></i> Инструкция по установке</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_1" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-4 mb-4 alert bg-primary">Данный модуль создает один глобальный макет, в который можно добавить модули, и эти модули будут отображаться на всех страницах вашего магазина OpenCart</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <b>1.</b> Убедитесь в том, что у Вас установлен модуль <b>aw_core_oc2.3-3.x.ocmod.zip</b>
+                                            <span class="badge bg-warning">Это вспомагательный фунционал для работы всех моих модулей</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>2.</b> Убедитесь в том, что у Вас установлен модуль отключающий
+                                            ftp-загрузку дополнений в Opencart 2.x или у Вас корректные настройки FTP в настройках
+                                            магазина -
+                                            <a href="https://www.opencart.com/index.php?route=extension/extension/info&extension_id=18892"
+                                               rel="external nofollow noopener" target="_blank"><span
+                                                    class="badge bg-warning">Ссылка на модуль отключающий ftp-загрузку только для Opencart v2.3 (<b>Для Opencart 3.x не требуется</b>)</span></a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>3.</b> Установите файлы модуля в вашу установку OpenCart:
+                                            <ul class="mt-2">
+                                                <li>Контроллер админки: <code>admin/controller/extension/module/aw_global_layout.php</code></li>
+                                                <li>Шаблон админки: <code>admin/view/template/extension/module/aw_global_layout.twig</code></li>
+                                                <li>Модель админки: <code>admin/model/extension/module/aw_global_layout.php</code></li>
+                                                <li>Языковые файлы админки: <code>admin/language/*/extension/module/aw_global_layout.php</code></li>
+                                                <li>Контроллеры каталога: <code>catalog/controller/extension/aw_position/aw_content_top.php</code>, <code>aw_content_bottom.php</code></li>
+                                                <li>Модель каталога: <code>catalog/model/extension/module/aw_global_layout.php</code></li>
+                                                <li>Шаблоны каталога: <code>catalog/view/theme/default/template/extension/aw_position/aw_content_top.twig</code>, <code>aw_content_bottom.twig</code></li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>4.</b> Обновите кеш модификаций</li>
+                                        <li class="list-group-item">
+                                            <b>5.</b> В разделе: Расширения <i class="ti ti-arrow-right"></i> Модули <i class="ti ti-arrow-right"></i> Включите модуль -
+                                            <b><span style="color:#0937cc;">alexwaha.com</span> -
+                                                <i class="ti ti-puzzle-piece"></i> Глобальный макет</b>
+                                            <span class="badge bg-warning">При включении модуль автоматически выдаст права на просмотр и редактирование, а также создаст необходимые таблицы базы данных</span>
+                                        </li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-primary">Самопроверка после установки:</p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">Проверить наличие модуля в списке дополнений</li>
+                                        <li class="list-group-item">Обновить кеш модификаций</li>
+                                        <li class="list-group-item">Убедиться, что интерфейс глобального макета доступен</li>
+                                        <li class="list-group-item">Проверить позиционирование модулей на сайте</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_2" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-cog"></i> Настройка</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_2" class="collapse">
+                                <div class="item_content">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <p><b>1.</b> Зайдите в раздел <b>Дополнения</b> <i class="ti ti-arrow-right"></i> <b>Модули</b> <i class="ti ti-arrow-right"></i> <b><span style="color:#0937cc;">alexwaha.com</span> - Глобальный макет</b></p>
+                                        </li>
+                                        <li class="list-group-item"><b>2.</b> Настройте параметры модуля:
+                                            <ul class="mt-2">
+                                                <li><b>Название макета:</b> Задайте имя для глобального макета (по умолчанию: "All pages")</li>
+                                                <li><b>Статус:</b> Включить/Отключить глобальный макет</li>
+                                                <li><b>Добавление модулей:</b> Добавляйте модули в глобальный макет из выпадающих списков</li>
+                                                <li><b>Порядок сортировки:</b> Перетаскивайте модули за ручку для изменения их порядка внутри одной позиции</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item"><b>3.</b> Сохраните конфигурацию</li>
+                                        <li class="list-group-item"><b>4.</b> При включении все модули в глобальном макете будут отображаться на каждой странице магазина</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-warning">Глобальный макет отображает свои модули на всех страницах при активном макете</p>
+                                    <p class="mt-4 mb-4 alert bg-info">Модуль поддерживает перетаскивание для изменения порядка модулей внутри каждой позиции с помощью визуальных ручек</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_3" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-user"></i> Использование</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_3" class="collapse">
+                                <div class="item_content">
+                                    <p><b>Модуль Глобальный Макет создает единый глобальный макет, в который можно добавить модули, и они будут отображаться на всех страницах магазина.</b></p>
+                                    <ol class="list-group list-group-numbered">
+                                        <li class="list-group-item"><b>Доступ к модулю:</b> Перейдите в Дополнения → Модули → Глобальный макет</li>
+                                        <li class="list-group-item"><b>Выбор модулей:</b> Выберите любой установленный модуль из выпадающих списков</li>
+                                        <li class="list-group-item"><b>Добавление в макет:</b> Добавьте модули в позиции глобального макета (Верх/Низ контента, Левая/Правая колонки, Полная ширина Верх/Низ)</li>
+                                        <li class="list-group-item"><b>Изменение порядка модулей:</b> Используйте ручку перетаскивания для изменения порядка модулей только внутри одной позиции</li>
+                                        <li class="list-group-item"><b>Удаление модулей:</b> Нажмите кнопку удаления для удаления модулей из позиций</li>
+                                        <li class="list-group-item"><b>Сохранение конфигурации:</b> Нажмите "Сохранить" чтобы модули появились на всех страницах</li>
+                                    </ol>
+                                    <p class="mt-4 mb-4 alert bg-success">
+                                        <b>Доступные позиции макета:</b><br>
+                                        • Полная ширина Верх - охватывает всю ширину страницы<br>
+                                        • Верх контента - выше основной области контента<br>
+                                        • Левая колонка - левая боковая панель<br>
+                                        • Правая колонка - правая боковая панель<br>
+                                        • Низ контента - ниже основной области контента<br>
+                                        • Полная ширина Низ - охватывает всю ширину страницы
+                                    </p>
+                                    <p class="mt-4 mb-4 alert bg-warning">
+                                        <i class="fa fa-exclamation-triangle"></i> <b>Важно:</b> Модули, добавленные в глобальный макет, будут отображаться на всех страницах магазина. Удалите модули из макета, если не хотите их показывать на всех страницах.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#part_ru_4" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-code"></i> Разработчикам</span>
+                                    <i class="ti ti-caret-down"></i>
+                                </a>
+                            </div>
+                            <div id="part_ru_4" class="collapse">
+                                <div class="item_content">
+                                    <p>Модуль использует шаблонизатор Twig, а также не требует объявления языковых переменных внутри контроллера,
+                                        достаточно просто добавить переменную в языковой файл.</p>
+                                    <p>Языковые файлы модуля всегда в папках <b>en-gb, ru-ru</b> вне зависимости от версии Opencart.</p>
+                                    <p>Расположение файла шаблона: <b>admin/view/template/extension/module/aw_global_layout.twig</b></p>
+                                    <p>Файлы шаблонов позиций: <b>catalog/view/theme/default/template/extension/aw_position/aw_content_top.twig</b>, <b>aw_content_bottom.twig</b></p>
+                                    <p><b>Основные функции:</b></p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><code>getLayout($route)</code> - Получает конфигурацию макета для определённого маршрута</li>
+                                        <li class="list-group-item"><code>getModules($id)</code> - Получает все модули, назначенные позиции макета</li>
+                                        <li class="list-group-item"><code>editLayout($id, $data)</code> - Обновляет конфигурацию макета и назначения модулей</li>
+                                        <li class="list-group-item"><code>install($name, $route)</code> - Создаёт таблицы базы данных и начальный макет</li>
+                                    </ul>
+                                    <p class="mt-4 mb-4 alert bg-danger">Использование модуля возможно только совместно с системным модулем <b>alexwaha.com - Core</b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mt-4 mb-4 alert bg-light">
+                            <span class="badge bg-danger">Внимание!</span> Техническая поддержка модуля оказывается только на платной основе.
+                            Устранение ошибок в основном репозитории проводиться без регламента при наличии свободного времени у разработчика.
+                            Если Вы можете предложить решение какой-то проблемы,
+                            <a href="https://github.com/AlexWaha/opencart-bundle/pulls">pull-request на
+                                <i class="ti ti-brand-github"></i> GitHub</a> приветствуется.
+                        </p>
+                        <p class="mt-4 mb-4 alert bg-primary">Настройка модуля автором, доработка, исправление
+                            конфликтов с другими модулями, интеграция с шаблоном, интеграция с другим модулем в Вашем проекте - только на
+                            <b>платной основе</b>, обращайтесь по контактам ниже.
+                        </p>
+                        <p class="mt-4 mb-4">Протестировано на чистом
+                            <b>Opencart</b> и на шаблоне по-умолчанию (Default).
+                        </p>
+                        <div class="item">
+                            <div class="item_title">
+                                <a href="#licence" data-toggle="collapse" class="accordion-toggle"><span><i
+                                        class="far fa-file-certificate"></i> Лицензия</span>
+                                    <i class="ti ti-caret-down"></i></a>
+                            </div>
+                            <div id="licence" class="collapse">
+                                <div class="item_content">
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        Этот проект распространяется под лицензией
+                                        <a href="https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE" target="_blank">GNU General Public License version 3 (GPLv3)</a>.
+                                    </p>
+                                    <p class="mt-2 mb-2 alert bg-secondary">
+                                        Права и авторство на ПО принадлежат разработчику Ваховскому Александру Витальевичу, он же: Alexwaha, Ocdev.pro, сайт https://alexwaha.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron">
+                <div class="container">
+                    <p class="lead">Контакты:</p>
+                    <ul class="list-group list-group-horizontal text-center">
+                        <li class="list-group-item flex-fill"><i class="ti ti-brand-telegram"></i> Telegram:
+                            <a class="btn btn-primary btn-sm" href="https://t.me/alexwaha_dev" target="_blank" role="button">alexwaha_dev</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-mail"></i> Email:
+                            <a class="btn btn-primary btn-sm" href="mailto:support@alexwaha.com" target="_blank" role="button">support@alexwaha.com</a>
+                        </li>
+                        <li class="list-group-item flex-fill"><i class="ti ti-bug"></i> Bug report:
+                            <a class="btn btn-primary btn-sm" href="https://alexwaha.com/bug-report" target="_blank" role="button">https://alexwaha.com/bug-report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <div class="container">
+        <div class="text-center"><a href="https://alexwaha.com">Alexwaha.com</a> Made with
+            <i class="ti ti-coffee"></i>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
