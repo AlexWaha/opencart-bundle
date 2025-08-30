@@ -91,6 +91,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
         $this->params['status'] = $this->request->post['status'] ?? $moduleConfig->get('status') ?? false;
         $this->params['title'] = $this->request->post['title'] ?? $moduleConfig->get('title') ?? [];
         $this->params['h1'] = $this->request->post['h1'] ?? $moduleConfig->get('h1') ?? [];
+        $this->params['meta_description'] = $this->request->post['meta_description'] ?? $moduleConfig->get('meta_description') ?? [];
         $this->params['description'] = $this->request->post['description'] ?? $moduleConfig->get('description') ?? [];
         $this->params['instructions'] = $this->request->post['instructions'] ?? $moduleConfig->get('instructions') ?? [];
         $this->params['seo_url'] = $this->awCore->getSeoUrls('extension/module/' . $this->moduleName) ?? [];
@@ -125,6 +126,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
                 'status' => $this->request->post['status'] ?? 0,
                 'title' => $this->request->post['title'] ?? [],
                 'h1' => $this->request->post['h1'] ?? [],
+                'meta_description' => $this->request->post['meta_description'] ?? [],
                 'description' => $this->request->post['description'] ?? [],
                 'instructions' => $this->request->post['instructions'] ?? []
             ];
@@ -157,6 +159,14 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
             foreach ($this->request->post['title'] as $languageId => $value) {
                 if ((utf8_strlen($value) < 3) || (utf8_strlen($value) > 64)) {
                     $this->error['title'][$languageId] = $this->language->get('error_title');
+                }
+            }
+        }
+
+        if (isset($this->request->post['meta_description'])) {
+            foreach ($this->request->post['meta_description'] as $languageId => $value) {
+                if ((utf8_strlen($value) < 3) || (utf8_strlen($value) > 255)) {
+                    $this->error['meta_description'][$languageId] = $this->language->get('error_meta_description');
                 }
             }
         }

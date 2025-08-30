@@ -16,6 +16,7 @@ $_['text_home'] = 'Главная';
 $_['entry_status'] = 'Статус';
 $_['entry_title'] = 'Заголовок страницы';
 $_['entry_h1'] = 'Заголовок H1';
+$_['entry_meta_description'] = 'Meta Описание';
 $_['entry_description'] = 'Описание';
 $_['entry_instructions'] = 'Инструкция по использованию';
 $_['entry_seo_url'] = 'SEO URL';

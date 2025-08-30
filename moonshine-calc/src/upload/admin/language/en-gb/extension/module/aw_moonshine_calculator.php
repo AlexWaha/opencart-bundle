@@ -16,6 +16,7 @@ $_['text_home'] = 'Home';
 $_['entry_status'] = 'Status';
 $_['entry_title'] = 'Page Title';
 $_['entry_h1'] = 'H1 Title';
+$_['entry_meta_description'] = 'Meta Description';
 $_['entry_description'] = 'Description';
 $_['entry_instructions'] = 'Usage Instructions';
 $_['entry_seo_url'] = 'SEO URL';
