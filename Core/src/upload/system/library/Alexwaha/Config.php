@@ -25,12 +25,13 @@ final class Config
     }
 
     /**
-     * @param $key
+     * @param  string  $key
+     * @param  null  $default
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key, $default = null)
     {
-        return $this->data[$key] ?? null;
+        return $this->data[$key] ?? $default;
     }
 
     /**

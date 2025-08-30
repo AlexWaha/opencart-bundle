@@ -29,6 +29,7 @@ final class Core
         $this->registry = $registry;
         $this->model = new Model($registry);
         $this->view = new View($registry);
+        $this->model->ensureSchema();
     }
 
     /**
@@ -56,9 +57,9 @@ final class Core
      */
     public function isLegacy(): int
     {
-        if (is_file(DIR_SYSTEM . 'engine/router.php')) {
+        if (is_file(DIR_SYSTEM.'engine/router.php')) {
             return false;
-        } elseif (is_file(DIR_SYSTEM . 'framework.php')) {
+        } elseif (is_file(DIR_SYSTEM.'framework.php')) {
             return true;
         }
     }
@@ -73,13 +74,13 @@ final class Core
         if ($this->isLegacy()) {
             $token = $session->data['token'];
             $tokenData = [
-                'param' => 'token=' . $token,
+                'param' => 'token='.$token,
                 'token' => $token,
             ];
         } else {
             $token = $session->data['user_token'];
             $tokenData = [
-                'param' => 'user_token=' . $token,
+                'param' => 'user_token='.$token,
                 'token' => $token,
             ];
         }
@@ -230,8 +231,6 @@ final class Core
      */
     public function getConfig($code)
     {
-        $this->model->createTables();
-
         $result = $this->model->getConfig($code);
 
         $decoded = json_decode($result, true);
@@ -275,10 +274,8 @@ final class Core
      */
     protected function recursiveDelete($path): void
     {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
-            $path,
-            RecursiveDirectoryIterator::SKIP_DOTS
-        ), RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path,
+            RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isDir()) {
