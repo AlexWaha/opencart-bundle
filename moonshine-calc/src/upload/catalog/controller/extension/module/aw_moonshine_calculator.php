@@ -41,6 +41,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
         $title = $this->moduleConfig->get('title');
         $h1 = $this->moduleConfig->get('h1');
         $description = $this->moduleConfig->get('description');
+        $metaDescription = $this->moduleConfig->get('meta_description');
         $instructions = $this->moduleConfig->get('instructions');
 
         $this->document->addStyle('catalog/view/javascript/aw_moonshine_calculator.min.css');
@@ -79,8 +80,10 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
 
         $this->document->setTitle($this->params['title']);
 
-        if ($this->params['description']) {
-            $this->document->setDescription(strip_tags($this->params['description']));
+        if ($metaDescription) {
+            $meta_description = (isset($metaDescription[$languageId]) && $metaDescription[$languageId]) ? $metaDescription[$languageId] : '';
+
+            $this->document->setDescription($meta_description);
         }
 
         $this->params['column_left'] = $this->load->controller('common/column_left');
