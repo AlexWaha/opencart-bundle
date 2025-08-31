@@ -13,8 +13,8 @@
     <link>https://alexwaha.com</link>
     <file path="system/engine/{router,front}.php">
         <operation>
-            <search><![CDATA[public function __construct($registry) {]]></search>
-            <add position="after"><![CDATA[
+            <search><![CDATA[$this->registry = $registry;]]></search>
+            <add position="before"><![CDATA[
                 $autoloadFile = DIR_SYSTEM . 'library/Alexwaha/Autoload.php';
 
                 if (is_file($autoloadFile)) {
