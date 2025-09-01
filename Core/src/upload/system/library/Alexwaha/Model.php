@@ -46,15 +46,15 @@ final class Model
         $json = $this->db->escape(json_encode($data));
 
         if ($moduleId) {
-            $this->db->query("UPDATE `".DB_PREFIX."module`
-             SET `name` = '".$this->db->escape($data['name'])."',
-                 `setting` = '".$json."'
-             WHERE `module_id` = '".$moduleId."'");
+            $this->db->query("UPDATE `" . DB_PREFIX . "module`
+             SET `name` = '" . $this->db->escape($data['name']) . "',
+                 `setting` = '" . $json . "'
+             WHERE `module_id` = '" . $moduleId . "'");
         } else {
-            $this->db->query("INSERT INTO `".DB_PREFIX."module`
-             SET `name` = '".$this->db->escape($data['name'])."',
-                 `code` = '".$this->db->escape($code)."',
-                 `setting` = '".$json."'");
+            $this->db->query("INSERT INTO `" . DB_PREFIX . "module`
+             SET `name` = '" . $this->db->escape($data['name']) . "',
+                 `code` = '" . $this->db->escape($code) . "',
+                 `setting` = '" . $json . "'");
         }
     }
 
@@ -64,7 +64,7 @@ final class Model
      */
     public function getModule($moduleId)
     {
-        $query = $this->db->query("SELECT * FROM `".DB_PREFIX."module` WHERE `module_id` = '".$moduleId."'");
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "module` WHERE `module_id` = '" . $moduleId . "'");
 
         return $query->row ? json_decode($query->row['setting'], true) : [];
     }
@@ -74,11 +74,11 @@ final class Model
      */
     public function createTables()
     {
-        $query = $this->db->query("SHOW TABLES LIKE '".DB_PREFIX."aw_module_config'");
+        $query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "aw_module_config'");
 
         if (!$query->num_rows) {
             $this->db->query("
-                CREATE TABLE IF NOT EXISTS `".DB_PREFIX."aw_module_config` (
+                CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "aw_module_config` (
                     `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                     `code` VARCHAR(255) NOT NULL,
                     `config` JSON NOT NULL,
@@ -96,8 +96,8 @@ final class Model
     public function getConfig($code): ?string
     {
         $query = $this->db->query("SELECT `config`
-         FROM `".DB_PREFIX."aw_module_config`
-         WHERE `code` = '".$this->db->escape($code)."'
+         FROM `" . DB_PREFIX . "aw_module_config`
+         WHERE `code` = '" . $this->db->escape($code) . "'
          LIMIT 1");
 
         return $query->row['config'] ?? null;
@@ -111,18 +111,18 @@ final class Model
     public function setConfig(string $code, string $json): void
     {
         $exists = $this->db->query("SELECT `id`
-             FROM `".DB_PREFIX."aw_module_config`
-             WHERE `code` = '".$this->db->escape($code)."'
+             FROM `" . DB_PREFIX . "aw_module_config`
+             WHERE `code` = '" . $this->db->escape($code) . "'
              LIMIT 1");
 
         if ($exists->num_rows) {
-            $this->db->query("UPDATE `".DB_PREFIX."aw_module_config`
-                 SET `config` = '".$this->db->escape($json)."'
-                 WHERE `code` = '".$this->db->escape($code)."'");
+            $this->db->query("UPDATE `" . DB_PREFIX . "aw_module_config`
+                 SET `config` = '" . $this->db->escape($json) . "'
+                 WHERE `code` = '" . $this->db->escape($code) . "'");
         } else {
-            $this->db->query("INSERT INTO `".DB_PREFIX."aw_module_config`
-                 SET `code` = '".$this->db->escape($code)."',
-                     `config` = '".$this->db->escape($json)."'");
+            $this->db->query("INSERT INTO `" . DB_PREFIX . "aw_module_config`
+                 SET `code` = '" . $this->db->escape($code) . "',
+                     `config` = '" . $this->db->escape($json) . "'");
         }
     }
 
@@ -131,10 +131,10 @@ final class Model
      */
     public function getLanguageCode(): string
     {
-        $query = $this->db->query('SELECT code FROM `'.DB_PREFIX."language` WHERE 
-        `language_id` = '".$this->config->get('config_language_id')."'");
+        $query = $this->db->query('SELECT code FROM `' . DB_PREFIX . "language` WHERE 
+        `language_id` = '" . $this->config->get('config_language_id') . "'");
 
-        return $query->row['code'] ? : '';
+        return $query->row['code'] ?: '';
     }
 
     /**
@@ -142,7 +142,7 @@ final class Model
      */
     public function getLanguages(): array
     {
-        $query = $this->db->query('SELECT * FROM `'.DB_PREFIX."language` WHERE `status` = '1'");
+        $query = $this->db->query('SELECT * FROM `' . DB_PREFIX . "language` WHERE `status` = '1'");
 
         return $query->rows;
     }
@@ -156,27 +156,27 @@ final class Model
      */
     public function setSeoUrls(array $seoUrls, string $entityQuery, int $entityId = 0, bool $isLegacy = false)
     {
-        $queryParam = $entityId ? $entityQuery.'='.$entityId : $entityQuery;
+        $queryParam = $entityId ? $entityQuery . '=' . $entityId : $entityQuery;
 
         $languageId = $this->config->get('config_language_id');
         $defaultStoreId = (int) $this->config->get('config_store_id');
 
         if ($isLegacy) {
             $exists = $this->db->query("SELECT url_alias_id
-             FROM `".DB_PREFIX."url_alias`
-             WHERE query = '".$this->db->escape($queryParam)."'");
+             FROM `" . DB_PREFIX . "url_alias`
+             WHERE query = '" . $this->db->escape($queryParam) . "'");
 
             $seoUrl = $seoUrls[$defaultStoreId][$languageId];
             $keyword = mb_strtolower(trim((string) $seoUrl));
 
             if ($exists->num_rows) {
-                $this->db->query("UPDATE `".DB_PREFIX."url_alias`
-                 SET keyword = '".$this->db->escape($keyword)."'
-                 WHERE query = '".$this->db->escape($queryParam)."'");
+                $this->db->query("UPDATE `" . DB_PREFIX . "url_alias`
+                 SET keyword = '" . $this->db->escape($keyword) . "'
+                 WHERE query = '" . $this->db->escape($queryParam) . "'");
             } else {
-                $this->db->query("INSERT INTO `".DB_PREFIX."url_alias`
-                 SET query = '".$this->db->escape($queryParam)."',
-                     keyword = '".$this->db->escape($keyword)."'");
+                $this->db->query("INSERT INTO `" . DB_PREFIX . "url_alias`
+                 SET query = '" . $this->db->escape($queryParam) . "',
+                     keyword = '" . $this->db->escape($keyword) . "'");
             }
         } else {
             foreach ($seoUrls as $storeId => $languages) {
@@ -185,27 +185,27 @@ final class Model
 
                     $exists = $this->db->query("
                         SELECT seo_url_id
-                        FROM `".DB_PREFIX."seo_url`
-                        WHERE store_id = '".$storeId."'
-                          AND language_id = '".$languageId."'
-                          AND query = '".$this->db->escape($queryParam)."'
+                        FROM `" . DB_PREFIX . "seo_url`
+                        WHERE store_id = '" . $storeId . "'
+                          AND language_id = '" . $languageId . "'
+                          AND query = '" . $this->db->escape($queryParam) . "'
                         LIMIT 1
                     ");
 
                     if ($exists->num_rows) {
                         $this->db->query("
-                            UPDATE `".DB_PREFIX."seo_url`
-                            SET keyword = '".$this->db->escape($keyword)."'
-                            WHERE seo_url_id = '".$exists->row['seo_url_id']."'
+                            UPDATE `" . DB_PREFIX . "seo_url`
+                            SET keyword = '" . $this->db->escape($keyword) . "'
+                            WHERE seo_url_id = '" . $exists->row['seo_url_id'] . "'
                             LIMIT 1
                         ");
                     } else {
                         $this->db->query("
-                            INSERT INTO `".DB_PREFIX."seo_url`
-                            SET store_id   = '".$storeId."',
-                                language_id= '".$languageId."',
-                                query      = '".$this->db->escape($queryParam)."',
-                                keyword    = '".$this->db->escape($keyword)."'
+                            INSERT INTO `" . DB_PREFIX . "seo_url`
+                            SET store_id   = '" . $storeId . "',
+                                language_id= '" . $languageId . "',
+                                query      = '" . $this->db->escape($queryParam) . "',
+                                keyword    = '" . $this->db->escape($keyword) . "'
                         ");
                     }
                 }
@@ -221,19 +221,19 @@ final class Model
      */
     public function getSeoUrls(string $entityQuery, int $entityId = 0, bool $isLegacy = false): array
     {
-        $queryParam = $entityId ? $entityQuery.'='.$entityId : $entityQuery;
+        $queryParam = $entityId ? $entityQuery . '=' . $entityId : $entityQuery;
 
         $defaultStoreId = (int) $this->config->get('config_store_id');
 
         $languages = $this->getLanguages();
 
         if ($isLegacy) {
-            $sql = "SELECT keyword FROM `".DB_PREFIX."url_alias`
-                WHERE query = '".$this->db->escape($queryParam)."'";
+            $sql = "SELECT keyword FROM `" . DB_PREFIX . "url_alias`
+                WHERE query = '" . $this->db->escape($queryParam) . "'";
         } else {
             $sql = "SELECT keyword, language_id, store_id
-                FROM `".DB_PREFIX."seo_url`
-                WHERE query = '".$this->db->escape($queryParam)."'";
+                FROM `" . DB_PREFIX . "seo_url`
+                WHERE query = '" . $this->db->escape($queryParam) . "'";
         }
 
         $query = $this->db->query($sql);
@@ -263,15 +263,15 @@ final class Model
         int $entityId = 0,
         bool $isLegacy = false
     ): bool {
-        $queryParam = $entityId ? $entityQuery.'='.$entityId : $entityQuery;
+        $queryParam = $entityId ? $entityQuery . '=' . $entityId : $entityQuery;
 
         if ($isLegacy) {
-            $sql = "SELECT query FROM `".DB_PREFIX."url_alias` WHERE keyword = '".$this->db->escape($seoUrl)."'";
+            $sql = "SELECT query FROM `" . DB_PREFIX . "url_alias` WHERE keyword = '" . $this->db->escape($seoUrl) . "'";
         } else {
-            $sql = "SELECT query FROM `".DB_PREFIX."seo_url`
-              WHERE keyword = '".$this->db->escape($seoUrl)."'
-              AND store_id = '".$storeId."'
-              AND language_id = '".$languageId."'";
+            $sql = "SELECT query FROM `" . DB_PREFIX . "seo_url`
+              WHERE keyword = '" . $this->db->escape($seoUrl) . "'
+              AND store_id = '" . $storeId . "'
+              AND language_id = '" . $languageId . "'";
         }
 
         $query = $this->db->query($sql);

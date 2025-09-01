@@ -26,10 +26,6 @@ final class Language
 
     private $core;
 
-    /**
-     * @param $registry
-     * @param  string  $code
-     */
     public function __construct($registry, string $code = 'en-gb')
     {
         $this->core = new Core($registry);
@@ -38,7 +34,6 @@ final class Language
     }
 
     /**
-     * @param $key
      * @return mixed
      */
     public function get($key)
@@ -47,8 +42,6 @@ final class Language
     }
 
     /**
-     * @param $key
-     * @param $value
      * @return void
      */
     public function set($key, $value)
@@ -56,17 +49,12 @@ final class Language
         $this->data[$key] = $value;
     }
 
-    /**
-     * @return array
-     */
     public function all(): array
     {
         return $this->data;
     }
 
     /**
-     * @param $filename
-     * @return array
      * @throws Exception
      */
     public function load($filename): array
@@ -94,13 +82,14 @@ final class Language
             require $fileDefault;
         }
 
-        $this->data = array_merge($_, $this->loadSupport());
+        $icons = (new Icon())->getIcons();
+
+        $this->data = array_merge($_, $this->loadSupport(), $icons);
 
         return $this->data;
     }
 
     /**
-     * @return array
      * @throws Exception
      */
     private function loadSupport(): array

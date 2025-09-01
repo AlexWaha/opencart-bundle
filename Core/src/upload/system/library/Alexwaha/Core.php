@@ -2,8 +2,11 @@
 
 /**
  * @author  Alexander Vakhovski (AlexWaha)
+ *
  * @link    https://alexwaha.com
+ *
  * @email   support@alexwaha.com
+ *
  * @license GPLv3
  */
 
@@ -21,9 +24,8 @@ final class Core
 
     public $view;
 
-    /**
-     * @param $registry
-     */
+    public $robots;
+
     public function __construct($registry)
     {
         $this->registry = $registry;
@@ -41,10 +43,6 @@ final class Core
     }
 
     /**
-     * @param  string  $template
-     * @param  array  $data
-     * @param  bool  $isString
-     * @return string
      * @throws Exception
      */
     public function render(string $template, array $data = [], bool $isString = false): string
@@ -52,21 +50,15 @@ final class Core
         return $this->view->render($template, $data, $isString);
     }
 
-    /**
-     * @return int
-     */
     public function isLegacy(): int
     {
-        if (is_file(DIR_SYSTEM.'engine/router.php')) {
+        if (is_file(DIR_SYSTEM . 'engine/router.php')) {
             return false;
-        } elseif (is_file(DIR_SYSTEM.'framework.php')) {
+        } elseif (is_file(DIR_SYSTEM . 'framework.php')) {
             return true;
         }
     }
 
-    /**
-     * @return array
-     */
     public function getToken(): array
     {
         $session = $this->registry->get('session');
@@ -74,13 +66,13 @@ final class Core
         if ($this->isLegacy()) {
             $token = $session->data['token'];
             $tokenData = [
-                'param' => 'token='.$token,
+                'param' => 'token=' . $token,
                 'token' => $token,
             ];
         } else {
             $token = $session->data['user_token'];
             $tokenData = [
-                'param' => 'user_token='.$token,
+                'param' => 'user_token=' . $token,
                 'token' => $token,
             ];
         }
@@ -88,14 +80,26 @@ final class Core
         return $tokenData;
     }
 
-    /**
-     * @return Language
-     */
     public function getLanguage(): Language
     {
         $code = $this->model->getLanguageCode();
 
         return new Language($this->registry, $code);
+    }
+
+    public function setRobots($robots)
+    {
+        $this->robots = $robots;
+    }
+
+    public function getRobots()
+    {
+        return $this->robots;
+    }
+
+    public function getIconsList(): array
+    {
+        return (new Icon())->getIcons();
     }
 
     public function getSeoUrls(string $entityQuery, int $entityId = 0)
@@ -107,7 +111,6 @@ final class Core
     {
         $this->model->setSeoUrls($seoUrls, $entityQuery, $entityId, $this->isLegacy());
     }
-
 
     public function seoUrlExists(
         string $seoUrl,
@@ -196,37 +199,22 @@ final class Core
         return strtr($string, $scheme);
     }
 
-    /**
-     * @param  string  $number
-     * @return string
-     */
     public function prepareNumber(string $number): string
     {
         return preg_replace('/\D/', '', $number);
     }
 
-    /**
-     * @param  string  $code
-     * @param  array  $data
-     * @param  int  $moduleId
-     * @return void
-     */
     public function setModule(string $code, array $data, int $moduleId = 0): void
     {
         $this->model->setModule($code, $data, $moduleId);
     }
 
-    /**
-     * @param  int  $moduleId
-     * @return array
-     */
     public function getModule(int $moduleId): array
     {
         return $this->model->getModule($moduleId);
     }
 
     /**
-     * @param $code
      * @return Config
      */
     public function getConfig($code)
@@ -239,8 +227,6 @@ final class Core
     }
 
     /**
-     * @param  string  $code
-     * @param  array  $data
      * @return void
      */
     public function setConfig(string $code, array $data)
@@ -249,14 +235,11 @@ final class Core
     }
 
     /**
-     * @param  string  $path
-     * @param  bool  $force
-     * @return void
      * @throws Exception
      */
     protected function removeByPath(string $path, bool $force = false): void
     {
-        if (!$force) {
+        if (! $force) {
             throw new Exception("Dangerous deletion method: you must set force=true to delete '{$path}'.");
         }
 
@@ -268,14 +251,12 @@ final class Core
         }
     }
 
-    /**
-     * @param $path
-     * @return void
-     */
     protected function recursiveDelete($path): void
     {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path,
-            RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
+            $path,
+            RecursiveDirectoryIterator::SKIP_DOTS
+        ), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isDir()) {
@@ -287,8 +268,6 @@ final class Core
     }
 
     /**
-     * @param  array  $paths
-     * @return void
      * @throws Exception
      */
     public function removeLegacyFiles(array $paths = []): void
