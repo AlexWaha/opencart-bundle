@@ -82,9 +82,7 @@ final class Language
             require $fileDefault;
         }
 
-        $icons = (new Icon())->getIcons();
-
-        $this->data = array_merge($_, $this->loadSupport(), $icons);
+        $this->data = array_merge($_, $this->loadSupport());
 
         return $this->data;
     }
