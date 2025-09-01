@@ -16,16 +16,12 @@ final class Config
 {
     private $data;
 
-    /**
-     * @param  array  $data
-     */
     public function __construct(array $data = [])
     {
         $this->data = $data;
     }
 
     /**
-     * @param  string  $key
      * @param  null  $default
      * @return mixed
      */
@@ -34,9 +30,6 @@ final class Config
         return $this->data[$key] ?? $default;
     }
 
-    /**
-     * @return array
-     */
     public function all(): array
     {
         return $this->data;

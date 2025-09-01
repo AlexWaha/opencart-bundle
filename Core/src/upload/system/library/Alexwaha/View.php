@@ -12,6 +12,7 @@
 
 namespace Alexwaha;
 
+use Exception;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -19,7 +20,6 @@ use Twig\Error\SyntaxError;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
-use Exception;
 
 final class View
 {
@@ -32,10 +32,6 @@ final class View
     }
 
     /**
-     * @param  string  $template
-     * @param  array  $data
-     * @param  bool  $isString
-     * @return string
      * @throws Exception
      */
     public function render(string $template, array $data = [], bool $isString = false): string
@@ -71,7 +67,7 @@ final class View
 
             $fullPath = $baseDir . $templateFile;
 
-            if (!is_file($fullPath)) {
+            if (! is_file($fullPath)) {
                 $fallbackDir = DIR_TEMPLATE . 'default/template/';
                 $fallbackPath = $fallbackDir . $templateFile;
 

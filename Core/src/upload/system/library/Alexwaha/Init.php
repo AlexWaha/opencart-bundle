@@ -17,7 +17,6 @@ use Exception;
 final class Init
 {
     /**
-     * @param $registry
      * @throws Exception
      */
     public function __construct($registry)
