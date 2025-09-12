@@ -217,13 +217,13 @@ final class Core
     /**
      * @return Config
      */
-    public function getConfig($code)
+    public function getConfig($code): Config
     {
         $result = $this->model->getConfig($code);
 
-        $decoded = json_decode($result, true);
+        $data = $result ? json_decode($result, true) : [];
 
-        return new Config(is_array($decoded) ? $decoded : []);
+        return new Config($data);
     }
 
     /**
