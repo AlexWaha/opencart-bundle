@@ -235,6 +235,14 @@ final class Core
     }
 
     /**
+     * @return void
+     */
+    public function setConfig(string $code, array $data)
+    {
+        $this->model->setConfig($code, json_encode($data));
+    }
+
+    /**
      * @throws Exception
      */
     protected function removeByPath(string $path, bool $force = false): void

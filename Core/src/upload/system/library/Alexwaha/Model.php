@@ -109,6 +109,11 @@ final class Model
         }
     }
 
+    public function removeConfig($code): void
+    {
+        $this->db->query('DELETE FROM `' . DB_PREFIX . "aw_module_config` WHERE `code` = '" . $this->db->escape($code) . "'");
+    }
+
     public function getLanguageCode(): string
     {
         $query = $this->db->query('SELECT code FROM `' . DB_PREFIX . "language` WHERE 
