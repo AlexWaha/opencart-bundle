@@ -226,6 +226,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
+        $this->awCore->removeConfig($this->moduleName);
     }
 
     protected function installPermissions()

@@ -446,6 +446,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('sms_notify');
+        $this->awCore->removeConfig('sms_notify');
 
         if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
