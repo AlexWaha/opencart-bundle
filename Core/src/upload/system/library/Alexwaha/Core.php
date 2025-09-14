@@ -237,9 +237,9 @@ final class Core
     /**
      * @return void
      */
-    public function setConfig(string $code, array $data)
+    public function removeConfig(string $code)
     {
-        $this->model->setConfig($code, json_encode($data));
+        $this->model->removeConfig($code);
     }
 
     /**
