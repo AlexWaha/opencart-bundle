@@ -10,19 +10,19 @@
 
 class ControllerExtensionModuleAwAgeVerification extends Controller
 {
-    private $moduleName = 'aw_age_verification';
+    private string $moduleName = 'aw_age_verification';
 
-    private $moduleConfig;
+    private \Alexwaha\Config $moduleConfig;
 
-    private $language;
+    private \Alexwaha\Language $language;
 
-    private $error = [];
+    private array $error = [];
 
-    private $routeExtension;
+    private string $routeExtension;
 
-    private $params;
+    private array $params;
 
-    private $tokenData;
+    private array $tokenData;
 
     public function __construct($registry)
     {
@@ -102,15 +102,7 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
     public function store()
     {
         if ($this->request->server['REQUEST_METHOD'] === 'POST' && $this->validate()) {
-            $configData = [
-                'status' => $this->request->post['status'] ?? 0,
-                'title' => $this->request->post['title'] ?? [],
-                'description' => $this->request->post['description'] ?? [],
-                'cookie_days' => $this->request->post['cookie_days'] ?? 30,
-                'redirect_url' => $this->request->post['redirect_url'] ?? 'https://google.com'
-            ];
-
-            $this->awCore->setConfig($this->moduleName, $configData);
+            $this->awCore->setConfig($this->moduleName, $this->request->post);
 
             $this->session->data['success'] = $this->language->get('text_success');
 

@@ -10,13 +10,13 @@
 
 class ControllerExtensionModuleAwAgeVerification extends Controller
 {
-    private $moduleName = 'aw_age_verification';
+    private string $moduleName = 'aw_age_verification';
 
-    private $moduleConfig;
+    private \Alexwaha\Language $language;
 
-    private $params;
+    private \Alexwaha\Config $moduleConfig;
 
-    private $language;
+    private array $params;
 
     public function __construct($registry)
     {
@@ -29,7 +29,7 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
 
     public function index()
     {
-        $this->document->addStyle('catalog/view/javascript/' . $this->moduleName . '.min.css');
+        $this->document->addStyle('catalog/view/javascript/' . $this->moduleName . '.css');
         $this->load->language('extension/module/' . $this->moduleName);
 
         $languageId = $this->config->get('config_language_id');
@@ -52,9 +52,6 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
             $this->params['verified'] = false;
         }
 
-        $this->params['redirect_url'] = $this->moduleConfig->get('redirect_url') ?? 'https://google.com';
-        $this->params['cookie_days'] = $this->moduleConfig->get('cookie_days') ?? 30;
-
         $this->params['action_confirm'] = $this->url->link('extension/module/' . $this->moduleName . '/confirm');
         $this->params['action_decline'] = $this->url->link('extension/module/' . $this->moduleName . '/decline');
 
@@ -65,8 +62,7 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
     {
         $json = [];
 
-        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
-        $cookieDays = $this->moduleConfig->get('cookie_days') ?? 30;
+        $cookieDays = $this->moduleConfig->get('cookie_days') ?: 30;
 
         setcookie(
             $this->moduleName,
@@ -86,7 +82,7 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
     {
         $json = [];
 
-        $json['redirect'] = $this->moduleConfig->get('redirect_url') ?? 'https://google.com';
+        $json['redirect'] = $this->moduleConfig->get('redirect_url') ?: 'https://google.com';
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
