@@ -9,11 +9,11 @@
 
 class ControllerExtensionAwPositionAwContentBottom extends Controller
 {
-    private $layoutRoute = 'aw_global_layout';
+    private string $layoutRoute = 'aw_global_layout';
 
-    private $moduleName = 'aw_content_bottom';
+    private string $moduleName = 'aw_content_bottom';
 
-    private $params;
+    private array $params;
 
     public function index()
     {

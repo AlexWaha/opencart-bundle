@@ -9,11 +9,11 @@
 
 class ControllerExtensionAwPositionAwContentTop extends Controller
 {
-    private $layoutRoute = 'aw_global_layout';
+    private string $layoutRoute = 'aw_global_layout';
 
-    private $moduleName = 'aw_content_top';
+    private string $moduleName = 'aw_content_top';
 
-    private $params;
+    private array $params;
 
     public function index()
     {

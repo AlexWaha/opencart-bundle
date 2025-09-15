@@ -9,17 +9,17 @@
 
 class ControllerExtensionModuleAwGlobalLayout extends Controller
 {
-    private $moduleName = 'aw_global_layout';
+    private string $moduleName = 'aw_global_layout';
 
-    private $language;
+    private \Alexwaha\Language $language;
 
-    private $error = [];
+    private array $error = [];
 
-    private $routeExtension;
+    private string $routeExtension;
 
-    private $params;
+    private array $params;
 
-    private $tokenData;
+    private array $tokenData;
 
     public function __construct($registry)
     {
