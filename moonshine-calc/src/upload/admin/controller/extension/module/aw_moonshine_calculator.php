@@ -11,12 +11,12 @@
 
 class ControllerExtensionModuleAwMoonshineCalculator extends Controller
 {
-    private $moduleName = 'aw_moonshine_calculator';
-    private $language;
-    private $error = [];
-    private $routeExtension;
-    private $params;
-    private $tokenData;
+    private string $moduleName = 'aw_moonshine_calculator';
+    private \Alexwaha\Language $language;
+    private array $error = [];
+    private string $routeExtension;
+    private array $params;
+    private array $tokenData;
 
     public function __construct($registry)
     {
@@ -24,6 +24,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
 
         $this->language = $this->awCore->getLanguage();
         $this->tokenData = $this->awCore->getToken();
+        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
@@ -86,14 +87,12 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
             ];
         }
 
-        $moduleConfig = $this->awCore->getConfig($this->moduleName);
-
-        $this->params['status'] = $this->request->post['status'] ?? $moduleConfig->get('status') ?? false;
-        $this->params['title'] = $this->request->post['title'] ?? $moduleConfig->get('title') ?? [];
-        $this->params['h1'] = $this->request->post['h1'] ?? $moduleConfig->get('h1') ?? [];
-        $this->params['meta_description'] = $this->request->post['meta_description'] ?? $moduleConfig->get('meta_description') ?? [];
-        $this->params['description'] = $this->request->post['description'] ?? $moduleConfig->get('description') ?? [];
-        $this->params['instructions'] = $this->request->post['instructions'] ?? $moduleConfig->get('instructions') ?? [];
+        $this->params['status'] = $this->moduleConfig->get('status', false);
+        $this->params['title'] = $this->moduleConfig->get('title', []);
+        $this->params['h1'] = $this->moduleConfig->get('h1', []);
+        $this->params['meta_description'] = $this->moduleConfig->get('meta_description', []);
+        $this->params['description'] = $this->moduleConfig->get('description', []);
+        $this->params['instructions'] = $this->moduleConfig->get('instructions', []);
         $this->params['seo_url'] = $this->awCore->getSeoUrls('extension/module/' . $this->moduleName) ?? [];
 
         $this->params['breadcrumbs'] = [
@@ -121,17 +120,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
     public function store()
     {
         if ($this->request->server['REQUEST_METHOD'] === 'POST' && $this->validate()) {
-
-            $configData = [
-                'status' => $this->request->post['status'] ?? 0,
-                'title' => $this->request->post['title'] ?? [],
-                'h1' => $this->request->post['h1'] ?? [],
-                'meta_description' => $this->request->post['meta_description'] ?? [],
-                'description' => $this->request->post['description'] ?? [],
-                'instructions' => $this->request->post['instructions'] ?? []
-            ];
-
-            $this->awCore->setConfig($this->moduleName, $configData);
+            $this->awCore->setConfig($this->moduleName, $this->request->post);
 
             $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/module/' . $this->moduleName);
 

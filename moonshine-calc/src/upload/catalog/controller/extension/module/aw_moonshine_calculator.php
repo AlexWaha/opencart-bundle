@@ -11,14 +11,15 @@
 
 class ControllerExtensionModuleAwMoonshineCalculator extends Controller
 {
-    private $moduleName = 'aw_moonshine_calculator';
-    private $params;
-    private $language;
-    private $moduleConfig;
-    private $error = [];
+    private string $moduleName = 'aw_moonshine_calculator';
+    private array $params;
+    private \Alexwaha\Language $language;
+    private \Alexwaha\Config $moduleConfig;
+    private array $error = [];
 
     /**
      * @param $registry
+     * @throws Exception
      */
     public function __construct($registry)
     {
@@ -45,7 +46,6 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
         $instructions = $this->moduleConfig->get('instructions');
 
         $this->document->addStyle('catalog/view/javascript/aw_moonshine_calculator.min.css');
-
 
         $this->params['title'] = (isset($title[$languageId]) && $title[$languageId]) ? $title[$languageId] : $this->params['text_calculator_title'];
         $this->params['h1'] = (isset($h1[$languageId]) && $h1[$languageId]) ? $h1[$languageId] : $this->params['text_calculator_title'];
