@@ -15,16 +15,21 @@ namespace Alexwaha;
 use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Registry;
+use Request;
+use FilesystemIterator;
 
 final class Core
 {
-    private $registry;
+    private Registry $registry;
 
-    public $model;
+    public Model $model;
 
-    public $view;
+    public View $view;
 
-    public $robots;
+    public Request $request;
+
+    public string $robots;
 
     public function __construct($registry)
     {
@@ -32,6 +37,7 @@ final class Core
         $this->model = new Model($registry);
         $this->view = new View($registry);
         $this->model->ensureSchema();
+        $this->request = $registry->get('request');
     }
 
     /**
@@ -87,7 +93,7 @@ final class Core
         return new Language($this->registry, $code);
     }
 
-    public function setRobots($robots)
+    public function setRobots($robots): void
     {
         $this->robots = $robots;
     }
@@ -215,15 +221,15 @@ final class Core
     }
 
     /**
+     * @param $code
      * @return Config
      */
     public function getConfig($code): Config
     {
         $result = $this->model->getConfig($code);
+        $data   = $result ? json_decode($result, true) : [];
 
-        $data = $result ? json_decode($result, true) : [];
-
-        return new Config($data);
+        return new Config($data, $this->request->post ?? []);
     }
 
     /**
@@ -263,7 +269,7 @@ final class Core
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
             $path,
-            RecursiveDirectoryIterator::SKIP_DOTS
+            FilesystemIterator::SKIP_DOTS
         ), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $fileinfo) {

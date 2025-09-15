@@ -14,19 +14,21 @@ namespace Alexwaha;
 
 final class Config
 {
-    private $data;
+    private array $data;
+    private array $post;
 
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], array $post = [])
     {
         $this->data = $data;
+        $this->post = $post;
     }
 
-    /**
-     * @param  null  $default
-     * @return mixed
-     */
     public function get(string $key, $default = null)
     {
+        if (array_key_exists($key, $this->post)) {
+            return $this->post[$key];
+        }
+
         return $this->data[$key] ?? $default;
     }
 

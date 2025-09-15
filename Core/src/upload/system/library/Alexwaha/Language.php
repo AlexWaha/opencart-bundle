@@ -16,15 +16,15 @@ use Exception;
 
 final class Language
 {
-    private $default = 'en-gb';
+    private string $default = 'en-gb';
 
-    private $code;
+    private string $code;
 
-    private $directory;
+    private string $directory;
 
-    private $data = [];
+    private array $data = [];
 
-    private $core;
+    private Core $core;
 
     public function __construct($registry, string $code = 'en-gb')
     {

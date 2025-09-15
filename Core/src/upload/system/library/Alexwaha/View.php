@@ -20,10 +20,11 @@ use Twig\Error\SyntaxError;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
+use Config;
 
 final class View
 {
-    private $config;
+    private Config $config;
 
     public function __construct($registry)
     {

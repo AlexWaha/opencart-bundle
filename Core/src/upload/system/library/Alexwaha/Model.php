@@ -12,13 +12,16 @@
 
 namespace Alexwaha;
 
+use DB;
+use Config;
+
 final class Model
 {
-    private $db;
+    private DB $db;
 
-    private $config;
+    private Config $config;
 
-    private static $schemaReady = false;
+    private static bool $schemaReady = false;
 
     public function __construct($registry)
     {
