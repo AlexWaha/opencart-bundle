@@ -11,10 +11,19 @@
  */
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
+    private string $moduleName = 'aw_sms_notify';
+
+    private \Alexwaha\Config $moduleConfig;
+
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+
+        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
+    }
+
     public function order(&$route, &$args)
     {
-        $moduleConfig = $this->awCore->getConfig('aw_sms_notify');
-
         $order_id = $args[0] ?? 0;
 
         $order_status_id = $args[1] ?? 0;
@@ -25,7 +34,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $admin_order = $args[6] ?? 0;
 
-        $this->load->model('extension/module/aw_sms_notify');
+        $this->load->model('extension/module/' . $this->moduleName);
         $this->load->model('checkout/order');
 
         $order_info = $this->model_checkout_order->getOrder($order_id);
@@ -37,7 +46,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
             if ($order_status_id && $admin_order && $sendsms) {
                 $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_id, $order_status_id, $comment, $sendsms);
-            } elseif ($order_status_id && ! $admin_order && $moduleConfig->get('sms_notify_force')) {
+            } elseif ($order_status_id && ! $admin_order && $this->moduleConfig->get('sms_notify_force')) {
                 $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_info['order_id'], $order_status_id, $comment, true);
             }
         }
@@ -53,7 +62,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $password = '';
         }
 
-        $this->load->model('extension/module/aw_sms_notify');
+        $this->load->model('extension/module/' . $this->moduleName);
 
         $this->model_extension_module_aw_sms_notify->sendRegisterSms($customer_id, $password);
     }
@@ -62,7 +71,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     {
         $product_id = $args[0] ?? 0;
 
-        $this->load->model('extension/module/aw_sms_notify');
+        $this->load->model('extension/module/' . $this->moduleName);
 
         $this->model_extension_module_aw_sms_notify->sendReviewsSms($product_id);
     }

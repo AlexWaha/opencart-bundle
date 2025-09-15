@@ -200,6 +200,9 @@
                                     <td>{{ entry_admin_template }}</td>
                                     <td>
                                         <textarea name="sms_notify_admin_template" id="input-admin-template" class="form-control" cols="80" rows="3">{{ admin_template ? admin_template : '' }}</textarea>
+                                        {% if error.admin_template %}
+                                            <div class="text-danger">{{ error.admin_template }}</div>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
@@ -213,6 +216,9 @@
                                             </div>
                                             <div class="col-sm-8">
                                                 <textarea name="sms_notify_reviews_template" id="input-reviews-template" class="form-control" cols="80" rows="3">{{ reviews_template ? reviews_template : '' }}</textarea>
+                                                {% if error.reviews_template %}
+                                                    <div class="text-danger">{{ error.reviews_template }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </td>
@@ -240,6 +246,9 @@
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
                                                         <textarea name="sms_notify_register_template[{{ language.language_id }}]" id="input-register-template-{{ language.language_id }}" class="form-control" cols="80" rows="2">{{ register_template ? register_template[language.language_id] : '' }}</textarea>
+                                                        {% if error.register_template[language.language_id] %}
+                                                            <div class="text-danger">{{ error.register_template[language.language_id] }}</div>
+                                                        {% endif %}
                                                     </div>
                                                 {% endfor %}
                                             </div>
@@ -261,6 +270,9 @@
                                                 <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
                                                 <textarea name="sms_notify_client_template[{{ language.language_id }}]" id="input-client-template-{{ language.language_id }}" class="form-control" cols="80" rows="2">{{ client_template ? client_template[language.language_id] : '' }}</textarea>
                                             </div>
+                                            {% if error.client_template[language.language_id] %}
+                                                <div class="text-danger">{{ error.client_template[language.language_id] }}</div>
+                                            {% endif %}
                                         {% endfor %}
                                     </td>
                                 </tr>
@@ -380,6 +392,9 @@
                                         <label class="col-sm-2 control-label" for="input-viber-sender">{{ entry_viber_sender }}</label>
                                         <div class="col-sm-10">
                                             <input type="text" name="sms_notify_viber_sender" value="{{ viber_sender }}" placeholder="{{ entry_viber_sender }}" id="input-viber-sender" class="form-control"/>
+                                            {% if error.viber_sender %}
+                                                <div class="text-danger">{{ error.viber_sender }}</div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -434,6 +449,9 @@
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
                                                         <textarea name="sms_notify_client_viber_template[{{ language.language_id }}]" class="form-control" cols="80" rows="2">{{ client_viber_template ? client_viber_template[language.language_id] : '' }}</textarea>
+                                                        {% if error.client_viber_template[language.language_id] %}
+                                                            <div class="text-danger">{{ error.client_viber_template[language.language_id] }}</div>
+                                                        {% endif %}
                                                     </div>
                                                 {% endfor %}
                                             </td>
@@ -695,7 +713,7 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="tab-gate-setting">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" for="input-template">{{ entry_sms_gatename }}</label>
                                 <div class="col-sm-10">
                                     <select name="sms_notify_gatename" id="input-template" class="form-control">
@@ -707,12 +725,18 @@
                                             {% endif %}
                                         {% endfor %}
                                     </select>
+                                    {% if error.gatename %}
+                                        <div class="text-danger">{{ error.gatename }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" for="input-sms-notify-from"><span data-toggle="tooltip" title="{{ help_sms_from }}">{{ entry_sms_from }}</span></label>
                                 <div class="col-sm-10">
                                     <input type="text" name="sms_notify_from" value="{{ sms_notify_from }}" placeholder="{{ entry_sms_from }}" id="input-sms-notify-from" class="form-control"/>
+                                    {% if error.from %}
+                                        <div class="text-danger">{{ error.from }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="form-group">
@@ -727,10 +751,13 @@
                                     <textarea name="sms_notify_copy" rows="5" placeholder="{{ entry_sms_copy }}" id="input-sms-notify-copy" class="form-control">{{ sms_notify_copy }}</textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" for="input-sms-gate-username">{{ entry_sms_gate_username }}</label>
                                 <div class="col-sm-10">
                                     <input type="text" name="sms_notify_gate_username" value="{{ sms_notify_gate_username }}" placeholder="{{ entry_sms_gate_username }}" id="input-sms-gate-username" class="form-control"/>
+                                    {% if error.username %}
+                                        <div class="text-danger">{{ error.username }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="form-group">
@@ -746,6 +773,9 @@
                                     <label class="col-sm-2 control-label" for="input-sms-log-file">{{ entry_sms_notify_log_filename }}</label>
                                     <div class="col-sm-10">
                                         <input type="text" name="sms_notify_log_filename" value="{{ sms_notify_log_filename }}" placeholder="{{ entry_sms_notify_log_filename }}" id="input-sms-log-file" class="form-control"/>
+                                        {% if error.log_filename %}
+                                            <div class="text-danger">{{ error.log_filename }}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="form-group">

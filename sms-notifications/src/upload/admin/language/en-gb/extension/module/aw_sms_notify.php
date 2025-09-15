@@ -132,8 +132,20 @@ $_['tag_lastname'] = 'Customer Lastname';
 $_['tag_track_no'] = 'Tracking number (if applicable)';
 
 // Error
-$_['error_permission'] = 'Warning: You do not have permission to modify this module!';
-$_['error_sms_setting'] = 'Error: Please save sms gate settings first!';
-$_['error_sms'] = 'Error: Sms not send!';
-$_['error_warning'] = 'Attention: Log file %s size %s!';
-$_['error_log_file'] = 'Warning: Log file is not exists!';
+$_['error_permission'] = 'You do not have permission to manage this module!';
+$_['error_sms_setting'] = 'Error: Please configure the SMS gateway settings first!';
+$_['error_sms'] = 'Error: SMS was not sent!';
+$_['error_warning'] = 'Warning: Please carefully check the form for errors!';
+$_['error_log_size'] = 'Warning: Log file %s takes up %s!';
+$_['error_log_file'] = 'Error: Log file does not exist!';
+
+$_['error_log_filename'] = 'Error: Log filename is not specified!';
+$_['error_gatename'] = 'Error: Gateway is not selected!';
+$_['error_from'] = 'Error: Sender alpha name is not specified!';
+$_['error_username'] = 'Error: SMS gateway login (api_id) is not specified!';
+$_['error_admin_template'] = 'Error: Sending SMS to admin on order is enabled, but SMS template is not specified!';
+$_['error_reviews_template'] = 'Error: Sending SMS to admin on reviews is enabled, but SMS template is not specified!';
+$_['error_client_template'] = 'Error: Sending SMS to customer on order is enabled, but SMS template is not specified!';
+$_['error_register_template'] = 'Error: Sending SMS to customer on registration is enabled, but SMS template is not specified!';
+$_['error_viber_sender'] = 'Error: Viber sender name is not specified!';
+$_['error_client_viber_template'] = 'Error: Sending Viber message to customer on order is enabled, but SMS template is not specified!';

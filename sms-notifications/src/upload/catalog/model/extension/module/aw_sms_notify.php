@@ -14,9 +14,9 @@ use Alexwaha\SmsDispatcher;
 
 class ModelExtensionModuleAwSmsNotify extends Model
 {
-    private $moduleName = 'aw_sms_notify';
+    private string $moduleName = 'aw_sms_notify';
 
-    private $moduleConfig;
+    private \Alexwaha\Config $moduleConfig;
 
     public function __construct($registry)
     {
@@ -24,7 +24,6 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
         $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
     }
-
     public function send($data)
     {
         if (isset($data['phone']) && $data['phone']) {

@@ -14,13 +14,13 @@ use Alexwaha\SmsDispatcher;
 
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
-    private $moduleName = 'aw_sms_notify';
-    private $moduleConfig;
-    private $language;
-    private $error = [];
-    private $routeExtension;
-    private $params;
-    private $tokenData;
+    private string $moduleName = 'aw_sms_notify';
+    private \Alexwaha\Config $moduleConfig;
+    private \Alexwaha\Language $language;
+    private array $error = [];
+    private string $routeExtension;
+    private array $params;
+    private array $tokenData;
 
     public function __construct($registry)
     {
@@ -79,45 +79,45 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $this->params['sms_gatenames'][] = basename($file, '.php');
         }
 
-        $this->params['sms_notify_gatename'] = $this->moduleConfig->get('sms_notify_gatename');
-        $this->params['sms_notify_to'] = $this->moduleConfig->get('sms_notify_to');
-        $this->params['sms_notify_from'] = $this->moduleConfig->get('sms_notify_from');
-        $this->params['sms_notify_gate_username'] = $this->moduleConfig->get('sms_notify_gate_username');
-        $this->params['sms_notify_gate_password'] = $this->moduleConfig->get('sms_notify_gate_password');
-        $this->params['sms_notify_copy'] = $this->moduleConfig->get('sms_notify_copy');
-        $this->params['admin_alert'] = $this->moduleConfig->get('sms_notify_admin_alert');
-        $this->params['client_alert'] = $this->moduleConfig->get('sms_notify_client_alert');
-        $this->params['register_alert'] = $this->moduleConfig->get('sms_notify_register_alert');
-        $this->params['order_alert'] = $this->moduleConfig->get('sms_notify_order_alert');
-        $this->params['reviews'] = $this->moduleConfig->get('sms_notify_reviews');
-        $this->params['translit'] = $this->moduleConfig->get('sms_notify_translit') ?? false;
-        $this->params['force'] = $this->moduleConfig->get('sms_notify_force');
-        $this->params['admin_template'] = $this->moduleConfig->get('sms_notify_admin_template');
-        $this->params['client_template'] = $this->moduleConfig->get('sms_notify_client_template');
-        $this->params['register_template'] = $this->moduleConfig->get('sms_notify_register_template') ?? [];
-        $this->params['reviews_template'] = $this->moduleConfig->get('sms_notify_reviews_template');
-        $this->params['sms_payment'] = $this->moduleConfig->get('sms_notify_payment') ?? [];
-        $this->params['payment_template'] = $this->moduleConfig->get('sms_notify_payment_template') ?? [];
-        $this->params['sms_customer_group'] = $this->moduleConfig->get('sms_notify_customer_group') ?? [];
-        $this->params['viber_alert'] = $this->moduleConfig->get('sms_notify_viber_alert');
-        $this->params['viber_sender'] = $this->moduleConfig->get('sms_notify_viber_sender');
-        $this->params['viber_ttl'] = $this->moduleConfig->get('sms_notify_viber_ttl') ?? '3600';
-        $this->params['viber_caption'] = $this->moduleConfig->get('sms_notify_viber_caption');
-        $this->params['viber_url'] = $this->moduleConfig->get('sms_notify_viber_url');
-        $this->params['width'] = $this->moduleConfig->get('sms_notify_viber_image_width') ?? '400';
-        $this->params['height'] = $this->moduleConfig->get('sms_notify_viber_image_height') ?? '400';
-        $this->params['client_viber_template'] = $this->moduleConfig->get('sms_notify_client_viber_template');
-        $this->params['payment_viber_template'] = $this->moduleConfig->get('sms_notify_payment_viber_template');
-        $this->params['order_viber_template'] = $this->moduleConfig->get('sms_notify_viber_template') ?? [];
+        $this->params['sms_notify_gatename'] = $this->moduleConfig->get('sms_notify_gatename', '');
+        $this->params['sms_notify_to'] = $this->moduleConfig->get('sms_notify_to', '');
+        $this->params['sms_notify_from'] = $this->moduleConfig->get('sms_notify_from', '');
+        $this->params['sms_notify_gate_username'] = $this->moduleConfig->get('sms_notify_gate_username', '');
+        $this->params['sms_notify_gate_password'] = $this->moduleConfig->get('sms_notify_gate_password', '');
+        $this->params['sms_notify_copy'] = $this->moduleConfig->get('sms_notify_copy', '');
+        $this->params['admin_alert'] = $this->moduleConfig->get('sms_notify_admin_alert', false);
+        $this->params['client_alert'] = $this->moduleConfig->get('sms_notify_client_alert', false);
+        $this->params['register_alert'] = $this->moduleConfig->get('sms_notify_register_alert', false);
+        $this->params['order_alert'] = $this->moduleConfig->get('sms_notify_order_alert', false);
+        $this->params['reviews'] = $this->moduleConfig->get('sms_notify_reviews', false);
+        $this->params['translit'] = $this->moduleConfig->get('sms_notify_translit', false);
+        $this->params['force'] = $this->moduleConfig->get('sms_notify_force', false);
+        $this->params['admin_template'] = $this->moduleConfig->get('sms_notify_admin_template', '');
+        $this->params['client_template'] = $this->moduleConfig->get('sms_notify_client_template', []);
+        $this->params['register_template'] = $this->moduleConfig->get('sms_notify_register_template', []);
+        $this->params['reviews_template'] = $this->moduleConfig->get('sms_notify_reviews_template', '');
+        $this->params['sms_payment'] = $this->moduleConfig->get('sms_notify_payment', []);
+        $this->params['payment_template'] = $this->moduleConfig->get('sms_notify_payment_template', []);
+        $this->params['sms_customer_group'] = $this->moduleConfig->get('sms_notify_customer_group', []);
+        $this->params['viber_alert'] = $this->moduleConfig->get('sms_notify_viber_alert', false);
+        $this->params['viber_sender'] = $this->moduleConfig->get('sms_notify_viber_sender', '');
+        $this->params['viber_ttl'] = $this->moduleConfig->get('sms_notify_viber_ttl', '3600');
+        $this->params['viber_caption'] = $this->moduleConfig->get('sms_notify_viber_caption', '');
+        $this->params['viber_url'] = $this->moduleConfig->get('sms_notify_viber_url', '');
+        $this->params['width'] = $this->moduleConfig->get('sms_notify_viber_image_width', '400');
+        $this->params['height'] = $this->moduleConfig->get('sms_notify_viber_image_height', '400');
+        $this->params['client_viber_template'] = $this->moduleConfig->get('sms_notify_client_viber_template', []);
+        $this->params['payment_viber_template'] = $this->moduleConfig->get('sms_notify_payment_viber_template', []);
+        $this->params['order_viber_template'] = $this->moduleConfig->get('sms_notify_viber_template', []);
         $this->params['sms_template'] = html_entity_decode(
-            $this->moduleConfig->get('sms_notify_sms_template'),
+            $this->moduleConfig->get('sms_notify_sms_template', ''),
             ENT_QUOTES,
             'UTF-8'
         );
-        $this->params['order_status_template'] = $this->moduleConfig->get('sms_notify_status_template') ?? [];
-        $this->params['sms_order_status'] = $this->moduleConfig->get('sms_notify_order_status') ?? [];
-        $this->params['sms_notify_log'] = $this->moduleConfig->get('sms_notify_log');
-        $this->params['sms_notify_log_filename'] = $this->moduleConfig->get('sms_notify_log_filename') ?? $this->moduleName;
+        $this->params['order_status_template'] = $this->moduleConfig->get('sms_notify_status_template', []);
+        $this->params['sms_order_status'] = $this->moduleConfig->get('sms_notify_order_status', []);
+        $this->params['sms_notify_log'] = $this->moduleConfig->get('sms_notify_log', true);
+        $this->params['sms_notify_log_filename'] = $this->moduleConfig->get('sms_notify_log_filename', $this->moduleName);
 
         $this->params['payments'] = [];
 
@@ -134,7 +134,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->params['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);
 
-        $image = $this->moduleConfig->get('sms_notify_viber_image');
+        $image = $this->moduleConfig->get('sms_notify_viber_image', '');
 
         if ($image && is_file(DIR_IMAGE . $image)) {
             $this->params['viber_thumb'] = $this->model_tool_image->resize($image, 100, 100);
@@ -187,7 +187,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
                     }
 
                     $this->params['error_warning'] = sprintf(
-                        $this->language->get('error_warning'),
+                        $this->language->get('error_log_size'),
                         basename($logFilePath),
                         round(substr($size, 0, strpos($size, '.') + 4), 2) . $suffix[$i]
                     );
@@ -239,12 +239,12 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params['sendMessage'] = $this->url->link('extension/module/' . $this->moduleName . '/sendMessage', $this->tokenData['param'] . '&order_id=' . $order_id, true);
 
         $this->params['sms_template'] = html_entity_decode(
-            $this->moduleConfig->get('sms_notify_sms_template'),
+            $this->moduleConfig->get('sms_notify_sms_template', ''),
             ENT_QUOTES,
             'UTF-8'
         );
 
-        $this->params['force'] = $this->moduleConfig->get('sms_notify_force');
+        $this->params['force'] = $this->moduleConfig->get('sms_notify_force', false);
 
         return $this->awCore->render('extension/module/' . $this->moduleName . '_info', $this->params);
     }
@@ -368,7 +368,78 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
-        return ! $this->error;
+        if (isset($this->request->post['sms_notify_log_filename']) && !$this->request->post['sms_notify_log_filename']) {
+            $this->error['log_filename'] = $this->language->get('error_log_filename');
+        }
+
+        if (isset($this->request->post['sms_notify_gatename']) && !$this->request->post['sms_notify_gatename']) {
+            $this->error['gatename'] = $this->language->get('error_gatename');
+        }
+
+        if (isset($this->request->post['sms_notify_from']) && !$this->request->post['sms_notify_from']) {
+            $this->error['from'] = $this->language->get('error_from');
+        }
+
+        if (isset($this->request->post['sms_notify_gate_username']) && !$this->request->post['sms_notify_gate_username']) {
+            $this->error['username'] = $this->language->get('error_username');
+        }
+
+        if ((isset($this->request->post['sms_notify_admin_alert']) && $this->request->post['sms_notify_admin_alert'])
+            && isset($this->request->post['sms_notify_admin_template'])) {
+            if ((utf8_strlen(trim($this->request->post['sms_notify_admin_template'])) < 3)) {
+                $this->error['admin_template'] = $this->language->get('error_admin_template');
+            }
+        }
+
+        if ((isset($this->request->post['sms_notify_reviews']) && $this->request->post['sms_notify_reviews'])
+            && isset($this->request->post['sms_notify_reviews_template'])) {
+            if ((utf8_strlen(trim($this->request->post['sms_notify_reviews_template'])) < 3)) {
+                $this->error['reviews_template'] = $this->language->get('error_reviews_template');
+            }
+        }
+
+        if ((isset($this->request->post['sms_notify_client_alert']) && $this->request->post['sms_notify_client_alert'])) {
+            if (isset($this->request->post['sms_notify_client_template'])) {
+                foreach ($this->request->post['sms_notify_client_template'] as $languageId => $value) {
+                    if ((utf8_strlen(trim($value)) < 3)) {
+                        $this->error['client_template'][$languageId] = $this->language->get('error_client_template');
+                    }
+                }
+            }
+        }
+
+        if ((isset($this->request->post['sms_notify_register_alert']) && $this->request->post['sms_notify_register_alert'])) {
+            if (isset($this->request->post['sms_notify_register_template'])) {
+                foreach ($this->request->post['sms_notify_register_template'] as $languageId => $value) {
+                    if ((utf8_strlen(trim($value)) < 3)) {
+                        $this->error['register_template'][$languageId] = $this->language->get('error_register_template');
+                    }
+                }
+            }
+        }
+
+        if ((isset($this->request->post['sms_notify_viber_alert']) && $this->request->post['sms_notify_viber_alert'])
+            && isset($this->request->post['sms_notify_viber_sender'])) {
+            if ((utf8_strlen(trim($this->request->post['sms_notify_viber_sender'])) < 3)) {
+                $this->error['viber_sender'] = $this->language->get('error_viber_sender');
+            }
+        }
+
+        if ((isset($this->request->post['sms_notify_viber_alert']) && $this->request->post['sms_notify_viber_alert'])) {
+            if (isset($this->request->post['sms_notify_client_viber_template'])) {
+                foreach ($this->request->post['sms_notify_client_viber_template'] as $languageId => $value) {
+                    if ((utf8_strlen(trim($value)) < 3)) {
+                        $this->error['client_viber_template'][$languageId] = $this->language->get('error_client_viber_template');
+                    }
+                }
+            }
+        }
+
+        if ($this->error && !isset($this->error['warning'])) {
+            $this->error['warning'] = $this->language->get('error_warning');
+        }
+
+        return !$this->error;
     }
 
     /**
@@ -446,7 +517,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('sms_notify');
-        $this->awCore->removeConfig('sms_notify');
+        $this->awCore->removeConfig($this->moduleName);
 
         if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
