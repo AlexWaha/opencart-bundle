@@ -9,12 +9,12 @@
 
 class ControllerExtensionModuleAwLandingLinks extends Controller
 {
-    private $moduleName = 'aw_landing_links';
-    private $language;
-    private $error = [];
-    private $routeExtension;
-    private $params;
-    private $tokenData;
+    private string $moduleName = 'aw_landing_links';
+    private \Alexwaha\Language $language;
+    private array $error = [];
+    private string $routeExtension;
+    private array $params;
+    private array $tokenData;
 
     public function __construct($registry)
     {

@@ -9,8 +9,7 @@
 
 class ControllerExtensionModuleAwLandingLinks extends Controller
 {
-    private $moduleName = 'aw_landing_links';
-    private $moduleConfig;
+    private string $moduleName = 'aw_landing_links';
     private $params;
     private $language;
 
@@ -19,7 +18,6 @@ class ControllerExtensionModuleAwLandingLinks extends Controller
         parent::__construct($registry);
 
         $this->language = $this->awCore->getLanguage();
-        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
     }
 

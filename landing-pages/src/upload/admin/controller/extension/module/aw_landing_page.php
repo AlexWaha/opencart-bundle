@@ -9,17 +9,17 @@
 
 class ControllerExtensionModuleAwLandingPage extends Controller
 {
-    private $moduleName = 'aw_landing_page';
+    private string $moduleName = 'aw_landing_page';
 
-    private $language;
+    private \Alexwaha\Language $language;
 
-    private $error = [];
+    private array $error = [];
 
-    private $routeExtension;
+    private string $routeExtension;
 
-    private $params;
+    private array $params;
 
-    private $tokenData;
+    private array $tokenData;
 
     public function __construct($registry)
     {
