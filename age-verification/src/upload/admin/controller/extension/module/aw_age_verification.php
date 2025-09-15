@@ -12,6 +12,8 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
 {
     private $moduleName = 'aw_age_verification';
 
+    private $moduleConfig;
+
     private $language;
 
     private $error = [];
@@ -28,6 +30,7 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
 
         $this->language = $this->awCore->getLanguage();
         $this->tokenData = $this->awCore->getToken();
+        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
@@ -68,13 +71,11 @@ class ControllerExtensionModuleAwAgeVerification extends Controller
         $this->load->model('localisation/language');
         $this->params['languages'] = $this->model_localisation_language->getLanguages();
 
-        $moduleConfig = $this->awCore->getConfig($this->moduleName);
-
-        $this->params['age_verification_status'] = $this->request->post['status'] ?? $moduleConfig->get('status') ?? false;
-        $this->params['age_verification_title'] = $this->request->post['title'] ?? $moduleConfig->get('title') ?? [];
-        $this->params['age_verification_description'] = $this->request->post['description'] ?? $moduleConfig->get('description') ?? [];
-        $this->params['age_verification_cookie_days'] = $this->request->post['cookie_days'] ?? $moduleConfig->get('cookie_days') ?? 30;
-        $this->params['age_verification_redirect_url'] = $this->request->post['redirect_url'] ?? $moduleConfig->get('redirect_url') ?? 'https://google.com';
+        $this->params['age_verification_status'] =  $this->moduleConfig->get('status', false);
+        $this->params['age_verification_title'] =  $this->moduleConfig->get('title', []);
+        $this->params['age_verification_description'] =  $this->moduleConfig->get('description', []);
+        $this->params['age_verification_cookie_days'] =  $this->moduleConfig->get('cookie_days', 30);
+        $this->params['age_verification_redirect_url'] =  $this->moduleConfig->get('redirect_url', 'https://google.com');
 
         $this->params['breadcrumbs'] = [
             [
