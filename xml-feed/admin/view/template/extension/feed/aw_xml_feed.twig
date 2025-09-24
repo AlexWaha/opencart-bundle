@@ -1,0 +1,273 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-xml-feed" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ button_save }}
+                </button>
+                <a href="{{ cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i> {{ button_cancel }}
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-pencil"></i> {{ text_edit }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-xml-feed" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+                        <li><a href="#tab-support" data-toggle="tab">{{ tab_support }}</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-general">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <select name="status" id="input-status" class="form-control">
+                                        <option value="1" {{ status ? 'selected' : '' }}>{{ text_enabled }}</option>
+                                        <option value="0" {{ not status ? 'selected' : '' }}>{{ text_disabled }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-folder">{{ entry_folder }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="folder" id="input-folder" value="{{ folder ?? '' }}" placeholder="{{ entry_folder }}" class="form-control"/>
+                                    <div class="alert alert-info">{{ help_folder }}</div>
+                                    {% if error.folder %}
+                                        <div class="text-danger">{{ error.folder }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-batch-size">{{ entry_batch_size }}</label>
+                                <div class="col-sm-10">
+                                    <input type="number" min="50" max="1000" name="batch_size" value="{{ batch_size }}" id="input-batch-size" class="form-control">
+                                    <div class="alert alert-info">{{ help_batch_size }}</div>
+                                    {% if error.batch_size %}
+                                        <div class="text-danger">{{ error.batch_size }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-access-key">{{ entry_access_key }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="access_key" value="{{ access_key }}" id="input-access-key" class="form-control" minlength="8">
+                                    <div class="alert alert-info">{{ help_access_key }}</div>
+                                    {% if error.access_key %}
+                                        <div class="text-danger">{{ error.access_key }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label">{{ entry_shop_name }}</label>
+                                <div class="col-sm-10">
+                                    {% for language in languages %}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                            <input type="text" name="shop_name[{{ language.language_id }}]"
+                                                   value="{{ shop_name[language.language_id] }}"
+                                                   placeholder="{{ entry_shop_name }}" class="form-control"/>
+                                        </div>
+                                        {% if error.shop_name and error.shop_name[language.language_id] %}
+                                            <div class="text-danger">{{ error.shop_name[language.language_id] }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="alert alert-info">{{ help_shop_name }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label">{{ entry_company_name }}</label>
+                                <div class="col-sm-10">
+                                    {% for language in languages %}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                            <input type="text" name="company_name[{{ language.language_id }}]"
+                                                   value="{{ company_name[language.language_id] }}"
+                                                   placeholder="{{ entry_company_name }}" class="form-control"/>
+                                        </div>
+                                        {% if error.company_name and error.company_name[language.language_id] %}
+                                            <div class="text-danger">{{ error.company_name[language.language_id] }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="alert alert-info">{{ help_company_name }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label">{{ entry_shop_description }}</label>
+                                <div class="col-sm-10">
+                                    {% for language in languages %}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                            <textarea name="shop_description[{{ language.language_id }}]"
+                                                   placeholder="{{ entry_shop_description }}"
+                                                   rows="3" class="form-control">{{ shop_description[language.language_id] }}</textarea>
+                                        </div>
+                                        {% if error.shop_description and error.shop_description[language.language_id] %}
+                                            <div class="text-danger">{{ error.shop_description[language.language_id] }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="alert alert-info">{{ help_shop_description }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label" for="input-country">{{ entry_shop_country }}</label>
+                                <div class="col-sm-10">
+                                    <select name="shop_country" id="input-country" class="form-control">
+                                        {% for country in countries %}
+                                            <option value="{{ country.country_id }}" {{ country.country_id == shop_country ? 'selected' : '' }}>{{ country.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="alert alert-info">{{ help_shop_country }}</div>
+                                    {% if error.shop_country %}
+                                        <div class="text-danger">{{ error.shop_country }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label">{{ entry_delivery_service }}</label>
+                                <div class="col-sm-10">
+                                    {% for language in languages %}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                            <input type="text" name="delivery_service[{{ language.language_id }}]"
+                                                   value="{{ delivery_service[language.language_id] }}"
+                                                   placeholder="{{ entry_delivery_service }}" class="form-control"/>
+                                        </div>
+                                        {% if error.delivery_service and error.delivery_service[language.language_id] %}
+                                            <div class="text-danger">{{ error.delivery_service[language.language_id] }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="alert alert-info">{{ help_delivery_service }}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ entry_stock_status_available }}</label>
+                                <div class="col-sm-10">
+                                    <div class="well well-sm" style="height: 150px; overflow: auto;">
+                                        {% for status in stock_statuses %}
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="stock_status_available[]" value="{{ status.stock_status_id }}" {{ status.stock_status_id in stock_status_available ? 'checked' : '' }} />
+                                                    {{ status.name }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="alert alert-info">{{ help_stock_status_available }}</div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="feed_list" class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <td class="text-left">{{ column_name }}</td>
+                                        <td class="text-left">{{ column_template }}</td>
+                                        <td class="text-left">{{ column_filename }}</td>
+                                        <td class="text-left">{{ column_url }}</td>
+                                        <td class="text-left">{{ column_status }}</td>
+                                        <td class="text-right">{{ column_action }}</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if feeds %}
+                                    {% for feed in feeds %}
+                                    <tr id="feed-row-{{ feed.feed_id }}">
+                                        <td class="text-right">{{ feed.name }}</td>
+                                        <td class="text-right">{{ feed.template }}</td>
+                                        <td class="text-right">{{ feed.filename }}</a></td>
+                                        <td class="text-right"><a href="{{ feed.url }}" target="_blank">{{ feed.url }}</a></td>
+                                        <td class="text-right">{{ feed.status }}</td>
+                                        <td class="text-right">
+                                            <a href="{{ feed.edit }}" class="btn btn-primary" data-toggle="tooltip" title="{{ button_edit }}"><i class="fa fa-pencil"></i></a>
+                                            <button type="button" onclick="deleteFeed({{ feed.feed_id }})" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger">
+                                                <i class="fa fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                    {% if not feeds %}
+                                        <tr>
+                                            <td class="text-right" colspan="6">
+                                                <a href="{{ create }}" class="btn btn-primary" data-toggle="tooltip" title="{{ button_add }}"><i class="fa fa-plus"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center" colspan="6">{{ text_no_results }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab-support">
+                            <div class="panel-body">
+                                {{ text_aw_support }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  function deleteFeed (feedId) {
+    $('#feed-row-' + feedId).remove();
+
+    $.ajax({
+      url: 'index.php?route=extension/feed/aw_xml_feed/delete&{{ token_param }}',
+      type: 'POST',
+      data: 'feed_id=' + feedId,
+      dataType: 'json',
+      success: function (json) {
+        if (json['success']) {
+          $('#tab-general').before('<div class="alert alert-success">' + json['success'] +
+            '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+
+          $('.alert').delay('1500').fadeOut('1000', function () {
+            $(this).remove();
+          });
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+      },
+    });
+  }
+</script>
+{{ footer }}

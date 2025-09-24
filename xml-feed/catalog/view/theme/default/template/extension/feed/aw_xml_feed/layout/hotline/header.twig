@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<price>
+    <date>{{date}}</date>
+    <firmName>{{shop_name}}</firmName>
+    <firmId>{{company_name}}</firmId>
+    <categories>
+        {% for category in categories%}
+            <category>
+                <id>{{category.id}}</id>
+                {% if category.parent_id%}
+                    <parentId>{{category.parent_id}}</parentId>
+                {% endif %}
+                <name>{{category.name}}</name>
+            </category>
+        {% endfor %}
+    </categories>
+    <items>

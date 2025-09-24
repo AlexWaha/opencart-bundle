@@ -1,0 +1,9 @@
+{% if generated_feeds %}
+{% for feed in generated_feeds %}
+Feed ID: {{ feed.id }} - Template - {{ feed.template }}: {{ feed.url }}
+{% endfor %}
+
+{{ language.get('text_all_feeds_generated') }}
+{% else %}
+{{ language.get('text_no_active_feeds') }}
+{% endif %}

@@ -1,0 +1,31 @@
+        {% for offer in offers%}
+            <item id="{{offer.id}}">
+                <name>{{offer.name}}</name>
+                <categoryId>{{offer.category_id}}</categoryId>
+                <url>{{offer.url}}</url>
+                {% if offer.special%}
+                    <price>{{offer.special}}</price>
+                    <bnprice>{{offer.price}}</bnprice>
+                {% else%}
+                    <price>{{offer.price}}</price>
+                {% endif %}
+                <image>{{offer.image}}</image>
+                {% for image in offer.images %}
+                    <image>{{image}}</image>
+                {% endfor %}
+                <vendor>{{offer.vendor}}</vendor>
+                {% if offer.vendorCode %}
+                    <vendorCode>{{offer.vendorCode}}</vendorCode>
+                {% else %}
+                    <vendorCode>{{offer.model}}</vendorCode>
+                {% endif %}
+                {% for attribute in offer.attributes %}
+                    <param name="{{attribute.name}}">{{attribute.value}}</param>
+                {% endfor %}
+                {% for option in offer.options %}
+                    <param name="{{option.group}}">{{option.name}}</param>
+                {% endfor %}
+                <description><![CDATA[{{offer.description}}]]></description>
+                <available>{{offer.available}}</available>
+            </item>
+        {% endfor %}
