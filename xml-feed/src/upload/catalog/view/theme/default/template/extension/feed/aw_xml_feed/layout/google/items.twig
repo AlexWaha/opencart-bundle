@@ -1,0 +1,42 @@
+{% for offer in offers%}
+    <item>
+        <g:id>{{offer.id}}</g:id>
+        <g:title>{{offer.name}}</g:title>
+        <g:description>{{offer.description}}</g:description>
+        <g:link>{{offer.url}}</g:link>
+        <g:image_link>{{offer.image}}</g:image_link>
+        {% for image in offer.images %}
+            {% if loop.index != 1  %}
+                <g:additional_image_link>{{image}}</g:additional_image_link>
+            {% endif %}
+        {% endfor %}
+        <g:condition>{{offer.condition}}</g:condition>
+        <g:availability>{{offer.availability_status}}</g:availability>
+        {% if offer.availability_date %}
+            <g:availability_date>{{offer.availability_date}}</g:availability_date>
+        {% endif %}
+        {% if offer.special %}
+            <g:price>{{offer.price}} {{currency}}</g:price>
+            <g:sale_price>{{offer.special}} {{currency}}</g:sale_price>
+        {% else %}
+            <g:price>{{offer.price}} {{currency}}</g:price>
+        {% endif %}
+        <g:brand>{{offer.vendor}}</g:brand>
+        {% if offer.gtin %}
+            <g:gtin>{{offer.gtin}}</g:gtin>
+        {% endif %}
+        {% if offer.mpn %}
+            <g:mpn>{{offer.mpn}}</g:mpn>
+        {% endif %}
+        {% if offer.google_product_category %}
+            <g:google_product_category>{{offer.google_product_category}}</g:google_product_category>
+        {% endif %}
+        {% if delivery_service or delivery_price > 0 %}
+            <g:shipping>
+                {% if shop_country %}<g:country>{{shop_country}}</g:country>{% endif %}
+                {% if delivery_service %}<g:service>{{delivery_service}}</g:service>{% endif %}
+                {% if delivery_price > 0 %}<g:price>{{delivery_price}} {{currency}}</g:price>{% endif %}
+            </g:shipping>
+        {% endif %}
+    </item>
+{% endfor %}
