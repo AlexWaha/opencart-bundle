@@ -36,8 +36,8 @@
                         {% endif %}
                         <g:size>{{size.name}}</g:size>
                         <g:color>{{color.name}}</g:color>
-                        <g:shipping_weight>{{offer.weight}}</g:shipping_weight>
-                        {% if offer.shipping %}
+                        {% if show_delivery_info %}<g:shipping_weight>{{offer.weight}}</g:shipping_weight>{% endif %}
+                        {% if show_delivery_info and offer.shipping %}
                             <g:shipping>
                                 <g:country>{{shop_country}}</g:country>
                                 <g:service>{{delivery_service}}</g:service>
@@ -85,8 +85,8 @@
                         <g:color>{{color.name}}</g:color>
                     {% endfor %}
                 {% endif %}
-                <g:shipping_weight>{{offer.weight}}</g:shipping_weight>
-                {% if offer.shipping %}
+                {% if show_delivery_info %}<g:shipping_weight>{{offer.weight}}</g:shipping_weight>{% endif %}
+                {% if show_delivery_info and offer.shipping %}
                     <g:shipping>
                         <g:country>{{shop_country}}</g:country>
                         <g:service>{{delivery_service}}</g:service>

@@ -17,7 +17,7 @@
                                 <model>{{offer.model}}</model>
                                 <vendor>{{offer.vendor}}</vendor>
                                 {% if offer.vendorCode %}<vendorCode>{{offer.vendorCode}}</vendorCode>{% endif %}
-                                {% if offer.shipping %}
+                                {% if show_delivery_info and offer.shipping %}
                                     {% if delivery_days > 0 and delivery_price >= 0 %}
                                         <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
                                     {% elseif delivery_days > 0 %}
@@ -55,7 +55,7 @@
                         <model>{{offer.model}}</model>
                         <vendor>{{offer.vendor}}</vendor>
                         {% if offer.vendorCode %}<vendorCode>{{offer.vendorCode}}</vendorCode>{% endif %}
-                        {% if offer.shipping %}
+                        {% if show_delivery_info and offer.shipping %}
                             {% if delivery_days > 0 and delivery_price >= 0 %}
                                 <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
                             {% elseif delivery_days > 0 %}

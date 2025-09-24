@@ -87,6 +87,7 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
         $this->params['company_name'] = $this->moduleConfig->get('company_name', []);
         $this->params['shop_description'] = $this->moduleConfig->get('shop_description', []);
         $this->params['shop_country'] = $this->moduleConfig->get('shop_country', $this->config->get('config_country_id'));
+        $this->params['show_delivery_info'] = $this->moduleConfig->get('show_delivery_info', true);
         $this->params['delivery_service'] = $this->moduleConfig->get('delivery_service', []);
         $this->params['delivery_days'] = $this->moduleConfig->get('delivery_days', 1);
         $this->params['delivery_price'] = $this->moduleConfig->get('delivery_price', 0);
@@ -424,20 +425,20 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
 
         if (isset($this->request->post['delivery_service'])) {
             foreach ($this->request->post['delivery_service'] as $languageId => $value) {
-                if ((utf8_strlen(trim($value)) < 3) || (utf8_strlen(trim($value)) > 255)) {
+                if (!empty(trim($value)) && ((utf8_strlen(trim($value)) < 3) || (utf8_strlen(trim($value)) > 255))) {
                     $this->error['delivery_service'][$languageId] = $this->language->get('error_delivery_service');
                 }
             }
         }
 
-        if (isset($this->request->post['delivery_days'])) {
+        if (isset($this->request->post['delivery_days']) && !empty($this->request->post['delivery_days'])) {
             if (!is_numeric($this->request->post['delivery_days']) || (int)$this->request->post['delivery_days'] < 1 || (int)$this->request->post['delivery_days'] > 365) {
                 $this->error['delivery_days'] = $this->language->get('error_delivery_days');
             }
         }
 
-        if (isset($this->request->post['delivery_price'])) {
-            if (!is_numeric($this->request->post['delivery_price']) || (int)$this->request->post['delivery_price'] < 0) {
+        if (isset($this->request->post['delivery_price']) && !empty($this->request->post['delivery_price'])) {
+            if (!is_numeric($this->request->post['delivery_price']) || (float)$this->request->post['delivery_price'] < 0) {
                 $this->error['delivery_price'] = $this->language->get('error_delivery_price');
             }
         }

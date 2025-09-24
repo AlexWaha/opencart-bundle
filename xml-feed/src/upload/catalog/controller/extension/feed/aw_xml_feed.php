@@ -96,6 +96,7 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
             $companyName = $this->moduleConfig->get('company_name');
             $shopDescription = $this->moduleConfig->get('shop_description');
             $shopCountryId = $this->moduleConfig->get('shop_country', $this->config->get('config_country_id'));
+            $showDeliveryInfo = $this->moduleConfig->get('show_delivery_info', true);
             $deliveryService = $this->moduleConfig->get('delivery_service');
             $deliveryDays = $this->moduleConfig->get('delivery_days', 1);
             $deliveryPrice = $this->moduleConfig->get('delivery_price', 0);
@@ -108,9 +109,10 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
             $xml['company_name'] = $this->cleanTextForXml($companyName[$language['language_id']] ?? $this->config->get('config_owner'));
             $xml['shop_description'] = $this->cleanTextForXml($shopDescription[$language['language_id']] ?? $this->config->get('config_meta_description'));
             $xml['shop_country'] = $country['iso_code_2'];
+            $xml['show_delivery_info'] = $showDeliveryInfo;
             $xml['delivery_service'] = $this->cleanTextForXml($deliveryService[$language['language_id']] ?? $this->config->get('config_name'));
             $xml['delivery_days'] = (int)$deliveryDays;
-            $xml['delivery_price'] = (int)$deliveryPrice;
+            $xml['delivery_price'] = $deliveryPrice;
             $xml['warranty_text'] = $this->cleanTextForXml($warrantyText[$language['language_id']] ?? '');
 
             $categoryList = $feedConfig->get('category_list');
@@ -301,11 +303,7 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
                     $dayForms = $this->language->get('text_day_forms');
                     $dayWord = $this->getDeclension($setting['delivery_days'], $dayForms);
 
-                    if ($setting['delivery_price'] > 0) {
-                        $shipping = sprintf($this->language->get('text_delivery_info_with_price'), $setting['delivery_days'], $dayWord, $setting['delivery_price'], $setting['currency']['code']);
-                    } else {
-                        $shipping = sprintf($this->language->get('text_delivery_info'), $setting['delivery_days'], $dayWord);
-                    }
+                    $shipping = sprintf($this->language->get('text_delivery_info_with_price'), $setting['delivery_days'], $dayWord, $setting['delivery_price'], $setting['currency']['code']);
                 } else {
                     $shipping = false;
                 }
