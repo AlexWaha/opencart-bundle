@@ -17,12 +17,12 @@
                                 <model>{{offer.model}}</model>
                                 <vendor>{{offer.vendor}}</vendor>
                                 {% if offer.vendorCode %}<vendorCode>{{offer.vendorCode}}</vendorCode>{% endif %}
-                                {% if delivery_days > 0 and delivery_price > 0 %}
-                                    <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
-                                {% elseif delivery_days > 0 %}
-                                    <delivery-options><option days="{{delivery_days}}"/></delivery-options>
-                                {% elseif offer.shipping %}
-                                    <delivery-options><option days="{{offer.shipping}}"/></delivery-options>
+                                {% if offer.shipping %}
+                                    {% if delivery_days > 0 and delivery_price >= 0 %}
+                                        <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
+                                    {% elseif delivery_days > 0 %}
+                                        <delivery-options><option days="{{delivery_days}}"/></delivery-options>
+                                    {% endif %}
                                 {% endif %}
                                 {% if offer.weight %}<weight>{{offer.weight}}</weight>{% endif %}
                                 {% for image in offer.image %}
@@ -55,12 +55,12 @@
                         <model>{{offer.model}}</model>
                         <vendor>{{offer.vendor}}</vendor>
                         {% if offer.vendorCode %}<vendorCode>{{offer.vendorCode}}</vendorCode>{% endif %}
-                        {% if delivery_days > 0 and delivery_price > 0 %}
-                            <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
-                        {% elseif delivery_days > 0 %}
-                            <delivery-options><option days="{{delivery_days}}"/></delivery-options>
-                        {% elseif offer.shipping %}
-                            <delivery-options><option days="{{offer.shipping}}"/></delivery-options>
+                        {% if offer.shipping %}
+                            {% if delivery_days > 0 and delivery_price >= 0 %}
+                                <delivery-options><option cost="{{delivery_price}}" days="{{delivery_days}}"/></delivery-options>
+                            {% elseif delivery_days > 0 %}
+                                <delivery-options><option days="{{delivery_days}}"/></delivery-options>
+                            {% endif %}
                         {% endif %}
                         {% if offer.weight %}<weight>{{offer.weight}}</weight>{% endif %}
                         <picture>{{offer.image}}</picture>

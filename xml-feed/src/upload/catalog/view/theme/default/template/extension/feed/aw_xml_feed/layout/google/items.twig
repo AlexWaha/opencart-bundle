@@ -31,11 +31,11 @@
         {% if offer.google_product_category %}
             <g:google_product_category>{{offer.google_product_category}}</g:google_product_category>
         {% endif %}
-        {% if delivery_service or delivery_price > 0 %}
+        {% if offer.shipping and (delivery_service or delivery_price >= 0) %}
             <g:shipping>
                 {% if shop_country %}<g:country>{{shop_country}}</g:country>{% endif %}
                 {% if delivery_service %}<g:service>{{delivery_service}}</g:service>{% endif %}
-                {% if delivery_price > 0 %}<g:price>{{delivery_price}} {{currency}}</g:price>{% endif %}
+                {% if delivery_price >= 0 %}<g:price>{{delivery_price}} {{currency}}</g:price>{% endif %}
             </g:shipping>
         {% endif %}
     </item>
