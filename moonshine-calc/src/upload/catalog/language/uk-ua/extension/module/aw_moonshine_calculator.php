@@ -1,10 +1,10 @@
 <?php
 
 // Text
-$_['text_calculator_title']  = 'Калькулятор розбавлення самогону';
+$_['text_calculator_title']  = 'Калькулятор розбавлення спирту';
 $_['text_initial_strength']  = 'Початкова міцність (%)';
 $_['text_final_strength']    = 'Бажана міцність (%)';
-$_['text_moonshine_volume']  = 'Об\'єм самогону (мл)';
+$_['text_moonshine_volume']  = 'Об\'єм спирту (мл)';
 $_['text_water_volume']      = 'Додати води (мл)';
 $_['text_final_volume']      = 'Підсумковий об\'єм (мл)';
 $_['text_calculate']         = 'Розрахувати';
@@ -16,12 +16,12 @@ $_['text_home']              = 'Головна';
 // Entry
 $_['entry_initial_strength'] = 'Початкова міцність алкоголю';
 $_['entry_final_strength']   = 'Бажана підсумкова міцність';
-$_['entry_moonshine_volume'] = 'Об\'єм самогону';
+$_['entry_moonshine_volume'] = 'Об\'єм спирту';
 
 // Help
 $_['help_initial_strength']  = 'Введіть поточну міцність алкоголю у відсотках (0-100)';
 $_['help_final_strength']    = 'Введіть бажану міцність алкоголю у відсотках (0-100)';
-$_['help_moonshine_volume']  = 'Введіть об\'єм самогону в мілілітрах';
+$_['help_moonshine_volume']  = 'Введіть об\'єм спирту в мілілітрах';
 
 // Error
 $_['error_initial_strength']      = 'Початкова міцність обов\'язкова для заповнення!';
@@ -29,8 +29,8 @@ $_['error_initial_strength_range'] = 'Початкова міцність має
 $_['error_final_strength']        = 'Підсумкова міцність обов\'язкова для заповнення!';
 $_['error_final_strength_range']   = 'Підсумкова міцність має бути від 0 до 100%!';
 $_['error_final_strength_less']    = 'Підсумкова міцність має бути менше початкової!';
-$_['error_moonshine_volume']       = 'Об\'єм самогону обов\'язковий для заповнення!';
-$_['error_moonshine_volume_positive'] = 'Об\'єм самогону має бути позитивним!';
+$_['error_moonshine_volume']       = 'Об\'єм спирту обов\'язковий для заповнення!';
+$_['error_moonshine_volume_positive'] = 'Об\'єм спирту має бути позитивним!';
 
 // Note
 $_['text_calculator_note']         = 'Дані результати актуальні і вірні при температурі компонентів рівній 20 °C';

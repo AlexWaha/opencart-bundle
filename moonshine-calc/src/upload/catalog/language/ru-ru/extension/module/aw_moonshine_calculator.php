@@ -1,10 +1,10 @@
 <?php
 
 // Text
-$_['text_calculator_title']  = 'Калькулятор разбавления самогона';
+$_['text_calculator_title']  = 'Калькулятор разбавления спирта';
 $_['text_initial_strength']  = 'Начальная крепость (%)';
 $_['text_final_strength']    = 'Желаемая крепость (%)';
-$_['text_moonshine_volume']  = 'Объем самогона (л)';
+$_['text_moonshine_volume']  = 'Объем водки (л)';
 $_['text_water_volume']      = 'Добавить воды (л)';
 $_['text_final_volume']      = 'Итоговый объем (л)';
 $_['text_calculate']         = 'Рассчитать';
@@ -14,14 +14,14 @@ $_['text_instructions']      = 'Инструкция по использован
 $_['text_home']              = 'Главная';
 
 // Entry
-$_['entry_initial_strength'] = 'Начальная крепость алкоголя';
-$_['entry_final_strength']   = 'Желаемая итоговая крепость';
-$_['entry_moonshine_volume'] = 'Объем самогона (л)';
+$_['entry_initial_strength'] = 'Начальная крепость спирта или жидкости';
+$_['entry_final_strength']   = 'Желаемая крепость водки';
+$_['entry_moonshine_volume'] = 'Объем спирта (л)';
 
 // Help
 $_['help_initial_strength']  = 'Введите текущую крепость алкоголя в процентах (0-100)';
 $_['help_final_strength']    = 'Введите желаемую крепость алкоголя в процентах (0-100)';
-$_['help_moonshine_volume']  = 'Введите объем самогона в литрах';
+$_['help_moonshine_volume']  = 'Введите объем спирта в литрах';
 
 // Error
 $_['error_initial_strength']      = 'Начальная крепость обязательна для заполнения!';
@@ -29,8 +29,8 @@ $_['error_initial_strength_range'] = 'Начальная крепость дол
 $_['error_final_strength']        = 'Итоговая крепость обязательна для заполнения!';
 $_['error_final_strength_range']   = 'Итоговая крепость должна быть от 0 до 100%!';
 $_['error_final_strength_less']    = 'Итоговая крепость должна быть меньше начальной!';
-$_['error_moonshine_volume']       = 'Объем самогона обязателен для заполнения!';
-$_['error_moonshine_volume_positive'] = 'Объем самогона должен быть положительным!';
+$_['error_moonshine_volume']       = 'Объем спирта обязателен для заполнения!';
+$_['error_moonshine_volume_positive'] = 'Объем спирта должен быть положительным!';
 
 // Note
 $_['text_calculator_note']         = 'Данные результаты актуальны и верны при температуре компонентов равной 20 °C';
