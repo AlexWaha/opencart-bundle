@@ -12,15 +12,16 @@
 
 namespace Alexwaha;
 
+use Config;
 use Exception;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Twig\Extension\DebugExtension;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
-use Config;
 
 final class View
 {
@@ -50,6 +51,7 @@ final class View
             if ($isString) {
                 $loader = new ArrayLoader(['template' => $template]);
                 $twig = new Environment($loader, $config);
+                $twig->addExtension(new DebugExtension());
 
                 return $twig->render('template', $data);
             }
@@ -88,6 +90,7 @@ final class View
             ]);
 
             $twig = new Environment($loader, $config);
+            $twig->addExtension(new DebugExtension());
 
             return $twig->render($templateFile, $data);
         } catch (LoaderError|RuntimeError|SyntaxError $e) {
