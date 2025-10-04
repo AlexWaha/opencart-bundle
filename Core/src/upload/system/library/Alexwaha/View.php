@@ -27,8 +27,11 @@ final class View
 {
     private Config $config;
 
+    private $registry;
+
     public function __construct($registry)
     {
+        $this->registry = $registry;
         $this->config = $registry->get('config');
         require_once __DIR__ . '/vendor/autoload.php';
     }
@@ -38,11 +41,19 @@ final class View
      */
     public function render(string $template, array $data = [], bool $isString = false): string
     {
+        if ($this->registry->has('language')) {
+            foreach ($this->registry->get('language')->all() as $key => $value) {
+                if (!isset($data[$key])) {
+                    $data[$key] = $value;
+                }
+            }
+        }
+
         $isAdmin = defined('DIR_CATALOG');
 
         $config = [
             'autoescape' => false,
-            'debug' => false,
+            'debug' => true,
             'auto_reload' => true,
             'cache' => DIR_CACHE . 'template/',
         ];
