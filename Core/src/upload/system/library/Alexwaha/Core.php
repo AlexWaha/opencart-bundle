@@ -13,11 +13,11 @@
 namespace Alexwaha;
 
 use Exception;
+use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Registry;
 use Request;
-use FilesystemIterator;
 
 final class Core
 {
@@ -220,14 +220,10 @@ final class Core
         return $this->model->getModule($moduleId);
     }
 
-    /**
-     * @param $code
-     * @return Config
-     */
     public function getConfig($code): Config
     {
         $result = $this->model->getConfig($code);
-        $data   = $result ? json_decode($result, true) : [];
+        $data = $result ? json_decode($result, true) : [];
 
         return new Config($data, $this->request->post ?? []);
     }
@@ -246,6 +242,53 @@ final class Core
     public function removeConfig(string $code)
     {
         $this->model->removeConfig($code);
+    }
+
+    /**
+     * Export config as JSON
+     *
+     * @return string JSON encoded config
+     */
+    public function exportConfig(string $moduleName): string
+    {
+        $config = $this->getConfig($moduleName);
+        $data = $config->all();
+
+        $exportData = [
+            'module' => $moduleName,
+            'export_date' => date('Y-m-d H:i:s'),
+            'data' => $data,
+        ];
+
+        return json_encode($exportData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Import config from JSON
+     *
+     * @param  string|array  $data  JSON string or array
+     *
+     * @throws Exception
+     */
+    public function importConfig(string $moduleName, $data): bool
+    {
+        if (is_string($data)) {
+            $importData = json_decode($data, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Invalid JSON format: ' . json_last_error_msg());
+            }
+        } else {
+            $importData = $data;
+        }
+
+        if (! isset($importData['data']) || ! is_array($importData['data'])) {
+            throw new Exception('Invalid import data format');
+        }
+
+        $this->setConfig($moduleName, $importData['data']);
+
+        return true;
     }
 
     /**
