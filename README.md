@@ -24,7 +24,7 @@ For detailed installation instructions, please refer to the ***/readme/index.htm
 
 1. [Easy Checkout Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/easy-checkout/dist/aw_easy_checkout_oc2.3-3.x.ocmod.zip) ⭐
 2. [Sms Notifications for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip) ⭐
-3. [XML Feed (Google, Facebook, Any) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/xml-feed/dist/aw_xml-feed_oc2.3-3.x.ocmod.zip) ⭐
+3. [XML Feed (Google, Facebook, Any) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/xml-feed/dist/aw_xml_feed_oc2.3-3.x.ocmod.zip) ⭐
 4. [Landing pages and links for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip)
 5. [Age Verification Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip)
 6. [Alcohol Dilution Calculator page for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip)
