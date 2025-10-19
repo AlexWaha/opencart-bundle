@@ -1,0 +1,145 @@
+{{ header }}{{column_left }}
+<div id="content" class="theme-origin">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-setting" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+			</div>
+			<h1>{{ heading_title_setting }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i> {{ heading_title_setting }}</h3>
+			</div>
+			<div class="panel-body">
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-setting" class="form-horizontal">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }} </a></li>
+						<li><a href="#tab-email" data-toggle="tab">{{ tab_email }}</a></li>
+                        {% if show_sms %}
+						<li><a href="#tab-sms" data-toggle="tab">{{ tab_sms }}</a></li>
+                        {% endif %}
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-general">
+                            <div class="form-group">
+                                <div class="col-sm-3 control-label">{{ entry_status }}</div>
+                                <label class="col-sm-9 checkbox-switch" for="status">
+                                    <input type="hidden" name="status" value="0" id="status-off" {% if not status %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="status" value="1" id="status" {% if status %}checked="checked"{% endif %} />
+                                </label>
+                                <div class="col-sm-9 mt-20">
+                                    <div class="alert alert-info">{{ help_status_informer }}</div>
+                                </div>
+                            </div>
+						</div>
+
+						<div class="tab-pane" id="tab-email">
+                            <div class="form-group">
+                                <div class="col-sm-3 control-label">{{ entry_status }}</div>
+                                <label class="col-xs-9 col-sm-6 checkbox-switch" for="status-email">
+                                    <input type="hidden" name="status_email" value="0" id="status-off" {% if not status_email %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="status_email" value="1" id="status-email" {% if status_email %}checked="checked"{% endif %} />
+                                </label>
+                                <div class="col-sm-9 mt-20">
+                                    <div class="alert alert-info">{{ help_status_email }}</div>
+                                </div>
+                            </div>
+
+							<ul class="nav nav-tabs" id="email-language">
+								{% for language in languages %}
+									<li><a href="#email-language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+								{% endfor %}
+							</ul>
+							<div class="tab-content">
+								{% for language in languages %}
+									<div class="tab-pane" id="email-language{{ language.language_id }}">
+										<div class="form-group">
+											<div class="col-sm-3 text-right">
+												<label class="control-label" for="input-email-subject-{{ language.language_id }}">{{ entry_email_subject }}</label>
+												<p class="help-block">{{ help_email_subject }}</p>
+											</div>
+											<div class="col-sm-9">
+												<textarea class="form-control" name="email_subject[{{ language.language_id }}]" id="input-email-subject-{{ language.language_id }}" cols="50" rows="3">{{ email_subject[language.language_id] ?? '' }}</textarea>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-3 text-right">
+												<label class="control-label" for="input-email-template-{{ language.language_id }}">{{ entry_email_template }}</label>
+												<p class="help-block">{{ help_email_template }}</p>
+											</div>
+											<div class="col-sm-9">
+												<textarea class="form-control summernote" data-toggle="summernote" data-lang="{{ summernote }}" name="email_template[{{ language.language_id }}]" id="input-email-template-{{ language.language_id }}" cols="50" rows="3">{{ email_template[language.language_id] ?? '' }}</textarea>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+
+                        {% if show_sms %}
+						<div class="tab-pane" id="tab-sms">
+                            <div class="form-group">
+                                <div class="col-sm-3 control-label">{{ entry_status }}</div>
+                                <label class="col-xs-9 col-sm-6 checkbox-switch" for="status-sms">
+                                    <input type="hidden" name="status_sms" value="0" id="status-sms-off" {% if not status_sms %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="status_sms" value="1" id="status-sms" {% if status_sms %}checked="checked"{% endif %} />
+                                </label>
+                                <div class="col-sm-9 mt-20">
+                                    <div class="alert alert-info">{{ help_status_sms }}</div>
+                                </div>
+                            </div>
+
+							<ul class="nav nav-tabs" id="sms-language">
+								{% for language in languages %}
+									<li><a href="#sms-language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+								{% endfor %}
+							</ul>
+							<div class="tab-content">
+								{% for language in languages %}
+									<div class="tab-pane" id="sms-language{{ language.language_id }}">
+										<div class="form-group">
+											<div class="col-sm-3 text-right">
+												<label class="control-label" for="input-sms-template-{{ language.language_id }}">{{ entry_sms_template }}</label>
+												<p class="help-block">{{ help_sms_template }}</p>
+											</div>
+											<div class="col-sm-9">
+												<textarea class="form-control" name="sms_template[{{ language.language_id }}]" id="input-sms-template-{{ language.language_id }}" cols="50" rows="5">{{ sms_template[language.language_id] ?? '' }}</textarea>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+                        {% endif %}
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    $('#email-language a:first').tab('show');
+    $('#sms-language a:first').tab('show');
+</script>
+{{ footer }}

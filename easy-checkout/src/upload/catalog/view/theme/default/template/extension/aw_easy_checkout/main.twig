@@ -1,0 +1,122 @@
+{{ header }}
+<div class="container aw-easy-checkout">
+	<div class="breadcrumbs">
+		<ul class="breadcrumb">
+			{% for breadcrumb in breadcrumbs %}
+				{% if (i+1 < breadcrumbs|length) %}<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>{% else %}<li>{{ breadcrumb.text }}</li>{% endif %}
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="error"></div>
+	<div class="row">
+		<div id="content" class="col-sm-12">{{ content_top }}
+			<h1 class="checkout-heading">{{ heading_title }}</h1>
+			{% if errors is not empty %}
+			{% for error in errors %}
+				<div class="alert alert-danger">
+                    <i class="aw-icon aw-icon-error"></i>
+					{{ error }}
+					<button type="button" class="close" data-dismiss="alert"><i class="aw-icon aw-icon-close"></i></button>
+				</div>
+			{% endfor %}
+			{% endif %}
+
+			<div id="aw-easy-checkout" class="checkout-form">
+				{% if (blocks.top_full is defined) %}
+					<div class="checkout-col-top">
+						{% for block_item in blocks.top_full %}
+							{% if block_item.status %}
+								{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}
+
+				<div class="checkout-col-center">
+					<div class="checkout-col-left" style="width:{{ col_left_width }}%">
+						{% if (blocks.top_left is defined) %}
+							{% for block_item in blocks.top_left %}
+								{% if block_item.status %}
+									{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						{% if (blocks.center_left or blocks.center_right) %}
+							<div class="two-column">
+									{% if (blocks.center_left is defined) %}
+										<div class="left-column">
+											{% for block_item in blocks.center_left %}
+												{% if block_item.status %}
+												{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+												{% endif %}
+											{% endfor %}
+										</div>
+									{% endif %}
+									{% if (blocks.center_right is defined) %}
+										<div class="right-column">
+											{% for block_item in blocks.center_right %}
+												{% if block_item.status %}
+												{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+												{% endif %}
+											{% endfor %}
+										</div>
+									{% endif %}
+							</div>
+						{% endif %}
+						{% if (blocks.bottom_left is defined) %}
+							{% for block_item in blocks.bottom_left %}
+								{% if block_item.status %}
+									{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					</div>
+					{% if (blocks.fix_right is defined) %}
+					<div class="checkout-col-fix-right" style="width:{{ col_right_width }}%">
+						{% for block_item in blocks.fix_right %}
+							{% if block_item.status %}
+								{% set additional_class = (col_right_width < 40 and block_item.name == 'cart') ? 'small-fix-cart' : '' %}
+								{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+							{% endif %}
+						{% endfor %}
+					</div>
+					{% endif %}
+				</div>
+
+				{% if (blocks.bottom_full is defined) %}
+					<div class="checkout-col-bottom">
+						{% for block_item in blocks.bottom_full %}
+							{% if block_item.status %}
+								{% include 'extension/aw_easy_checkout/components/block-item.twig' %}
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}
+			</div>
+			<div class="payment hidden" id="payment">{% if (payment) %}{{ payment }}{% endif %}</div>
+			{{ content_bottom }}
+		</div>
+		{{ column_right }}
+	</div>
+<script>
+$(function() {
+	let options = {
+		lang: {
+			text_select: '{{ setting.text_select }}',
+			text_coupon_required: '{{ setting.text_coupon_required }}',
+			text_coupon_success: '{{ setting.text_coupon_success }}',
+			text_voucher_required: '{{ setting.text_voucher_required }}',
+			text_voucher_success: '{{ setting.text_voucher_success }}',
+		},
+		tel_mask: '{{ setting.tel_mask }}',
+		mask_type: '{{ setting.mask_type }}',
+		country_masks: {{ setting.country_masks|json_encode|raw }},
+		current_country_iso: '{{ setting.current_country_iso }}',
+		load_script: `{{ setting.load_script }}`,
+	}
+	const checkout = new AwEasyCheckout(options);
+	checkout.init();
+});
+</script>
+</div>
+{{ footer }}

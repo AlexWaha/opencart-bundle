@@ -1,0 +1,369 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ setting }}" class="btn btn-info" id="button-setting"><i class="fa fa-cog" aria-hidden="true"></i> {{ button_setting }}
+                </a>
+                <button type="button" id="button-delete" form="form-abandoned-order" formaction="{{ delete }}" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger">
+                    <i class="fa fa-trash-o"></i></button>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+            </div>
+            <div class="panel-body">
+                <div class="well">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="input-customer">{{ entry_customer }}</label>
+                                <input type="text" name="filter_customer" value="{{ filter_customer }}" placeholder="{{ entry_customer }}" id="input-customer" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="input-date-added">{{ entry_created_at }}</label>
+                                <div class="input-group date">
+                                    <input type="text" name="filter_created_at" value="{{ filter_created_at }}" placeholder="{{ entry_created_at }}" data-date-format="YYYY-MM-DD" id="input-date-added" class="form-control"/>
+                                    <span class="input-group-btn">
+										<button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+									</span></div>
+                            </div>
+                            <button type="button" id="button-filter" class="btn btn-primary pull-right">
+                                <i class="fa fa-filter"></i> {{ button_filter }}</button>
+                        </div>
+                    </div>
+                </div>
+                <form method="post" action="" enctype="multipart/form-data" id="form-order">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <td style="width: 1px;" class="text-center">
+                                    <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+                                </td>
+                                <td class="text-left">
+                                    {% if sort == 'a.abandoned_id' %}
+                                        <a href="{{ sort_order }}" class="{{ order|lower }}">{{ column_abandoned_id }}</a>
+                                    {% else %}
+                                        <a href="{{ sort_order }}">{{ column_abandoned_id }}</a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-left">{{ column_customer }}</td>
+                                <td class="text-left">{{ column_email }}</td>
+                                <td class="text-left">{{ column_telephone }}</td>
+                                <td class="text-right">
+                                    {% if sort == 'a.created_at' %}
+                                        <a href="{{ sort_created_at }}" class="{{ order|lower }}">{{ column_created_at }}</a>
+                                    {% else %}
+                                        <a href="{{ sort_created_at }}">{{ column_created_at }}</a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">{{ column_action }}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if orders %}
+                                {% for order in orders %}
+                                    <tr>
+                                        <td class="text-center">
+                                            {% if order.abandoned_id in selected %}
+                                                <input type="checkbox" name="selected[]" value="{{ order.abandoned_id }}" checked="checked"/>
+                                            {% else %}
+                                                <input type="checkbox" name="selected[]" value="{{ order.abandoned_id }}"/>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-left">{{ order.abandoned_id }}</td>
+                                        <td class="text-left">{{ order.customer }}</td>
+                                        <td class="text-left td-order-email">
+                                            {% if order.email is not empty %}
+                                                {% if order.email_sent_at is not empty %}
+                                                    <i class="fa fa-check-circle text-success" data-toggle="tooltip" title="{{ order.email_sent_at }}" aria-hidden="true"></i>
+                                                {% endif %}
+                                                {{ order.email }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-left td-order-sms">
+                                            {% if order.telephone is not empty %}
+                                                {% if order.sms_sent_at is not empty %}
+                                                    <i class="fa fa-check-circle text-success" data-toggle="tooltip" title="{{ order.sms_sent_at }}" aria-hidden="true"></i>
+                                                {% endif %}
+                                                {{ order.telephone }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-right">{{ order.created_at }} </td>
+                                        <td class="text-right">
+                                            {% if status_email and order.email is not empty and order.email_sent_at is empty %}
+                                                <button class="btn btn-warning send-email" data-loading-text="{{ text_loading }}" data-abandoned-id="{{ order.abandoned_id }}" data-toggle="tooltip" title="{{ button_send_email }}">
+                                                    <i class="fa fa-envelope-o" aria-hidden="true"></i></button>
+                                            {% endif %}
+                                            {% if status_sms and sms_module_installed and order.telephone is not empty and order.sms_sent_at is empty %}
+                                                <button class="btn btn-success send-sms" data-loading-text="{{ text_loading }}" data-abandoned-id="{{ order.abandoned_id }}" data-toggle="tooltip" title="{{ button_send_sms }}">
+                                                    <i class="fa fa-mobile" aria-hidden="true"></i></button>
+                                            {% endif %}
+                                            <button class="btn btn-primary open-modal" data-abandoned-id="{{ order.abandoned_id }}" data-toggle="tooltip" title="{{ button_view }}">
+                                                <i class="fa fa-eye"></i></button>
+                                            <a href="{{ order.delete }}" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td class="text-center" colspan="8">{{ text_no_results }}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination }}</div>
+                    <div class="col-sm-6 text-right">{{ results }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+      $(document).on('click', '.send-sms', function (e) {
+        e.preventDefault();
+
+        let abandonedId = $(this).data('abandoned-id');
+        let button = $(this);
+
+        $.ajax({
+          url: 'index.php?route=extension/module/aw_easy_abandoned/sendSmsMessage&{{ token_param }}',
+          type: 'post',
+          data: 'abandoned_id=' + abandonedId,
+          dataType: 'json',
+          beforeSend: function () {
+          },
+          complete: function () {
+          },
+          success: function (json) {
+            if (json['error']) {
+              $('.alert-danger').remove();
+              let errorHtml = '<div class="alert alert-danger alert-dismissible">';
+              errorHtml += '<i class="fa fa-exclamation-circle"></i> ' + json['error'];
+              errorHtml += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+              errorHtml += '</div>';
+              $('#form-order').before(errorHtml);
+              $('html, body').animate({scrollTop: $('#form-order').offset().top - 100}, 500);
+            }
+
+            if (json['success'] && json['sms_sent_at']) {
+              let html = '<div id="modal-success-sms" class="modal fade">';
+              html += '<div class="modal-dialog checkout-modal">';
+              html += '<div class="modal-content">';
+              html += '<div class="modal-header">';
+              html += '<div class="modal-title">' + json['success'] + '</div>';
+              html += '<button type="button" class="close-modal btn btn-sm btn-default" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>';
+              html += '</div>';
+              html += '<div class="modal-body">';
+              html += '<p><i class="fa fa-check-circle text-success"></i> ' + json['sms_sent_at'] + '</p>';
+              html += '</div>';
+              html += '</div>';
+              html += '</div>';
+              html += '</div>';
+
+              $('#content').append(html);
+              $('#modal-success-sms').modal('show');
+
+              if (json['sms_sent_at'] && json['sms_sent_at'].length > 0) {
+                let row = button.closest('tr');
+                let colSms = row.find('.td-order-sms');
+
+                colSms.prepend('<i class="fa fa-check-circle text-success" data-toggle="tooltip" title="' + json['sms_sent_at'] + '" aria-hidden="true"></i> ');
+                button.remove();
+              }
+            }
+
+            $(document).on('hide.bs.modal', '#modal-success-sms.modal.fade', function () {
+              $('#modal-success-sms').remove();
+            });
+          },
+        });
+      });
+
+      $(document).on('click', '.send-email', function (e) {
+        e.preventDefault();
+
+        let abandonedId = $(this).data('abandoned-id');
+        let button = $(this);
+
+        $.ajax({
+          url: 'index.php?route=extension/module/aw_easy_abandoned/sendEmailMessage&{{ token_param }}',
+          type: 'post',
+          data: 'abandoned_id=' + abandonedId,
+          dataType: 'json',
+          beforeSend: function () {
+          },
+          complete: function () {
+          },
+          success: function (json) {
+            if (json['error']) {
+              $('.alert-danger').remove();
+              let errorHtml = '<div class="alert alert-danger alert-dismissible">';
+              errorHtml += '<i class="fa fa-exclamation-circle"></i> ' + json['error'];
+              errorHtml += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+              errorHtml += '</div>';
+              $('#form-order').before(errorHtml);
+              $('html, body').animate({scrollTop: $('#form-order').offset().top - 100}, 500);
+            }
+
+            if (json['success'] && json['email_sent_at']) {
+              let html = '<div id="modal-success" class="modal fade">';
+              html += '<div class="modal-dialog checkout-modal">';
+              html += '<div class="modal-content">';
+              html += '<div class="modal-header">';
+              html += '<div class="modal-title">' + json['success'] + '</div>';
+              html += '<button type="button" class="close-modal btn btn-sm btn-default" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>';
+              html += '</div>';
+              html += '<div class="modal-body">';
+              html += '<p><i class="fa fa-check-circle text-success"></i> ' + json['email_sent_at'] + '</p>';
+              html += '</div>';
+              html += '</div>';
+              html += '</div>';
+              html += '</div>';
+
+              $('#content').append(html);
+              $('#modal-success').modal('show');
+
+              if (json['email_sent_at'] && json['email_sent_at'].length > 0) {
+                let row = button.closest('tr');
+                let colEmail = row.find('.td-order-email');
+
+                colEmail.prepend('<i class="fa fa-check-circle text-success" data-toggle="tooltip" title="' + json['email_sent_at'] + '" aria-hidden="true"></i> ');
+                button.remove();
+              }
+            }
+
+            $(document).on('hide.bs.modal', '#modal-success.modal.fade', function () {
+              $('#modal-success').remove();
+            });
+          },
+        });
+      });
+
+      $('.open-modal').click(function (e) {
+        e.preventDefault();
+        $('#order-info-modal').remove();
+        let abandonedId = $(this).data('abandoned-id');
+
+        $.ajax({
+          url: 'index.php?route=extension/module/aw_easy_abandoned/info&{{ token_param }}',
+          type: 'post',
+          data: 'abandoned_id=' + abandonedId,
+          dataType: 'html',
+          success: function (response) {
+
+            let html = '<div id="order-info-modal" class="modal">';
+            html += '<div class="modal-dialog modal-lg">';
+            html += '<div class="modal-content">' + response + '</div>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+            $('#content').append(html);
+            $('#order-info-modal').modal('show');
+
+            $(document).on('hide.bs.modal', '#order-info-modal.modal.fade', function () {
+              $('#order-info-modal').remove();
+            });
+          },
+        });
+      });
+
+      $('#input-customer').keydown(function (event) {
+        if (event.keyCode === 13) {
+          $('#button-filter').trigger('click');
+        }
+      });
+
+      $('#button-filter').on('click', function () {
+        let url = 'index.php?route=extension/module/aw_easy_abandoned&{{ token_param }}';
+
+        let filter_customer = $('input[name=\'filter_customer\']').val();
+
+        if (filter_customer) {
+          url += '&filter_customer=' + encodeURIComponent(filter_customer);
+        }
+
+        let filter_created_at = $('input[name=\'filter_created_at\']').val();
+
+        if (filter_created_at) {
+          url += '&filter_created_at=' + encodeURIComponent(filter_created_at);
+        }
+
+        location = url;
+      });
+
+      $('input[name=\'filter_customer\']').autocomplete({
+        'source': function (request, response) {
+          $.ajax({
+            url: 'index.php?route=extension/module/aw_easy_abandoned/autocomplete&{{ token_param }}&filter_name=' +
+              encodeURIComponent(request),
+            dataType: 'json',
+            success: function (json) {
+              response($.map(json, function (item) {
+                let label;
+
+                if (item['firstname'] !== '' || item['lastname']) {
+                  label = item['name'];
+                } else if (item['telephone'] !== '') {
+                  label = item['telephone'];
+                } else {
+                  label = item['email'];
+                }
+
+                return {
+                  label: label,
+                  value: label,
+                };
+              }));
+            },
+          });
+        },
+        'select': function (item) {
+          $('input[name=\'filter_customer\']').val(item['label']);
+        },
+      });
+
+      $('#button-delete').on('click', function (e) {
+        $('#form-order').attr('action', this.getAttribute('formAction'));
+
+        if (confirm('{{ text_confirm }}')) {
+          $('#form-order').submit();
+        } else {
+          return false;
+        }
+      });
+
+      $('.date').datetimepicker({
+        pickTime: false,
+      });
+    </script>
+</div>
+{{ footer }}

@@ -1,0 +1,28 @@
+{% for section in sections %}
+    {% set value = section.value|default([]) %}
+    {% set formClass = section.class|default('') %}
+    {% set required = section.required|default(false) %}
+    {% set placeholder = section.placeholder|default('') %}
+
+    <fieldset>
+        <div class="form-group {{ required ? 'required' : '' }} {{ formClass }}">
+        <label class="col-sm-3 control-label" for="input_{{ section.id }}">
+                {{ section.title }}
+            </label>
+            <div class="col-sm-9">
+                {% for language in languages if language.status %}
+                    <div class="input-group">
+                    <span class="input-group-addon">
+                        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" alt="{{ language.name }}">
+                    </span>
+                        <input type="text" class="form-control"
+                               name="{{ section.namePrefix }}[{{ language.language_id }}]"
+                               value="{{ value[language.language_id] }}"
+                               placeholder="{{ placeholder }}"
+                               id="input_{{ section.id }}_{{ language.language_id  }}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </fieldset>
+{% endfor %}

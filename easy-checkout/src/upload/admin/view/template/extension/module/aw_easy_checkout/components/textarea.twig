@@ -1,0 +1,18 @@
+{% set showEditor = section.showEditor|default(false) %}
+{% set value = section.value|default([]) %}
+{% set placeholder = section.placeholder|default('') %}
+
+<div class="form-group">
+    {% if not section.title %}
+    <label class="col-sm-2 control-label" for="input_{{ id }}{{ language.language_id }}">
+        {{ section.title }}
+    </label>
+    {% endif %}
+    <div class="col-sm-{% if not section.title %}12{% else %}10{% endif %}">
+    <textarea
+            name="{{ section.namePrefix }}[{{ language.language_id }}]"
+            placeholder="{{ placeholder }}"
+            id="input_{{ id }}{{ language.language_id }}"
+            class="form-control {% if showEditor %}summernote{% endif %}" {% if showEditor %}data-toggle="summernote" data-lang="{{ summernote }}"{% endif %}>{{ value[language.language_id] }}</textarea>
+    </div>
+</div>

@@ -1,0 +1,320 @@
+<div class="shipping_methods">
+    <div class="col-sm-4">
+        <ul class="nav nav-pills nav-stacked">
+            {% for code, shipping_method in shippingMethods %}
+                {% if code == 'default' %}
+                    <li class="active">
+                        <a href="#tab-shipping-method-default" data-toggle="tab">{{ shipping_method.title }}</a>
+                    </li>
+                {% else %}
+                    <li id="item-shipping-method-{{ code }}">
+                        <a href="#tab-shipping-method-{{ code }}" data-toggle="tab">
+                            <span class="text-shipping-method">{{ shipping_method.title }}</span>
+                            <span class="remove-shipping-method" onclick="$('#item-shipping-method-{{ code }}').remove(); $('#tab-shipping-method-{{ code }}').remove(); $('a[href=#tab-shipping-method-default]').trigger('click'); return false;"><i class="fa fa-trash-o"></i></span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li id="add_shipping_method">
+                <div class="tab-item-title">{{ text_shipping_options }}</div>
+                <div class="input-group mt-15">
+                    <select name="select_shipping_method" id="input-select-setting-shipping-method" class="form-control"></select>
+                </div>
+                <button type="button" id="btn-add-shipping-method" class="hidden btn btn-success mt-10 w-100" onclick="addShippingSetting('select-setting-shipping-method');">
+                    <i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-sm-8">
+        <div class="tab-content setting-shipping-methods-content">
+            {% for code, shipping_method in shippingMethods %}
+                <div id="tab-shipping-method-{{ code }}" class="tab-pane{% if(code == 'default') %} active{% endif %}">
+                    <div class="tab-item-title">{{ shipping_method.title }}</div>
+                    <input type="hidden" name="shipping_methods[{{ code }}][title]" value="{{ shipping_method.title }}">
+                    <div class="shipping-method-title">{{ text_free_shipping }}</div>
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">{{ entry_status }}</div>
+                        <label class="col-xs-9 col-sm-6 checkbox-switch" for="input-free-shipping-status-{{ code }}">
+                            <input type="hidden" name="shipping_methods[{{ code }}][free_shipping_status]" value="0" id="input-free-shipping-status-{{ code }}-off" {% if not shipping_method.free_shipping_status %}checked="checked"{% endif %} />
+                            <input type="checkbox" name="shipping_methods[{{ code }}][free_shipping_status]" value="1" id="input-free-shipping-status-{{ code }}" {% if shipping_method.free_shipping_status %}checked="checked"{% endif %} />
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="input-free-shipping-price-{{ code }}">{{ entry_free_shipping_price }}</label>
+                        <div class="col-sm-4 col-md-3 col-lg-2">
+                            <input type="number" min="0" class="form-control" id="input-free-shipping-price-{{ code }}" name="shipping_methods[{{ code }}][free_shipping_price]" value="{{ shipping_method.free_shipping_price }}">
+                        </div>
+                    </div>
+                    {% if code != 'default' %}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{ entry_image }}</label>
+                            <div class="col-sm-9">
+                                <a href="" id="thumb-image-shipping-{{ code }}" data-toggle="image" class="img-thumbnail"><img src="{{ shipping_method.thumb is defined ? shipping_method.thumb : placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}"/></a>
+                                <input type="hidden" name="shipping_methods[{{ code }}][image]" value="{{ shipping_method.image is defined ? shipping_method.image : '' }}" id="input-image-shipping-{{ code }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-sm-3 control-label">{{ entry_image_size }}</label>
+                            <div class="col-sm-9 col-md-6">
+                                <div class="input-group d-flex">
+                                    <span class="input-group-addon w-auto">{{ entry_width }}</span>
+                                    <input name="shipping_methods[{{ code }}][image_width]" value="{{ shipping_method.image_width is defined ? shipping_method.image_width : 32 }}" type="text" class="form-control">
+                                    <span class="input-group-addon w-auto">{{ entry_height }}</span>
+                                    <input name="shipping_methods[{{ code }}][image_height]" value="{{ shipping_method.image_height is defined ? shipping_method.image_height : 32 }}" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_status_shipping_method_title }}</div>
+                            <label class="col-xs-9 col-sm-6 checkbox-switch" for="shipping_methods_{{ code }}_status_shipping_method_new_title">
+                                <input type="hidden" name="shipping_methods[{{ code }}][status_shipping_method_new_title]" value="0" id="shipping_methods_{{ code }}_status_shipping_method_new_title-off" {% if not shipping_method.status_shipping_method_new_title %}checked="checked"{% endif %} />
+                                <input type="checkbox" name="shipping_methods[{{ code }}][status_shipping_method_new_title]" value="1" id="shipping_methods_{{ code }}_status_shipping_method_new_title" {% if shipping_method.status_shipping_method_new_title %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                        <div class="shipping-new-title form-group{% if shipping_method.status_shipping_method_new_title is not defined or shipping_method.status_shipping_method_new_title == 0 %} hidden{% endif %}">
+                            <label class="col-sm-3 control-label">{{ entry_method_title }}</label>
+                            <div class="col-sm-9">
+                                {% for language in languages %}
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                        <input class="form-control" type="text" name="shipping_methods[{{ code }}][shipping_method_new_title][{{ language.language_id }}]" value="{{ shipping_method['shipping_method_new_title'][language['language_id']] is not empty ? shipping_method['shipping_method_new_title'][language['language_id']] : '' }}"/>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="shipping-method-title">{{ text_shipping_method_available }}</div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_shipping_method_show_all_countries }}</div>
+                            <label class="col-xs-9 col-sm-6 checkbox-switch" for="input-shipping-method-show-all-countries-{{ code }}">
+                                <input type="hidden" name="shipping_methods[{{ code }}][shipping_method_show_all_countries]" value="0" id="input-shipping-method-show-all-countries-{{ code }}-off" {% if not shipping_method.shipping_method_show_all_countries %}checked="checked"{% endif %} />
+                                <input type="checkbox" name="shipping_methods[{{ code }}][shipping_method_show_all_countries]" value="1" id="input-shipping-method-show-all-countries-{{ code }}" {% if shipping_method.shipping_method_show_all_countries %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="input-shipping-method-show-only-countries-{{ code }}">{{ entry_shipping_method_show_for_countries }}</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="shipping_method_country" value="" placeholder="{{ entry_shipping_method_show_for_countries }}" id="input-shipping-method-show-only-countries-{{ code }}" class="form-control">
+                                <div id="shipping-method-show-only-countries-{{ code }}" data-name="shipping_methods[{{ code }}][shipping_method_show_for_countries]" class="well well-sm" style="height: 150px; overflow: auto;">
+                                    {% for shipping_method_show_only_country in shipping_method.shipping_method_show_for_countries %}
+                                        <div id="shipping-method-show-only-countries-{{ code }}-{{ shipping_method_show_only_country.country_id }}">
+                                            <i class="fa fa-minus-circle"></i> {{ shipping_method_show_only_country.name }}
+                                            <input type="hidden" name="shipping_methods[{{ code }}][shipping_method_show_for_countries][]" value="{{ shipping_method_show_only_country.country_id }}"/>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="input-shipping-method-disabled-countries-{{ code }}">{{ entry_shipping_method_disabled_for_countries }}</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="shipping_method_country" value="" placeholder="{{ entry_shipping_method_disabled_for_countries }}" id="input-shipping-method-disabled-countries-{{ code }}" class="form-control">
+                                <div id="shipping-method-disabled-countries-{{ code }}" data-name="shipping_methods[{{ code }}][shipping_method_hide_for_countries]" class="well well-sm" style="height: 150px; overflow: auto;">
+                                    {% for shipping_method_hide_for_countries in shipping_method.shipping_method_hide_for_countries %}
+                                        <div id="shipping-method-disabled-countries-{{ code }}-{{ shipping_method_hide_for_countries.country_id }}">
+                                            <i class="fa fa-minus-circle"></i> {{ shipping_method_hide_for_countries.name }}
+                                            <input type="hidden" name="shipping_methods[{{ code }}][shipping_method_hide_for_countries][]" value="{{ shipping_method_hide_for_countries.country_id }}"/>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+
+  $(document).on('change', "[name^='shipping_methods'][name$='[status_shipping_method_new_title]']", function () {
+    if ($(this).prop('checked')) {
+      $(this).closest('.tab-pane').find('.shipping-new-title').removeClass('hidden');
+    } else {
+      $(this).closest('.tab-pane').find('.shipping-new-title').addClass('hidden');
+    }
+  });
+
+  function addShippingSetting (select_shipping_method) {
+
+    let selectedShippingMethod = document.getElementById('input-' + select_shipping_method);
+    let shipping_method_value = selectedShippingMethod.options[selectedShippingMethod.selectedIndex].value;
+    let shipping_method_text = selectedShippingMethod.options[selectedShippingMethod.selectedIndex].text;
+
+    if ($('#item-shipping-method-' + shipping_method_value).length) {
+      if (!confirm('{{ text_shipping_confirm }}')) {
+        return false;
+      } else {
+        $('#item-shipping-method-' + shipping_method_value).remove();
+        $('#tab-shipping-method-' + shipping_method_value).remove();
+      }
+    }
+
+    $('#add_shipping_method').before('<li id="item-shipping-method-' + shipping_method_value +
+      '"><a data-toggle="tab" href="#tab-shipping-method-' + shipping_method_value + '" ><span class="text-shipping-method">' +
+      shipping_method_text + '</span><span class="remove-shipping-set" onclick="$(\'#item-shipping-method-' + shipping_method_value +
+      '\').remove(); $(\'#tab-shipping-method-' + shipping_method_value +
+      '\').remove(); $(\'a[href=#tab-shipping-method-default]\').trigger(\'click\'); return false;"><i class="fa fa-trash-o"></i></span></a></li>');
+    let html = '<div class="tab-pane" id="tab-shipping-method-' + shipping_method_value + '">';
+    html += '<div class="tab-item-title">' + shipping_method_text +
+      '</div><input type="hidden" name="shipping_methods[' + shipping_method_value + '][title]" value="' +
+      shipping_method_text + '">';
+
+    html += '<div class="shipping-method-title">{{ text_free_shipping }}</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status }}</div>';
+    html += '<label class="col-xs-9 col-sm-6 checkbox-switch" for="input-free-shipping-status-' + shipping_method_value +
+      '">';
+    html += '<input type="hidden" name="shipping_methods[' +
+      shipping_method_value +
+      '][free_shipping_status]" value="0" checked="checked" autocomplete="off" id="input-free-shipping-status-' + shipping_method_value +
+      '-off" />';
+    html += '<input type="checkbox" name="shipping_methods[' +
+      shipping_method_value +
+      '][free_shipping_status]" value="1" autocomplete="off" id="input-free-shipping-status-' + shipping_method_value +
+      '" />';
+    html += '</label>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label" for="input-free-shipping-price-' + shipping_method_value +
+      '">{{ entry_free_shipping_price }}</label>';
+    html += '<div class="col-sm-4 col-md-3 col-lg-2">';
+    html += '<input type="number" min="0" class="form-control" id="input-free-shipping-price-' + shipping_method_value +
+      '" name="shipping_methods[' + shipping_method_value + '][free_shipping_price]" value="0">';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ entry_image }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<a href="" id="thumb-image-shipping-' + shipping_method_value +
+      '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>';
+    html += '<input type="hidden" name="shipping_methods[' + shipping_method_value +
+      '][image]" value="" id="input-image-shipping-' + shipping_method_value + '" />';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group required">';
+    html += '<label class="col-sm-3 control-label">{{ entry_image_size }}</label>';
+    html += '<div class="col-sm-9 col-md-6">';
+    html += '<div class="input-group d-flex">';
+    html += '<span class="input-group-addon w-auto">{{ entry_width }}</span>';
+    html += '<input name="shipping_methods[' + shipping_method_value +
+      '][image_width]" value="36" type="text" class="form-control">';
+    html += '<span class="input-group-addon w-auto">{{ entry_height }}</span>';
+    html += '<input name="shipping_methods[' + shipping_method_value +
+      '][image_height]" value="36" type="text" class="form-control">';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status_shipping_method_title }}</div>';
+    html += '<label class="col-xs-9 col-sm-6 checkbox-switch" for="shipping_methods_' + shipping_method_value +
+      '_status_shipping_method_new_title">';
+    html += '<input type="hidden" name="shipping_methods[' + shipping_method_value +
+      '][status_shipping_method_new_title]" value="0" id="shipping_methods_' + shipping_method_value +
+      '_status_shipping_method_new_title-off" />';
+    html += '<input type="checkbox" name="shipping_methods[' + shipping_method_value +
+      '][status_shipping_method_new_title]" value="1" id="shipping_methods_' + shipping_method_value +
+      '_status_shipping_method_new_title" />';
+    html += '</label>';
+    html += '</div>';
+
+    html += '<div class="shipping-new-title form-group hidden">';
+    html += '<label class="col-sm-3 control-label">{{ entry_method_title }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="shipping_methods[' + shipping_method_value +
+      '][shipping_method_new_title][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="shipping-method-title">{{ text_shipping_method_available }}</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_shipping_method_show_all_countries }}</div>';
+    html += '<label class="col-xs-9 col-sm-6 checkbox-switch" for="input-shipping-method-show-all-countries-' + shipping_method_value +
+      '">';
+    html += '<input type="hidden" name="shipping_methods[' + shipping_method_value +
+      '][shipping_method_show_all_countries]" value="0" id="input-shipping-method-show-all-countries-' + shipping_method_value +
+      '-off" checked="checked" />';
+    html += '<input type="checkbox" name="shipping_methods[' + shipping_method_value +
+      '][shipping_method_show_all_countries]" value="1" id="input-shipping-method-show-all-countries-' + shipping_method_value +
+      '" checked="checked" />';
+    html += '</label>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label" for="input-shipping-method-show-only-countries-' + shipping_method_value +
+      '">{{ entry_shipping_method_show_for_countries }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<input type="text" name="shipping_method_country" value="" placeholder="{{ entry_shipping_method_show_for_countries }}" id="input-shipping-method-show-only-countries-' +
+      shipping_method_value + '" class="form-control">';
+    html += '<div id="shipping-method-show-only-countries-' + shipping_method_value + '" data-name="shipping_methods[' +
+      shipping_method_value + '][shipping_method_show_for_countries]" class="well well-sm" style="height: 150px; overflow: auto;"></div>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label" for="input-shipping-method-disabled-countries-' + shipping_method_value +
+      '">{{ entry_shipping_method_disabled_for_countries }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<input type="text" name="shipping_method_country" value="" placeholder="{{ entry_shipping_method_disabled_for_countries }}" id="input-shipping-method-disabled-countries-' +
+      shipping_method_value + '" class="form-control">';
+    html += '<div id="shipping-method-disabled-countries-' + shipping_method_value + '" data-name="shipping_methods[' +
+      shipping_method_value + '][shipping_method_hide_for_countries]" class="well well-sm" style="height: 150px; overflow: auto;"></div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    $('.setting-shipping-methods-content').append(html);
+    $('#modal-shipping-methods .close-modal').trigger('click');
+    countryAutocomplete();
+    $('a[href=\'#tab-shipping-method-' + shipping_method_value + '\']').trigger('click');
+  }
+
+  function countryAutocomplete () {
+    $('input[name="shipping_method_country"]:not([autocomplete])').each(function () {
+      let $self = $(this);
+      let id = $self.parent().find('.well').attr('id');
+      let name = $self.parent().find('.well').attr('data-name');
+
+      $self.autocomplete({
+        source: function (request, response) {
+          $.ajax({
+            url: 'index.php?route=extension/module/aw_easy_checkout/autocompleteCountry&{{ token_param }}&filter_name=' +
+              encodeURIComponent(request),
+            dataType: 'json',
+            success: function (json) {
+              response($.map(json, function (item) {
+                return {
+                  label: item['name'],
+                  value: item['country_id'],
+                };
+              }));
+            },
+          });
+        },
+        select: function (item) {
+          $self.val('');
+
+          $('#' + id + '-' + item['value']).remove();
+
+          $('#' + id).append('<div class="country-item" id="' + id + '-' + item['value'] +
+            '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="' + name +
+            '[]" value="' + item['value'] + '" /></div>');
+        },
+      });
+
+      $('#' + id).delegate('.fa-minus-circle', 'click', function () {
+        $(this).parent().remove();
+      });
+    });
+  }
+
+</script>

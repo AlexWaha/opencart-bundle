@@ -1,0 +1,90 @@
+<div class="cart-list">
+    {% if products is not empty or vouchers %}
+        {% for product in products %}
+            <div class="cart-item{% if not product.stock %} out-of-stock{% endif %}">
+                <div class="cart-item-left">
+                    {% if product.thumb %}
+                        <a href="{{ product.href }}"><img width="{{ cart_width }}" height="{{ cart_height }}" src="{{ product.thumb }}" alt="{{ product.name }}" class="img-responsive"/></a>
+                    {% endif %}
+                </div>
+                <div class="cart-item-center">
+                    <div class="cart-item-name">
+                        <a href="{{ product.href }}">{{ product.name }}</a>
+                        {% if (not product.stock) %}
+                            <div class="cart-item-stock text-danger">***</div>
+                        {% endif %}
+                    </div>
+                    <div class="product-model">{{ text_model }}{{ product.model }}</div>
+                    {% if (product.option) %}
+                        <div class="cart-item-options">
+                            {% for option in product.option %}
+                                <div class="cart-item-option">
+                                    <div class="cart-item-option-name">{{ option.name }}:</div>
+                                    <div class="cart-item-option-value">{{ option.value }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if (product.reward) %}
+                        <div class="cart-prod-info-reward">{{ product.reward }}</div>
+                    {% endif %}
+                    {% if (product.recurring) %}
+                        <br/>
+                        <span class="label label-info">{{ text_recurring_item }}</span>
+                        <small>{{ product.recurring }}</small>
+                    {% endif %}
+                    {% if product.ch_gift_id and product.ch_gift_id > 0 %}
+                        <div class="checkout-gift">{{ text_gift }}</div>
+                    {% endif %}
+                </div>
+                <div class="cart-item-price-quantity">
+                    <div class="justify-content-end">
+                        {% if not product.ch_gift_id or product.ch_gift_id == 0 %}
+                            <div class="checkout-cart-quantity">
+                                    <span class="input-btn">
+                                        <button class="btn btn-quantity-minus" type="button" data-action="minus">
+                                            <i class="aw-icon aw-icon-minus"></i>
+                                        </button>
+                                    </span>
+                                <input type="text" autocomplete="off" id="input_item_quantity_{{ product.key }}" class="form-control" data-minimum="{{ product.minimum }}" data-key="{{ product.key }}" value="{{ product.quantity }}">
+                                <span class="input-btn">
+								<button class="btn btn-quantity-plus" type="button" data-action="plus">
+                                    <i class="aw-icon aw-icon-plus"></i>
+								</button>
+							</span>
+                            </div>
+                        {% endif %}
+                        <button type="button" data-action="remove" data-key="{{ product.key }}" title="{{ button_remove }}" class="btn btn-remove">
+                            <i class="aw-icon aw-icon-trash"></i>
+                        </button>
+                    </div>
+                    <div class="cart-totals">
+                        <div class="cart-item-price">
+                            <span class="text-cart-item-price">{{ column_price }}</span>{{ product.price }}</div>
+                        <div class="cart-item-total">
+                            <span class="text-cart-item-total">{{ column_total }}</span>{{ product.total }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for voucher in vouchers %}
+            <div class="cart-item">
+                <div class="cart-item-left"></div>
+                <div class="cart-item-center">
+                    <div class="cart-item-name">{{ voucher.description }}</div>
+                </div>
+                <div class="cart-item-price-quantity">
+                    <div class="justify-content-end">
+                        <button type="button" data-toggle="tooltip" data-action="remove-voucher" data-key="{{ voucher.key }}" title="{{ button_remove }}" class="btn btn-remove">
+                            <i class="aw-icon aw-icon-trash"></i>
+                        </button>
+                    </div>
+                    <div class="cart-totals">
+                        <div class="cart-item-total">
+                            <span class="text-cart-item-total"></span>{{ voucher.amount }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

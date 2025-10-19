@@ -1,0 +1,24 @@
+{% set modalId = modal.id|default('') %}
+{% set modalSize = modal.size|default('lg') %}
+{% set modalTitle = modal.title|default('') %}
+{% set modalBody = modal.body|default('') %}
+{% set modalFooter = modal.footer|default('') %}
+
+<div id="{{ modalId }}" class="modal theme-origin">
+    <div class="modal-dialog modal-{{ modalSize }}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">{{ modalTitle }}</div>
+                <button type="button" class="close-modal btn btn-sm btn-default" data-dismiss="modal" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+            <div class="modal-body">
+                {{ modalBody|raw }}
+            </div>
+            {% if modalFooter %}
+                <div class="modal-footer text-center">
+                    {{ modalFooter|raw }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+{% set value = value|default([]) %}
+{% set placeholder = placeholder|default('') %}
+{% for language in languages if language.status %}
+<div class="input-group">
+    <span class="input-group-addon">
+        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" alt="{{ language.name }}">
+    </span>
+    <textarea
+            name="{{ namePrefix }}[{{ language.language_id }}]"
+            placeholder="{{ placeholder }}"
+            id="input_{{ id }}{{ language.language_id }}"
+            rows="5"
+            class="form-control">{{ value[language.language_id] }}</textarea>
+</div>
+{% endfor %}

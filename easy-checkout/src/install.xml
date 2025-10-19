@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>aw_easy_checkout</code>
+    <name>AW Easy Checkout</name>
+    <version>1.0</version>
+    <author>alexwaha</author>
+    <link>https://alexwaha.com</link>
+    <file path="admin/controller/common/header.php">
+        <operation>
+            <search><![CDATA[$data['logged'] = true;]]></search>
+            <add position="after"><![CDATA[
+      	$data['aw_abandoned_widget'] = $this->load->controller('extension/module/aw_easy_abandoned/widget');
+			]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/header.twig">
+        <operation>
+            <search><![CDATA[<ul class="nav navbar-nav navbar-right">]]></search>
+            <add position="after"><![CDATA[
+      	{{ aw_abandoned_widget }}
+			]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/header.tpl">
+        <operation>
+            <search><![CDATA[<ul class="nav pull-right">]]></search>
+            <add position="after"><![CDATA[
+      	<?php echo $aw_abandoned_widget; ?>
+			]]></add>
+        </operation>
+    </file>
+    <file path="admin/controller/common/column_left.php">
+        <operation error="skip">
+            <search><![CDATA[if ($this->user->hasPermission('access', 'sale/order')) {]]></search>
+            <add position="before"><![CDATA[
+				$this->load->model('extension/module/aw_easy_abandoned');
+
+				$abandonedTableExists = $this->model_extension_module_aw_easy_abandoned->isTableExists();
+
+				if ($this->user->hasPermission('access', 'extension/module/aw_easy_abandoned') && $abandonedTableExists) {
+					$this->load->language('extension/module/aw_easy_abandoned');
+
+					$abandonedOrderCount = $this->model_extension_module_aw_easy_abandoned->getTotalCountOrder();
+
+					if($this->awCore->isLegacy()) {
+						$tokenParam = 'token=' . $this->session->data['token'];
+					}else{
+						$tokenParam = 'user_token=' . $this->session->data['user_token'];
+					}
+
+					$sale[] = [
+						'name'	   => sprintf($this->language->get('text_column_left_abandoned_order'), $abandonedOrderCount),
+						'href'     => $this->url->link('extension/module/aw_easy_abandoned', $tokenParam, true),
+						'children' => []
+					];
+				}
+			]]></add>
+        </operation>
+    </file>
+</modification>

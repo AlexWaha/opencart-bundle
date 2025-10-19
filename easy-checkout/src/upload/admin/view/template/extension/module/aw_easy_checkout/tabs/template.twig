@@ -1,0 +1,232 @@
+<div id="block_constructor">
+    <div id="top_full" class="constructor-block col-sm-12" data-sb="top_full">
+        <div class="block-title">{{ text_block_top_full }}</div>
+        {% if (blockPosition.top_full is defined) %}
+            {% for block in blockPosition.top_full %}
+                {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div id="column-setting">
+        <div class="block-title text-center">{{ text_col_width_setting }}</div>
+        <div class="row-flex">
+            <div class="col-left-width">
+                <label class="control-label" for="col_left_width">{{ entry_left_column_width }}</label>
+                <div class="input-group">
+                    <input name="col_left_width" type="number" min="20" max="80" id="col_left_width" class="form-control" value="{{ col_left_width }}" placeholder="{{ text_entry_value }}">
+                    <span class="input-group-addon">%</span>
+                </div>
+            </div>
+            <div class="col-right-width">
+                <label class="control-label" for="col_right_width">{{ entry_right_column_width }}</label>
+                <div class="input-group">
+                    <input name="col_right_width" type="number" min="20" max="80" id="col_right_width" class="form-control" value="{{ col_right_width }}" placeholder="{{ text_entry_value }}">
+                    <span class="input-group-addon">%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="center-block">
+        <div id="top_left" style="width:{{ col_left_width }}%" data-sb="top_left" data-sb-bottom="bottom_left" class="full-width col-sm-9">
+            {% if (blockPosition.top_left is defined) %}
+                {% for block in blockPosition.top_left %}
+                    {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+                {% endfor %}
+            {% endif %}
+            <div class="group-lr-block">
+                <div id="sub_col_left" data-sb="center_left" class="left-column col-sm-6">
+                    {% if (blockPosition.center_left is defined) %}
+                        {% for block in blockPosition.center_left %}
+                            {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div id="sub_col_right" data-sb="center_right" class="right-column col-sm-6">
+                    {% if (blockPosition.center_right is defined) %}
+                        {% for block in blockPosition.center_right %}
+                            {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            {% if (blockPosition.bottom_left is defined) %}
+                {% for block in blockPosition.bottom_left %}
+                    {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div id="fix_right" data-sb="fix_right" style="width:{{ col_right_width }}%" class="col-sm-3 totals-column">
+            <div class="block-title">{{ text_fixed_block_title }}</div>
+            {% if (blockPosition.fix_right is defined) %}
+                {% for block in blockPosition.fix_right %}
+                    {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div id="bottom_full" class="constructor-block col-sm-12" data-sb="bottom_full">
+        <div class="block-title">{{ text_block_bottom_full }}</div>
+        {% if (blockPosition.bottom_full is defined) %}
+            {% for block in blockPosition.bottom_full %}
+                {% include 'extension/module/aw_easy_checkout/components/block-item.twig' %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+{% set customTextBody %}
+    {% include 'extension/module/aw_easy_checkout/components/lang-tabs.twig' with {
+        sections: [
+            {
+                id: 'custom_text',
+                namePrefix: 'custom_text',
+                title: '',
+                value: custom_text,
+                template: 'extension/module/aw_easy_checkout/components/textarea.twig',
+                showEditor: true
+            }
+        ],
+        languages: languages,
+        defaultLanguageId: defaultLanguageId
+    } %}
+{% endset %}
+
+{% set customTextFooter %}
+    <button type="button" class="btn btn-primary" data-dismiss="modal">{{ button_apply }}</button>
+{% endset %}
+
+{% include 'extension/module/aw_easy_checkout/components/modal.twig' with {
+    modal: {
+        id: 'сustom-text-modal',
+        size: 'lg',
+        title: text_block_custom_text,
+        body: customTextBody,
+        footer: customTextFooter
+    }
+} %}
+
+{% set commentBody %}
+    {% include 'extension/module/aw_easy_checkout/components/lang-inline.twig' with {
+        sections: [
+            {
+                id: 'comment-name',
+                namePrefix: 'comment[name]',
+                title: text_field_name,
+                value: comment.name,
+            },
+        ],
+        languages: languages,
+        defaultLanguageId: defaultLanguageId
+    } %}
+    {% include 'extension/module/aw_easy_checkout/components/lang-inline.twig' with {
+        sections: [
+            {
+                id: 'comment-placeholder',
+                namePrefix: 'comment[placeholder]',
+                title: text_placeholder,
+                value: comment.placeholder,
+            },
+        ],
+        languages: languages,
+        defaultLanguageId: defaultLanguageId
+    } %}
+{% endset %}
+
+{% set commentFooter %}
+    <button type="button" class="btn btn-primary" data-dismiss="modal">{{ button_apply }}</button>
+{% endset %}
+
+{% include 'extension/module/aw_easy_checkout/components/modal.twig' with {
+    modal: {
+        id: 'comment-modal',
+        size: 'lg',
+        title: text_block_comment,
+        body: commentBody,
+        footer: commentFooter
+    }
+} %}
+<script>
+$('#custom_text a:first').tab('show');
+
+(function() {
+  function handleSortableEnd({item, to}) {
+    const itemElement = $(item);
+    const parentDataSb =$(to).attr('data-sb');
+
+    itemElement.children('input[name^="block_position"]').val(parentDataSb);
+
+    const groupBlock = itemElement.closest('#top_left').find('.group-lr-block');
+    if (groupBlock.length) {
+      const previousBlocks = groupBlock.prevAll('.block-cart');
+      const nextBlocks = groupBlock.nextAll('.block-cart');
+
+      if (previousBlocks.is(itemElement)) {
+        itemElement.children('input[name^="block_position"]').val(parentDataSb);
+      } else if (nextBlocks.is(itemElement)) {
+        itemElement.children('input[name^="block_position"]').val(itemElement.parent().attr('data-sb-bottom'));
+      }
+    }
+
+    $(to).find('.block-cart').each(function(index) {
+      $(this).find('.block-sort-order').val(index + 1);
+    });
+  }
+
+  function createSortableConfig(customOptions = {}) {
+    const baseConfig = {
+      group: "shared",
+      pull: true,
+      put: true,
+      animation: 400,
+      sort: true,
+      swapThreshold: 1,
+      filter: '.btn-edit, .btn-link,',
+      draggable: '.block-cart',
+      handle: '.block-cart',
+      onEnd: handleSortableEnd
+    };
+
+    return Object.assign({}, baseConfig, customOptions);
+  }
+
+  Sortable.create(top_left, createSortableConfig({
+    group: { name: 'shared', pull: true, put: true },
+    swapThreshold: 0.5
+  }));
+
+  Sortable.create(sub_col_left, createSortableConfig());
+
+  Sortable.create(sub_col_right, createSortableConfig());
+
+  Sortable.create(fix_right, createSortableConfig());
+
+  Sortable.create(top_full, createSortableConfig({
+    group: { name: "shared", pull: true, put: true }
+  }));
+
+  Sortable.create(bottom_full, createSortableConfig({
+    group: { name: "shared", pull: true, put: true }
+  }));
+
+  function updateColumnWidths() {
+    const changedField = $(this);
+    const otherField = $('#column-setting #col_left_width, #column-setting #col_right_width').not(changedField);
+
+    let changedValue = parseInt(changedField.val(), 10) || 0;
+    changedValue = Math.max(20, Math.min(80, changedValue));
+
+    const otherValue = 100 - changedValue;
+
+    changedField.val(changedValue);
+    otherField.val(otherValue);
+
+    $('#top_left').css('width', changedValue + '%');
+    $('#fix_right').css('width', otherValue + '%');
+
+    changedField.attr('value', changedValue);
+    otherField.attr('value', otherValue);
+  }
+
+  $(document).on('change', '#column-setting #col_left_width, #column-setting #col_right_width', updateColumnWidths);
+})();
+</script>

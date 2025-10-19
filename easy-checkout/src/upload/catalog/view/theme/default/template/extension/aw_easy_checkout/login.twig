@@ -1,0 +1,33 @@
+<div class="aw-easy-checkout modal-dialog checkout-modal modal-lg modal-dialog-centered">
+    <div class="modal-content">
+        <form id="aw-checkout-login" enctype="multipart/form-data" method="post">
+            <div class="modal-header">
+                <div class="modal-title">{{ text_login }}</div>
+                <button type="button" class="close-modal" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="login-error-container"></div>
+                <div class="form-group required">
+                    <label class="control-label" for="input-email-popup">{{ entry_email }}</label>
+                    <input type="text" name="email_popup" value="" placeholder="{{ entry_email }}" id="input-email-popup" class="form-control"/>
+                </div>
+                <div class="form-group required">
+                    <label class="control-label" for="input-email-popup">{{ entry_password }}</label>
+                    <input type="password" name="password_popup" value="" placeholder="{{ entry_password }}" id="input-password-popup" class="form-control"/>
+                    <div class="forgot-password text-right"><a class="forgot" href="{{ forgotten }}">{{ text_forgotten }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="text-center">
+                        <button class="btn btn-primary" type="button" id="button-login-popup">{{ button_login }}</button>
+                    </div>
+                    <div class="text-center">
+                        <a class="btn btn-second" href="{{ register }}">{{ text_register }}</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

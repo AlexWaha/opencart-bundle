@@ -1,0 +1,266 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-easy-checkout" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-easy-checkout" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'general', label: tab_general },
+                                { id: 'template', label: tab_template },
+                                { id: 'customer', label: tab_customer },
+                                { id: 'shipping_address', label: tab_shipping_address },
+                                { id: 'shipping_methods', label: tab_shipping_methods },
+                                { id: 'payment_methods', label: tab_payment },
+                                { id: 'custom_field', label: tab_custom_field },
+                                { id: 'javascript', label: tab_javascript },
+                                { id: 'import_export', label: tab_import_export },
+                                { id: 'support', label: tab_support }
+                            ] %}
+                            {% set active_tab = 'general' %}
+
+                            {% include 'extension/module/aw_easy_checkout/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_easy_checkout/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  $(document).ready(function () {
+    getApiShipMethods();
+    getCustomFieldData();
+    countryAutocomplete();
+  });
+
+  function getApiShipMethods () {
+    $.ajax({
+      url: '{{ catalog }}index.php?route=extension/aw_easy_checkout/api/getShippingMethods&api_token={{ api_token }}',
+      type: 'post',
+      crossDomain: true,
+      success: function (json) {
+        let html = '';
+        if (json['shipping_methods']) {
+          for (let i = 0; i < json['shipping_methods'].length; i++) {
+            html += '<option data-shipping-method="' + json['shipping_methods'][i]['shipping_method'] + '" value="' +
+              json['shipping_methods'][i]['code'] + '">' + json['shipping_methods'][i]['text'] + '</option>';
+          }
+          $('#input-customer-shipping-method').html(html);
+          $('#input-select-shipping-method').html(html);
+          $('#input-select-setting-shipping-method').html(html);
+          $('#input-select-payment-method').html(html);
+          $('[name="payment_shipping_method"]').html(html);
+          $('#btn-add-shipset').removeClass('hidden');
+          $('#btn-add-payment-set').removeClass('hidden');
+          $('#btn-add-customer-set').removeClass('hidden');
+          $('#btn-add-shipping-method').removeClass('hidden');
+        } else {
+          $('#btn-add-shipset').remove();
+          $('#btn-add-payment-set').remove();
+          $('#btn-add-customer-set').remove();
+          $('#btn-add-shipping-method').remove();
+          $('#input-customer-shipping-method').replaceWith('<span class="form-control">{{ text_empty_shipping_methods }}</span>');
+          $('#input-select-shipping-method').replaceWith('<span class="form-control">{{ text_empty_shipping_methods }}</span>');
+          $('#input-select-setting-shipping-method').replaceWith('<span class="form-control">{{ text_empty_shipping_methods }}</span>');
+          $('#input-select-payment-method').replaceWith('<span class="form-control">{{ text_empty_shipping_methods }}</span>');
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+      },
+    });
+  }
+
+  function getCustomFieldData () {
+    $.ajax({
+      type: 'post',
+      url: 'index.php?route=extension/module/aw_easy_checkout/getCustomFieldData&{{ token_param }}',
+      dataType: 'json',
+      success: function (json) {
+        if (json['success']) {
+          updateCustomFieldsDropDown(json['custom_fields']);
+        }
+      },
+    });
+  }
+
+  function updateTable (data) {
+    let table = $('#v-tab_custom_field table');
+    let tbody = table.find('tbody');
+    tbody.empty();
+
+    if (data.length > 0) {
+      data.forEach(function (row) {
+        let html = '<tr>';
+        html += '<td class="text-left">' + row.name + '</td>';
+        html += '<td class="text-left">' + row.location + '</td>';
+        html += '<td class="text-left">' + row.type + '</td>';
+        html += '<td class="text-left">' + row.status + '</td>';
+        html += '<td class="text-right">' +
+          '<a href="javascript:" data-custom-field-id="' + row.custom_field_id +
+          '" data-toggle="tooltip" data-loading-text="<i class=\'fa fa-spinner fa-spin\'></i>" title="{{ button_edit }}" class="btn btn-primary button-custom-field"><i class="fa fa-pencil"></i></a> ' +
+          '<a href="javascript:" onclick="deleteCustomField(' + row.custom_field_id +
+          ');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>' +
+          '</td>';
+        tbody.append(html);
+      });
+
+    } else {
+      let colspan = table.find('thead tr th').length;
+      let html = '<tr>';
+      html += '<td class="text-center" colspan="' + colspan + '">' + '{{ text_no_results }}' + '</td>';
+      tbody.append(html);
+    }
+  }
+
+  function updateCustomFieldsDropDown (data) {
+    $('.list_custom_fields').each(function () {
+      let dropdown = $(this);
+      let location = dropdown.attr('data-custom-field-location');
+      let addFieldItem = dropdown.find('.add-custom-field');
+
+      dropdown.empty();
+      if (data.length > 0) {
+        data.forEach(function (field) {
+          let isMatch = (field.location_code === location);
+
+          if (isMatch) {
+            let listItem = $('<li>');
+            let link = $('<a>');
+            link.attr('href', '#');
+            link.attr('data-custom-field-params', dropdown.attr('data-customer-shipping-method-code') + ',' + field.custom_field_id + ',' + field.name);
+            link.attr('data-add-custom-field', field.location_code);
+            link.text(field.name);
+            listItem.append(link);
+            dropdown.append(listItem);
+          }
+        });
+        dropdown.append('<li class="divider"></li>');
+      }
+
+      dropdown.append(addFieldItem);
+    });
+  }
+
+  function updateSortOrder(containerId) {
+    $('#' + containerId + ' .form-group').each(function(index) {
+      let sortOrderField = $(this).find('.sort-order-field');
+      if (sortOrderField.length) {
+        sortOrderField.val(index + 1);
+      }
+    });
+  }
+
+  $(document).on("change", ".field-status", function() {
+    if(this.value === 'required'){
+      $(this).closest('.form-group').addClass('required').removeClass('field-off');
+    } else if(this.value === '0') {
+      $(this).closest('.form-group').removeClass('required').addClass('field-off');
+    } else {
+      $(this).closest('.form-group').removeClass('required').removeClass('field-off');
+    }
+  });
+
+  $(document).on("change", ".field-name", function() {
+    $(this).parents('.form-group').find('label.control-label .text-field-name').html(this.value);
+  });
+
+  $(document).on('click', '.button-custom-field', function (e) {
+    let button = $(this);
+    let action = 'index.php?route=extension/module/aw_easy_checkout/addCustomField&{{ token_param }}';
+    if (button.data('custom-field-id')) {
+      action += '&custom_field_id=' + button.data('custom-field-id');
+    }
+    $.ajax({
+      type: 'get',
+      url: action,
+      beforeSend: function () {
+        button.button('loading');
+      },
+      complete: function () {
+        button.button('reset');
+      },
+      success: function (data) {
+        $('html body').append(data);
+        $('#modal-add-custom-field').modal('show');
+
+        $(document).on('hide.bs.modal', '#modal-add-custom-field.modal', function () {
+          $('#modal-add-custom-field').remove();
+        });
+      },
+    });
+  });
+
+  $(document).on('click', '[data-add-custom-field]', function (e) {
+    e.preventDefault();
+
+    let custom_field_params = $(this).data('custom-field-params');
+    let params = custom_field_params.split(',');
+    let data_custom_filed = $(this).attr('data-add-custom-field');
+
+    if (data_custom_filed === 'customer') {
+      addCustomerCustomField(params);
+    } else if (data_custom_filed === 'address') {
+      addAddressCustomField(params);
+    }
+  });
+
+  function removeItem(selector) {
+    $(selector).remove();
+    return false;
+  }
+
+  function removeItemWithConfirm(selector) {
+    if (confirm('{{ text_confirm }}')) {
+      $(selector).remove();
+    }
+    return false;
+  }
+</script>
+{{ footer }}

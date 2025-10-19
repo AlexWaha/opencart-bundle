@@ -1,0 +1,73 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <td class="text-left">{{ column_name }}</td>
+            <td class="text-left">{{ column_location }}</td>
+            <td class="text-left">{{ column_type }}</td>
+            <td class="text-left">{{ column_status }}</td>
+            <td class="text-left">{{ column_action }}</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% if customFields is not empty %}
+            {% for custom_field in customFields %}
+                <tr>
+                    <td class="text-left">{{ custom_field.name }}</td>
+                    <td class="text-left">{{ custom_field.location }}</td>
+                    <td class="text-left">{{ custom_field.type }}</td>
+                    <td class="text-left">{{ custom_field.status }}</td>
+                    <td class="text-right">
+                        <a href="javascript:" data-custom-field-id="{{ custom_field.custom_field_id }}" data-loading-text="<i class='fa fa-spinner fa-spin'></i>" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary button-custom-field"><i class="fa fa-pencil"></i></a>
+                        <button type="button" onclick="deleteCustomField('{{ custom_field.custom_field_id }}');" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <td class="text-center" colspan="5">{{ text_no_results }}</td>
+        {% endif %}
+        </tbody>
+    </table>
+    <button type="button" data-loading-text="{{ text_loading }}" class="btn btn-success button-custom-field">
+        <i class="fa fa-plus" aria-hidden="true"></i> {{ button_create_field }}</button>
+</div>
+<script>
+  function deleteCustomField (custom_field_id) {
+    $.ajax({
+      type: 'post',
+      url: 'index.php?route=extension/module/aw_easy_checkout/deleteCustomField&{{ token_param }}',
+      data: 'custom_field_id=' + custom_field_id,
+      dataType: 'json',
+      success: function (json) {
+        if (json['error']) {
+          let alert_error = $('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' +
+            json['error']['warning'] +
+            '<button type="button" class="close" data-dismiss="alert"><i class="fa fa-times"></i></button></div>');
+          $('#v-tab_custom_field').prepend(alert_error);
+
+          setTimeout(function () {
+            alert_error.animate({ opacity: 0 }, 500, function () {
+              alert_error.remove();
+            });
+          }, 4000);
+        }
+
+        if (json['success']) {
+          let alert_success = $('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> ' +
+            json['success'] + '<button type="button" class="close" data-dismiss="alert"><i class="fa fa-times"></i></button></div>');
+          $('#v-tab_custom_field').prepend(alert_success);
+
+          setTimeout(function () {
+            alert_success.animate({ opacity: 0 }, 500, function () {
+              alert_success.remove();
+            });
+          }, 4000);
+
+          $('.custom-field-' + custom_field_id).remove();
+          updateTable(json['custom_fields']);
+          updateCustomFieldsDropDown(json['custom_fields']);
+        }
+      },
+    });
+  }
+</script>

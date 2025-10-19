@@ -1,0 +1,56 @@
+<div class="block-cart col-sm-12">{{ attribute(_context, 'text_block_' ~ block.name) }}
+    {% if block.name == 'custom_text' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+        <button type="button" data-toggle="modal" data-target="#сustom-text-modal" title="{{ button_edit }}" class="btn btn-xs btn-primary btn-edit ml-10">
+            <i class="fa fa-pencil"></i></button>
+    {% endif %}
+    {% if block.name == 'country' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+    {% endif %}
+    {% if block.name == 'zone_id' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+    {% endif %}
+    {% if block.name == 'coupon' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+    {% endif %}
+    {% if block.name == 'voucher' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+    {% endif %}
+    {% if block.name == 'comment' %}
+        <div class="group-radio-inline ml-10">
+            <label class="col-xs-9 col-sm-6 checkbox-switch" for="block_status_{{ block.name }}">
+                <input type="hidden" name="block_status[{{ block.name }}]" value="0" />
+                <input type="checkbox" name="block_status[{{ block.name }}]" value="1" id="block_status_{{ block.name }}" {% if block.status %}checked="checked"{% endif %} />
+            </label>
+        </div>
+        <button type="button" data-toggle="modal" data-target="#comment-modal" title="{{ button_edit }}" class="btn btn-xs btn-primary btn-edit ml-10">
+            <i class="fa fa-pencil"></i></button>
+    {% endif %}
+    <input type="hidden" name="block_position[{{ block.name }}]" value="{{ block.position }}"/>
+    <input type="hidden" class="block-sort-order" name="block_sort_order[{{ block.name }}]" value="{{ loop.index }}"/>
+</div>

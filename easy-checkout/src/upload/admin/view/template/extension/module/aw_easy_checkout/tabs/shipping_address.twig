@@ -1,0 +1,600 @@
+<div class="shipping_sets">
+    <div class="col-sm-4">
+        <ul class="nav nav-pills nav-stacked">
+            {% for code,address in shippingAddress %}
+                {% if (code == 'default') %}
+                    <li class="active">
+                        <a href="#tab-shipping-method-set-default" data-toggle="tab">{{ address.title }}</a>
+                    </li>
+                {% else %}
+                    <li id="item-shipping-method-set-{{ code }}">
+                        <a href="#tab-shipping-method-set-{{ code }}" data-toggle="tab"><span class="text-shipping-method">{{ address.title }}</span><span class="remove-shipping-set" onclick="removeItem('#item-shipping-method-set-{{ code }}'); removeItem('#tab-shipping-method-set-{{ code }}'); $('a[href=#tab-shipping-method-set-default]').trigger('click');"><i class="fa fa-trash-o"></i></span></a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li id="add_shipping_set">
+                <div class="tab-item-title">{{ text_shipping_options }}</div>
+                <div class="input-group mt-15">
+                    <select name="select_shipping_method" id="input-select-shipping-method" class="form-control"></select>
+                </div>
+                <button type="button" id="btn-add-shipset" class="hidden btn btn-success mt-10 w-100" onclick="addShippingSet('select-shipping-method');">
+                    <i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}</button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-8">
+        <div class="tab-content shipping-method-sets-content">
+            {% for code,address in shippingAddress %}
+                <div id="tab-shipping-method-set-{{ code }}" class="tab-pane{% if (code == 'default') %} active{% endif %}">
+                    <div class="tab-item-title">{{ address.title }}</div>
+                    <input type="hidden" name="shipping_address[{{ code }}][title]" value="{{ address.title }}">
+                    {% for field_name,field in address %}
+                        {% if field is iterable %}
+                            {% if field_name starts with "custom_field_" %}
+                                <div class="form-group custom-field-{{ field.id }}">
+                                    <label class="col-sm-3 control-label">
+                                        <div class="text-field-name">{{ field.name }}</div>
+                                        <div class="text-filed-name-default">[custom_field_id_{{ field.id }}]</div>
+                                    </label>
+
+                                    <div class="col-sm-9">
+                                        <div class="pull-left mr-10">
+                                            <span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span>
+                                        </div>
+                                        <div class="pull-left mr-10">
+                                            <button type="button" data-custom-field-id="{{ field.id }}" data-loading-text="<i class='fa fa-spinner fa-spin'></i>" class="btn btn-default button-custom-field">
+                                                <i class="fa fa-cog" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="pull-left">
+                                            <div class="btn-group group-show-when" data-toggle="buttons">
+                                                <label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="all" checked="checked">
+                                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                                </label>
+                                                <label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="guest">
+                                                    <i class="fa fa-user-times" aria-hidden="true"></i>
+                                                </label>
+                                                <label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="authorized">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                </label>
+                                            </div>
+                                            <input type="hidden" name="shipping_address[{{ code }}][{{ field_name }}][id]" value="{{ field.id }}">
+                                            <input type="hidden" name="shipping_address[{{ code }}][{{ field_name }}][sort_order]" value="{{ field.sort_order ?? 1 }}" class="sort-order-field">
+                                        </div>
+                                        <div class="pull-left col-sm-4 col-md-3">
+                                            <button type="button" data-toggle="tooltip" title="" class="btn btn-danger" onclick="removeItemWithConfirm('.form-group.custom-field-{{ field.id }}');" data-original-title="{{ button_remove }}">
+                                                <i class="fa fa-trash-o"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <div class="form-group field-{{ field_name }} {% if (field.status == 'required') %}required{% elseif (field.status == '0') %}field-off{% endif %}">
+                                    <label class="col-sm-3 control-label" for="input-{{ code }}-shipping-address-{{ field_name }}">
+                                        <div class="text-field-name">{{ field.setting.field_name[defaultLanguageId] is not empty ? field.setting.field_name[defaultLanguageId] : attribute(_context, 'text_address_' ~ field_name) }}</div>
+                                        <div class="text-filed-name-default">[{{ field_name }}]</div>
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <div class="pull-left mr-10">
+                                            <span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span>
+                                        </div>
+                                        <div class="pull-left mr-10">
+                                            <button type="button" data-toggle="collapse" href="#{{ code }}_setting_{{ field_name }}" class="btn btn-default">
+                                                <i class="fa fa-cog" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="pull-left">
+                                            <div class="btn-group group-show-when" data-toggle="buttons">
+                                                <label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all{% if (not field.show_when or field.show_when == 'all') %} active{% endif %}">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="all" {% if (not field.show_when or field.show_when == 'all') %}checked="checked"{% endif %}>
+                                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                                </label>
+                                                <label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest{% if (field.show_when == 'guest') %} active{% endif %}">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="guest" {% if (field.show_when == 'guest') %}checked="checked"{% endif %}>
+                                                    <i class="fa fa-user-times" aria-hidden="true"></i>
+                                                </label>
+                                                <label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized{% if (field.show_when == 'authorized') %} active{% endif %}">
+                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][show_when]" value="authorized" {% if (field.show_when == 'authorized') %}checked="checked"{% endif %}>
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="pull-left col-sm-4 col-md-3">
+                                            <select autocomplete="off" name="shipping_address[{{ code }}][{{ field_name }}][status]" id="input-{{ code }}-shipping-address-{{ field_name }}" class="form-control field-status">
+                                                {% if (field.status == 'required') %}
+                                                    <option value="0">{{ text_disabled }}</option>
+                                                    <option value="required" selected="selected">{{ text_enabled_required }}</option>
+                                                    <option value="not_required">{{ text_enabled_not_required }}</option>
+                                                {% elseif (field.status == 'not_required') %}
+                                                    <option value="0">{{ text_disabled }}</option>
+                                                    <option value="required">{{ text_enabled_required }}</option>
+                                                    <option value="not_required" selected="selected">{{ text_enabled_not_required }}</option>
+                                                {% else %}
+                                                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                                                    <option value="required">{{ text_enabled_required }}</option>
+                                                    <option value="not_required">{{ text_enabled_not_required }}</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <div id="{{ code }}_setting_{{ field_name }}" class="col-xs-12 col-sm-9 col-md-9 panel-collapse collapse field_setting">
+                                            {% include 'extension/module/aw_easy_checkout/components/lang-inline.twig' with {
+                                                sections: [
+                                                    {
+                                                        id: 'shipping_address-' ~ code ~ field_name ~ '-field-name',
+                                                        namePrefix: 'shipping_address[' ~ code ~ '][' ~ field_name ~ '][setting][field_name]',
+                                                        title: text_field_name,
+                                                        value: field.setting.field_name,
+                                                    },
+                                                    {
+                                                        id: 'shipping_address-' ~ code ~ '-' ~ field_name ~ '-placeholder',
+                                                        namePrefix: 'shipping_address[' ~ code ~ '][' ~ field_name ~ '][setting][placeholder_field]',
+                                                        title: text_placeholder,
+                                                        value: field.setting.placeholder_field,
+                                                    },
+                                                    {
+                                                        id: 'shipping_address-' ~ code ~ '-' ~ field_name ~ '-error',
+                                                        namePrefix: 'shipping_address[' ~ code ~ '][' ~ field_name ~ '][setting][text_error_field]',
+                                                        title: text_field_error,
+                                                        value: field.setting.text_error_field,
+                                                    },
+                                                ],
+                                                languages: languages,
+                                                defaultLanguageId: defaultLanguageId
+                                            } %}
+
+                                            {% if (field_name == 'country' or field_name == 'zone_id') %}
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">{{ entry_type }}</label>
+                                                    <div class="col-sm-9">
+                                                        <div class="btn-group" data-toggle="buttons">
+                                                            {% if (not field.setting.type or field.setting.type == 'select') %}
+                                                                <label class="btn btn-default active">
+                                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][setting][type]" value="select" checked="checked"/> Select
+                                                                </label>
+                                                                <label class="btn btn-default">
+                                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][setting][type]" value="select2"/> Select2
+                                                                </label>
+                                                            {% else %}
+                                                                <label class="btn btn-default">
+                                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][setting][type]" value="select"/> Select
+                                                                </label>
+                                                                <label class="btn btn-default active">
+                                                                    <input autocomplete="off" type="radio" name="shipping_address[{{ code }}][{{ field_name }}][setting][type]" value="select2" checked="checked"/> Select2
+                                                                </label>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            {% if field_name in fieldTypes %}
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label" for="input-{{ code }}-{{ field_name }}-type">{{ entry_type }}</label>
+                                                    <div class="col-sm-9">
+                                                        <select onchange="checkTypeField('addFieldValue-{{ code }}-{{ field_name }}',this.value);" name="shipping_address[{{ code }}][{{ field_name }}][setting][type]" id="input-{{ code }}-{{ field_name }}-type" class="form-control">
+                                                            {% if (field.setting.type == 'input') %}
+                                                                <option value="input" selected="selected">{{ text_input }}</option>
+                                                            {% else %}
+                                                                <option value="input">{{ text_input }}</option>
+                                                            {% endif %}
+                                                            {% if ((code == 'novaposhta_department' or code == 'novaposhta_poshtomat' or code == 'ukrposhta_standard_department') and (field_name == 'city' or field_name == 'address_1')) %}
+                                                                {% if (field.setting.type == 'select2') %}
+                                                                    <option value="select2" selected="selected">{{ text_select2 }}</option>
+                                                                {% else %}
+                                                                    <option value="select2">{{ text_select2 }}</option>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                {% if (field.setting.type == 'select') %}
+                                                                    <option value="select" selected="selected">{{ text_select }}</option>
+                                                                {% else %}
+                                                                    <option value="select">{{ text_select }}</option>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="box-custom-field-{{ code }}-{{ field_name }}">
+                                                    {% set custom_field_row = 0 %}
+                                                    {% if (field.setting.custom_fields is not empty) %}
+                                                        {% for key_value,custom_field in field.setting.custom_fields %}
+                                                            <div class="form-group custom-field-row d-flex">
+                                                                <label class="col-sm-3 control-label">
+                                                                    {{ entry_custom_value }}
+                                                                    <div class="group-btn-input mt-10">
+                                                                        <div title="{{ text_sorts_field }}" data-toggle="tooltip" title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-sm btn-info handle">
+                                                                            <i class="fa fa-hand-grab-o"></i>
+                                                                        </div>
+                                                                        <div class="input-radio">
+                                                                            {% if (field.setting.custom_field_default_select is defined and field.setting.custom_field_default_select == custom_field_row) %}
+                                                                                <input type="radio" data-toggle="tooltip" title="{{ text_default_select_custom_field_value }}" name="shipping_address[{{ code }}][{{ field_name }}][setting][custom_field_default_select]" value="{{ custom_field_row }}" checked="checked"/>
+                                                                            {% else %}
+                                                                                <input type="radio" data-toggle="tooltip" title="{{ text_default_select_custom_field_value }}" name="shipping_address[{{ code }}][{{ field_name }}][setting][custom_field_default_select]" value="{{ custom_field_row }}"/>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        <button type="button" onclick="removeItem($(this).closest('.custom-field-row'));" title="{{ button_remove }}" data-toggle="tooltip" class="btn btn-sm btn-danger">
+                                                                            <i class="fa fa-trash-o"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </label>
+                                                                <div class="col-sm-9">
+                                                                    {% for language in languages %}
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                                                            <input type="text" name="shipping_address[{{ code }}][{{ field_name }}][setting][custom_fields][{{ custom_field_row }}][{{ language.language_id }}][name]" value="{{ custom_field[language.language_id].name is not empty ? custom_field[language.language_id].name : '' }}" placeholder="{{ entry_custom_value }}" class="form-control"/>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                            {% set custom_field_row = custom_field_row + 1 %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    <input type="hidden" id="custom_field_{{ code }}-{{ field_name }}" value="{{ custom_field_row }}">
+                                                </div>
+                                                <script>
+                                                  Sortable.create(document.querySelector('.box-custom-field-{{ code }}-{{ field_name }}'), {
+                                                    handle: '.handle',
+                                                    animation: 150,
+                                                    onEnd: function() {
+                                                      updateSortOrder('box-custom-field-{{ code }}-{{ field_name }}');
+                                                    }
+                                                  });
+                                                </script>
+                                                <div id="addFieldValue-{{ code }}-{{ field_name }}" class="form-group {% if (field.setting.type is defined and (field.setting.type == 'input' or field.setting.type == 'select2') or field.setting.type is not defined) %}hidden{% endif %}">
+                                                    <div class="text-center">
+                                                        <button type="button" onclick="addFieldValue('{{ code }}','{{ field_name }}');" class="btn btn-primary">{{ button_add_value }}</button>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <input type="hidden" name="shipping_address[{{ code }}][{{ field_name }}][sort_order]" value="{{ field.sort_order ?? loop.index }}" class="sort-order-field">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    <div class="form-group custom_fields_add_element">
+                        <label class="col-sm-3 control-label">{{ text_custom_field }}</label>
+                        <div class="col-sm-9">
+                            <div class="dropdown dropup">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                    {{ button_add_element }}
+                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                </button>
+                                <ul class="dropdown-menu list_custom_fields" data-custom-field-location="address" data-customer-shipping-method-code="{{ code }}">
+                                    {% if address_custom_fields is not empty %}
+                                        {% for address_custom_field_selector in address_custom_fields %}
+                                            <li>
+                                                <a href="#" data-custom-field-params="{{ code }},{{ address_custom_field_selector.custom_field_id }},{{ address_custom_field_selector.name }}" data-add-custom-field="{{ address_custom_field_selector.location_code }}">{{ address_custom_field_selector.name }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="divider"></li>
+                                    {% endif %}
+                                    <li class="add-custom-field">
+                                        <a href="javascript:" data-loading-text="{{ text_loading }}" class="button-custom-field"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_create_field }}
+                                        </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                      Sortable.create(document.getElementById('tab-shipping-method-set-{{ code }}'), {
+                        handle: '.handle',
+                        animation: 150,
+                        onMove: function (event) {
+                          return event.related.className.indexOf('custom_fields_add_element') === -1;
+                        },
+                        onEnd: function() {
+                          updateSortOrder('tab-shipping-method-set-{{ code }}');
+                        }
+                      });
+                    </script>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+  function addAddressCustomField (custom_field_params) {
+    if ($('#tab-shipping-method-set-' + custom_field_params[0] + ' .custom-field-' + custom_field_params[1]).length) {
+      if (!confirm('{{ text_custom_field_confirm }}')) {
+        return false;
+      } else {
+        $('#tab-shipping-method-set-' + custom_field_params[0] + ' .custom-field-' + custom_field_params[1]).remove();
+      }
+    }
+
+    let html = '<div class="form-group custom-field-' + custom_field_params[1] + '">';
+    html += '<label class="col-sm-3 control-label">';
+    html += '<div class="text-field-name">' + custom_field_params[2] + '</div>';
+    html += '<div class="text-filed-name-default">[custom_field_id_' + custom_field_params[1] + ']</div>';
+    html += '</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="pull-left mr-10"><span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span></div>';
+    html += '<div class="pull-left mr-10"><button type="button"data-custom-field-id="' + custom_field_params[1] +
+      '" data-loading-text="<i class=\'fa fa-spinner fa-spin\'></i>" class="btn btn-default button-custom-field"><i class="fa fa-cog" aria-hidden="true"></i></button></div>';
+    html += '<div class="pull-left">';
+    html += '<div class="btn-group group-show-when" data-toggle="buttons">';
+    html += '<label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="all" checked="checked">';
+    html += '<i class="fa fa-users" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="guest">';
+    html += '<i class="fa fa-user-times" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="authorized">';
+    html += '<i class="fa fa-user-plus" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '</div>';
+    html += '<input type="hidden" name="shipping_address[' + custom_field_params[0] + '][custom_field_' + custom_field_params[1] +
+      '][id]" value="' + custom_field_params[1] + '">';
+    html += '<input type="hidden" name="shipping_address[' + custom_field_params[0] + '][custom_field_' + custom_field_params[1] +
+      '][sort_order]" value="1" class="sort-order-field">';
+    html += '</div>';
+    html += '<div class="pull-left col-sm-4 col-md-3"><button type="button" data-toggle="tooltip" title="" class="btn btn-danger" onclick="confirm(\'{{ text_confirm }}\') ? $(this).closest(\'.form-group.custom-field-' +
+      custom_field_params[1] +
+      '\').remove() : false;" data-original-title="{{ button_remove }}"><i class="fa fa-trash-o"></i></button></div>';
+    html += '</div>';
+    html += '</div>';
+
+    $('#tab-shipping-method-set-' + custom_field_params[0] + ' .custom_fields_add_element').before(html);
+  }
+
+  function addShippingSet (select_shipping_method) {
+    let selectedShippingMethod = document.getElementById('input-' + select_shipping_method);
+    let shipping_method_value = selectedShippingMethod.options[selectedShippingMethod.selectedIndex].value;
+    let shipping_method_text = selectedShippingMethod.options[selectedShippingMethod.selectedIndex].text;
+
+    if ($('#item-shipping-method-set-' + shipping_method_value).length) {
+      if (!confirm('{{ text_shipping_confirm }}')) {
+        return false;
+      } else {
+        $('#item-shipping-method-set-' + shipping_method_value).remove();
+        $('#tab-shipping-method-set-' + shipping_method_value).remove();
+      }
+    }
+
+    $('#add_shipping_set').before('<li id="item-shipping-method-set-' + shipping_method_value +
+      '"><a data-toggle="tab" href="#tab-shipping-method-set-' + shipping_method_value + '" ><span class="text-shipping-method">' + shipping_method_text +
+      '</span><span class="remove-shipping-set" onclick="$(\'#item-shipping-method-set-' + shipping_method_value +
+      '\').remove(); $(\'#tab-shipping-method-set-' + shipping_method_value +
+      '\').remove(); $(\'a[href=#tab-shipping-method-set-default]\').trigger(\'click\'); return false;"><i class="fa fa-trash-o"></i></span></a></li>');
+    let html = '<div class="tab-pane" id="tab-shipping-method-set-' + shipping_method_value + '">';
+    html += '<div class="tab-item-title">' + shipping_method_text + '</div><input type="hidden" name="shipping_address[' +
+      shipping_method_value + '][title]" value="' + shipping_method_text + '">';
+      {% for field_name in shippingFields %}
+    html += '<div class="form-group field-{{ field_name }} field-off">';
+    html += '<label class="col-sm-3 control-label" for="input-' + shipping_method_value +
+      '-shipping-address-{{ field_name }}">';
+    html += '<div class="text-field-name">{{ attribute(_context, 'text_address_' ~ field_name) }}</div>';
+    html += '<div class="text-filed-name-default">[{{ field_name }}]</div>';
+    html += '</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="pull-left mr-10"><span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span></div>';
+    html += '<div class="pull-left mr-10"><button type="button" data-toggle="collapse" href="#' + shipping_method_value +
+      '_setting_{{ field_name }}" class="btn btn-default"><i class="fa fa-cog" aria-hidden="true"></i></button></div>';
+    html += '<div class="pull-left">';
+    html += '<div class="btn-group group-show-when" data-toggle="buttons">';
+    html += '<label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][show_when]" value="all" checked="checked">';
+    html += '<i class="fa fa-users" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][show_when]" value="guest">';
+    html += '<i class="fa fa-user-times" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][show_when]" value="authorized">';
+    html += '<i class="fa fa-user-plus" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="pull-left col-sm-4 col-md-3">';
+    html += '<select autocomplete="off" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][status]" id="input-' + shipping_method_value +
+      '-shipping-address-{{ field_name }}" class="form-control field-status">';
+    html += '<option value="0" selected="selected">{{ text_disabled }}</option>';
+    html += '<option value="required">{{ text_enabled_required }}</option>';
+    html += '<option value="not_required">{{ text_enabled_not_required }}</option>';
+    html += '</select>';
+    html += '</div>';
+    html += '<div id="' + shipping_method_value +
+      '_setting_{{ field_name }}" class="col-xs-12 col-sm-9 col-md-9 panel-collapse collapse field_setting">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_field_name }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control{% if (language.language_id == defaultLanguageId) %} field-name{% endif %}" type="text" name="shipping_address[' +
+      shipping_method_value + '][{{ field_name }}][setting][field_name][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_placeholder }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][setting][placeholder_field][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_field_error }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][setting][text_error_field][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+
+      {% if (field_name == 'country' or field_name == 'zone_id') %}
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ entry_type }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="btn-group" data-toggle="buttons">';
+    html += '<label class="btn btn-default active">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][setting][type]" value="select"  checked="checked" /> Select';
+    html += '</label>';
+    html += '<label class="btn btn-default">';
+    html += '<input autocomplete="off" type="radio" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][setting][type]" value="select2" /> Select2';
+    html += '</label>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+      {% endif %}
+
+      {% if field_name in fieldTypes %}
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label" for="input-' + shipping_method_value +
+      '-{{ field_name }}-type">{{ entry_type }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<select onchange="checkTypeField(\'addFieldValue-' + shipping_method_value +
+      '-{{ field_name }}\',this.value);" name="shipping_address[' + shipping_method_value +
+      '][{{ field_name }}][setting][type]" id="input-' + shipping_method_value + '-{{ field_name }}-type" class="form-control">';
+    html += '<option value="input" selected="selected">{{ text_input }}</option>';
+      {% if ((field_name == 'city') or (field_name == 'address_1')) %}
+    if (shipping_method_value === 'apostatising_department' || shipping_method_value === 'novaposhta_poshtomat' || shipping_method_value ===
+      'ukrposhta_standard_department') {
+      html += '<option value="select2">{{ text_select2 }}</option>';
+    } else {
+      html += '<option value="select">{{ text_select }}</option>';
+      html += '<option value="radio">{{ text_radio }}</option>';
+    }
+      {% else %}
+    html += '<option value="select">{{ text_select }}</option>';
+    html += '<option value="radio">{{ text_radio }}</option>';
+      {% endif %}
+    html += '</select>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="box-custom-field-' + shipping_method_value + '-{{ field_name }}">';
+    html += '<input type="hidden" id="custom_field_' + shipping_method_value + '-{{ field_name }}" value="0">';
+    html += '</div>';
+    html += '<div id="addFieldValue-' + shipping_method_value + '-{{ field_name }}" class="form-group hidden">';
+    html += '<div class="text-center">';
+    html += '<button type="button" onclick="addFieldValue(\'' + shipping_method_value +
+      '\',\'{{ field_name }}\');" class="btn btn-primary">{{ button_add_value }}</button>';
+    html += '</div>';
+    html += '</div>';
+      {% endif %}
+
+    html += '</div>';
+    html += '<input type="hidden" name="shipping_address[' + shipping_method_value + '][{{ field_name }}][sort_order]" value="{{ loop.index }}" class="sort-order-field">';
+    html += '</div>';
+    html += '</div>';
+      {% endfor %}
+
+    html += '<div class="form-group custom_fields_add_element">';
+    html += '<label class="col-sm-3 control-label">{{ text_custom_field }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="dropdown dropup">';
+    html += '<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-plus" aria-hidden="true"></i>{{ button_add_element }}<i class="fa fa-angle-up" aria-hidden="true"></i></button>';
+    html += '<ul class="dropdown-menu list_custom_fields" data-custom-field-location="address" data-customer-shipping-method-code="' +
+      shipping_method_value + '">';
+      {% if address_custom_fields is not empty %}
+      {% for address_custom_field_selector in address_custom_fields %}
+    html += '<li><a href="#" data-custom-field-params="' + shipping_method_value + ',{{ address_custom_field_selector.custom_field_id }},{{ address_custom_field_selector.name }}" data-add-custom-field = "{{ address_custom_field_selector.location_code }}">{{ address_custom_field_selector.name }}</a></li>';
+      {% endfor %}
+    html += '<li class="divider"></li>';
+      {% endif %}
+    html += '<li class="add-custom-field"><a href="javascript:" data-loading-text="{{ text_loading }}" class="button-custom-field"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_create_field }}</a></li>';
+    html += '</ul>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '</div>';
+
+    $('.shipping-method-sets-content').append(html);
+    $('#modal-shipping-methods .close-modal').trigger('click');
+
+    Sortable.create(document.getElementById('tab-shipping-method-set-' + shipping_method_value), {
+      handle: '.handle',
+      animation: 150,
+      onMove: function (event) {
+        return event.related.className.indexOf('custom_fields_add_element') === -1;
+      },
+      onEnd: function() {
+        updateSortOrder('tab-shipping-method-set-' + shipping_method_value);
+      }
+    });
+
+      {% for field_name in shippingFields %}
+      {% if field_name in fieldTypes %}
+    Sortable.create(document.querySelector('.box-custom-field-' + shipping_method_value + '-{{ field_name }}'), {
+      handle: '.handle',
+      animation: 150,
+      onEnd: function() {
+        updateSortOrder('box-custom-field-' + shipping_method_value + '-{{ field_name }}');
+      }
+    });
+      {% endif %}
+      {% endfor %}
+
+    $('a[href=\'#tab-shipping-method-set-' + shipping_method_value + '\']').trigger('click');
+
+    getCustomFieldData();
+  }
+
+  function addFieldValue (shipping_method_code, field_name) {
+    let custom_field_row = $('#custom_field_' + shipping_method_code + '-' + field_name).val();
+    $('#custom_field_' + shipping_method_code + '-' + field_name).val(parseInt(custom_field_row) + 1);
+
+    let html = '<div class="form-group custom-field-row d-flex">';
+    html += '<label class="col-sm-3 control-label">{{ entry_custom_value }}';
+    html += '<div class="group-btn-input mt-10">';
+    html += '<div title="{{ text_sorts_field }}" data-toggle="tooltip" title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-sm btn-info handle"><i class="fa fa-hand-grab-o"></i></div>';
+    html += '<div class="input-radio">';
+    html += '<input type="radio" data-toggle="tooltip" title="{{ text_default_select_custom_field_value }}" name="shipping_address[' +
+      shipping_method_code + '][' + field_name + '][setting][custom_field_default_select]" value="' + custom_field_row + '" />';
+    html += '</div>';
+    html += '<button type="button" onclick="$(this).closest(\'.custom-field-row\').remove();" title="{{ button_remove }}" data-toggle="tooltip" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>';
+    html += '</div>';
+    html += '</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '  	<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input type="text" name="shipping_address[' + shipping_method_code + '][' + field_name + '][setting][custom_fields][' + custom_field_row +
+      '][{{ language.language_id }}][name]" value="" placeholder="{{ entry_custom_value }}" class="form-control" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+
+    $('.box-custom-field-' + shipping_method_code + '-' + field_name).append(html);
+  }
+
+  function checkTypeField (id, elem) {
+    let selectElement = elem.target;
+    let type_field = selectElement.value;
+    if (type_field === 'input' || type_field === 'select2') {
+      $('#' + id).addClass('hidden');
+    } else {
+      $('#' + id).removeClass('hidden');
+    }
+  }
+</script>

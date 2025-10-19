@@ -1,0 +1,406 @@
+<div class="col-sm-4">
+    <ul class="nav nav-pills nav-stacked">
+        {% for type,customer in customers %}
+            {% if (type == 'default') %}
+                <li class="active">
+                    <a href="#tab-customer-set-default" data-toggle="tab">{{ customer.title }}</a>
+                </li>
+            {% else %}
+                <li id="item-customer-set-{{ type }}">
+                    <a href="#tab-customer-set-{{ type }}" data-toggle="tab">
+                        <span class="text-shipping-method">{{ customer.title }}</span>
+                        <span class="remove-shipping-set" onclick="removeItem('#item-customer-set-{{ type }}'); removeItem('#tab-customer-set-{{ type }}'); $('a[href=#tab-customer-set-default]').trigger('click');"><i class="fa fa-trash-o"></i></span></a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        <li id="add_customer_shipping_set">
+            <div class="tab-item-title">{{ text_shipping_options }}</div>
+            <div class="input-group mt-15">
+                <select name="customer_shipping_method" id="input-customer-shipping-method" class="form-control"></select>
+            </div>
+            <button type="button" id="btn-add-customer-set" class="hidden btn btn-success mt-10 w-100" onclick="addCustomerShippingSet('customer-shipping-method');">
+                <i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}</button>
+        </li>
+    </ul>
+</div>
+<div class="col-sm-8">
+    <div class="tab-content customer-sets-content">
+        {% for type,customer in customers %}
+            <div id="tab-customer-set-{{ type }}" class="tab-pane{% if(type == 'default') %} active{% endif %}">
+                <div class="tab-item-title">{{ customer.title }}</div>
+                <input type="hidden" name="customer[{{ type }}][title]" value="{{ customer.title }}">
+                {% for field_name,field in customer %}
+                    {% if field is iterable %}
+                        {% if field_name starts with "custom_field_" %}
+                            <div class="form-group custom-field-{{ field.id }}">
+                                <label class="col-sm-3 control-label">
+                                    <div class="text-field-name">{{ field.name }}</div>
+                                    <div class="text-filed-name-default">[custom_field_id_{{ field.id }}]</div>
+                                </label>
+
+                                <div class="col-sm-9">
+                                    <div class="pull-left mr-10">
+                                        <span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span>
+                                    </div>
+                                    <div class="pull-left mr-10">
+                                        <button type="button" data-custom-field-id="{{ field.id }}" data-loading-text="<i class='fa fa-spinner fa-spin'></i>" class="btn btn-default button-custom-field">
+                                            <i class="fa fa-cog" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <div class="pull-left">
+                                        <div class="btn-group group-show-when" data-toggle="buttons">
+                                            <label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="all" checked="checked">
+                                                <i class="fa fa-users" aria-hidden="true"></i>
+                                            </label>
+                                            <label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="guest">
+                                                <i class="fa fa-user-times" aria-hidden="true"></i>
+                                            </label>
+                                            <label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="authorized">
+                                                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                            </label>
+                                        </div>
+                                        <input type="hidden" name="customer[{{ type }}][{{ field_name }}][id]" value="{{ field.id }}">
+                                        <input type="hidden" name="customer[{{ type }}][{{ field_name }}][sort_order]" value="{{ field.sort_order ?? loop.index }}" class="sort-order-field">
+                                    </div>
+                                    <div class="pull-left col-sm-4 col-md-3">
+                                        <button type="button" data-toggle="tooltip" title="" class="btn btn-danger" onclick="removeItemWithConfirm('.form-group.custom-field-{{ field.id }}');" data-original-title="{{ button_remove }}">
+                                            <i class="fa fa-trash-o"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-group field-{{ field_name }} {% if (field.status == 'required') %}required{% elseif (field.status == '0') %}field-off{% endif %}">
+                                <label class="col-sm-3 control-label" for="input-{{ type }}-customer-{{ field_name }}">
+                                    <span class="text-field-name">{{ field.setting.field_name[defaultLanguageId] ?: attribute(_context, 'text_customer_' ~ field_name) }}
+                                    </span>
+                                    <span class="text-filed-name-default">[{{ field_name }}]</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="pull-left mr-10">
+                                        <span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span>
+                                    </div>
+                                    <div class="pull-left mr-10">
+                                        <button type="button" data-toggle="collapse" href="#{{ type }}_setting_{{ field_name }}" class="btn btn-default">
+                                            <i class="fa fa-cog" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <div class="pull-left">
+                                        <div class="btn-group group-show-when" data-toggle="buttons">
+                                            <label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all{% if (not field.show_when or field.show_when == 'all') %} active{% endif %}">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="all" {% if (not field.show_when or field.show_when == 'all') %}checked="checked"{% endif %}>
+                                                <i class="fa fa-users" aria-hidden="true"></i>
+                                            </label>
+                                            <label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest{% if (field.show_when == 'guest') %} active{% endif %}">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="guest" {% if (field.show_when == 'guest') %}checked="checked"{% endif %}>
+                                                <i class="fa fa-user-times" aria-hidden="true"></i>
+                                            </label>
+                                            <label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized{% if (field.show_when == 'authorized') %} active{% endif %}">
+                                                <input autocomplete="off" type="radio" name="customer[{{ type }}][{{ field_name }}][show_when]" value="authorized" {% if (field.show_when == 'authorized') %}checked="checked"{% endif %}>
+                                                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="customer[{{ type }}][{{ field_name }}][sort_order]" value="{{ field.sort_order ?? loop.index }}" class="sort-order-field">
+                                    <div class="pull-left col-sm-4 col-md-3">
+                                        <select autocomplete="off" name="customer[{{ type }}][{{ field_name }}][status]" id="input-{{ type }}-customer-{{ field_name }}" class="form-control field-status">
+                                            {% if (field.status == 'required') %}
+                                                <option value="0">{{ text_disabled }}</option>
+                                                <option value="required" selected="selected">{{ text_enabled_required }}</option>
+                                                <option value="not_required">{{ text_enabled_not_required }}</option>
+                                            {% elseif (field.status == 'not_required') %}
+                                                <option value="0">{{ text_disabled }}</option>
+                                                <option value="required">{{ text_enabled_required }}</option>
+                                                <option value="not_required" selected="selected">{{ text_enabled_not_required }}</option>
+                                            {% else %}
+                                                <option value="0" selected="selected">{{ text_disabled }}</option>
+                                                <option value="required">{{ text_enabled_required }}</option>
+                                                <option value="not_required">{{ text_enabled_not_required }}</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div id="{{ type }}_setting_{{ field_name }}" class="col-xs-12 col-sm-9 col-md-9 panel-collapse collapse field_setting">
+                                        {% include 'extension/module/aw_easy_checkout/components/lang-inline.twig' with {
+                                            sections: [
+                                                {
+                                                    id: 'customer-' ~ type ~ '-' ~ field_name ~ '-field-name',
+                                                    namePrefix: 'customer[' ~ type ~ '][' ~ field_name ~ '][setting][field_name]',
+                                                    title: text_field_name,
+                                                    value: field.setting.field_name,
+                                                },
+                                                {
+                                                    id: 'customer-' ~ type ~ '-' ~ field_name ~ '-placeholder',
+                                                    namePrefix: 'customer[' ~ type ~ '][' ~ field_name ~ '][setting][placeholder_field]',
+                                                    title: text_placeholder,
+                                                    value: field.setting.placeholder_field,
+                                                },
+                                                {
+                                                    id: 'customer-' ~ type ~ '-' ~ field_name ~ '-error',
+                                                    namePrefix: 'customer[' ~ type ~ '][' ~ field_name ~ '][setting][text_error_field]',
+                                                    title: text_field_error,
+                                                    value: field.setting.text_error_field,
+                                                },
+                                            ],
+                                            languages: languages,
+                                            defaultLanguageId: defaultLanguageId
+                                        } %}
+                                        {% if field_name == 'email' %}
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label"><span data-toggle="tooltip" title="{{ help_regex }}">{{ entry_validation }}</span></label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="customer[{{ type }}][{{ field_name }}][setting][validation]" value="{{ field.setting.validation ?? '' }}" placeholder="{{ text_regex }}" class="form-control"/>
+                                                <small class="help-block">{{ help_email_regex_empty }}</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <div class="form-group custom_fields_add_element">
+                    <label class="col-sm-3 control-label">{{ text_custom_field }}</label>
+                    <div class="col-sm-9">
+                        <div class="dropdown dropup">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                {{ button_add_element }}
+                                <i class="fa fa-angle-up" aria-hidden="true"></i>
+                            </button>
+                            <ul class="dropdown-menu list_custom_fields" data-custom-field-location="customer" data-customer-shipping-method-code="{{ type }}">
+                                {% if customerCustomFields is not empty %}
+                                    {% for customField in customerCustomFields %}
+                                        <li>
+                                            <a href="#" data-custom-field-params="{{ type }},{{ customField.custom_field_id }},{{ customField.name }}" data-add-custom-field="{{ customField.location_code }}">{{ customField.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    <li class="divider"></li>
+                                {% endif %}
+                                <li class="add-custom-field">
+                                    <a href="javascript:" data-loading-text="{{ text_loading }}" class="button-custom-field"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_create_field }}
+                                    </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                  Sortable.create(document.getElementById('tab-customer-set-{{ type }}'), {
+                    handle: '.handle',
+                    animation: 150,
+                    onMove: function (event) {
+                      return event.related.className.indexOf('custom_fields_add_element') === -1;
+                    },
+                    onEnd: function() {
+                      updateSortOrder('tab-customer-set-{{ type }}');
+                    }
+                  });
+                </script>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+  function addCustomerShippingSet (select_shipping_method) {
+    let selectedCustomerShippingMethod = document.getElementById('input-' + select_shipping_method);
+    let customerShippingMethodValue = selectedCustomerShippingMethod.options[selectedCustomerShippingMethod.selectedIndex].value;
+    let customerShippingMethodText = selectedCustomerShippingMethod.options[selectedCustomerShippingMethod.selectedIndex].text;
+    let selector = $('#item-customer-set-' + customerShippingMethodValue);
+    let selectorTab = $('#tab-customer-set-' + customerShippingMethodValue);
+
+    if (selector.length) {
+      if (!confirm('{{ text_shipping_confirm }}')) {
+        return false;
+      } else {
+        selector.remove();
+        selectorTab.remove();
+      }
+    }
+
+    $('#add_customer_shipping_set').before('<li id="item-customer-set-' + customerShippingMethodValue +
+      '"><a data-toggle="tab" href="#tab-customer-set-' + customerShippingMethodValue + '" ><span class="text-shipping-method">' +
+      customerShippingMethodText + '</span><span class="remove-shipping-set" onclick="removeItem(\'#item-customer-set-' + customerShippingMethodValue +
+    '\');  removeItem(\'#tab-shipping-method-set-' + customerShippingMethodValue +
+      '\'); $(\'a[href=#tab-customer-set-default]\').trigger(\'click\'); return false;"><i class="fa fa-trash-o"></i></span></a></li>');
+
+    let html = '<div class="tab-pane" id="tab-customer-set-' + customerShippingMethodValue + '">';
+    html += '<div class="tab-item-title">' + customerShippingMethodText + '</div><input type="hidden" name="customer[' +
+      customerShippingMethodValue + '][title]" value="' + customerShippingMethodText + '">';
+      {% for field_name in customerFields %}
+    html += '<div class="form-group field-{{ field_name }} field-off">';
+    html += '<label class="col-sm-3 control-label" for="input-' + customerShippingMethodValue +
+      '-customer-{{ field_name }}">';
+    html += '<div class="text-field-name">{{ attribute(_context, 'text_customer_' ~ field_name) }}</div>';
+    html += '<div class="text-filed-name-default">[{{ field_name }}]</div>';
+    html += '</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="pull-left mr-10"><span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span></div>';
+    html += '<div class="pull-left mr-10"><button type="button" data-toggle="collapse" href="#' + customerShippingMethodValue +
+      '_setting_{{ field_name }}" class="btn btn-default"><i class="fa fa-cog" aria-hidden="true"></i></button></div>';
+    html += '<div class="pull-left">';
+    html += '<div class="btn-group group-show-when" data-toggle="buttons">';
+    html += '<label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][show_when]" value="customer" checked="checked">';
+    html += '<i class="fa fa-users" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][show_when]" value="guest">';
+    html += '<i class="fa fa-user-times" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][show_when]" value="authorized">';
+    html += '<i class="fa fa-user-plus" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '</div>';
+    html += '</div>';
+    html += '<input type="hidden" name="customer[' + customerShippingMethodValue + '][{{ field_name }}][sort_order]" value="{{ loop.index }}" class="sort-order-field">';
+    html += '<div class="pull-left col-sm-6">';
+    html += '<select autocomplete="off" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][status]" id="input-' + customerShippingMethodValue +
+      '-customer-{{ field_name }}" class="form-control field-status">';
+    html += '<option value="0" selected="selected">{{ text_disabled }}</option>';
+    html += '<option value="required">{{ text_enabled_required }}</option>';
+    html += '<option value="not_required">{{ text_enabled_not_required }}</option>';
+    html += '</select>';
+    html += '</div>';
+
+    html += '<div id="' + customerShippingMethodValue +
+      '_setting_{{ field_name }}" class="col-xs-12 col-sm-9 col-md-9 panel-collapse collapse field_setting">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_field_name }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control{% if (language['language_id'] == defaultLanguageId) %} field-name{% endif %}" type="text" name="customer[' +
+      customerShippingMethodValue + '][{{ field_name }}][setting][field_name][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_placeholder }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][setting][placeholder_field][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ text_field_error }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="customer[' + customerShippingMethodValue +
+      '][{{ field_name }}][setting][text_error_field][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+      {% endfor %}
+
+    html += '<div class="form-group custom_fields_add_element">';
+    html += '<label class="col-sm-3 control-label">{{ text_custom_field }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="dropdown dropup">';
+    html += '<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_add_element }} <i class="fa fa-angle-up" aria-hidden="true"></i></button>';
+    html += '<ul class="dropdown-menu list_custom_fields" data-custom-field-location="customer" data-customer-shipping-method-code="' +
+      customerShippingMethodValue + '">';
+      {% if customerCustomFields is not empty %}
+      {% for customer_custom_field_selector in customerCustomFields %}
+    html += '<li><a href="#" data-custom-field-params="' + customerShippingMethodValue +
+      ',{{ customer_custom_field_selector.custom_field_id }},{{ customer_custom_field_selector.name }} data-add-custom-field = "{{ customer_custom_field_selector.location_code }}">{{ customer_custom_field_selector.name }}</a></li>';
+      {% endfor %}
+    html += '<li class="divider"></li>';
+      {% endif %}
+    html += '<li class="add-custom-field"><a href="javascript:" data-loading-text="{{ text_loading }}" class="button-custom-field"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_create_field }}</a></li>';
+    html += '</ul>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '</div>';
+
+    $('.customer-sets-content').append(html);
+    $('#modal-shipping-methods .close-modal').trigger('click');
+
+    Sortable.create(document.getElementById('tab-customer-set-' + customerShippingMethodValue), {
+      handle: '.handle',
+      animation: 150,
+      onMove: function (event) {
+        return event.related.className.indexOf('custom_fields_add_element') === -1;
+      },
+      onEnd: function() {
+        updateSortOrder('tab-customer-set-' + customerShippingMethodValue);
+      }
+    });
+
+    $('a[href=\'#tab-customer-set-' + customerShippingMethodValue + '\']').trigger('click');
+    getCustomFieldData();
+  }
+
+  function addCustomerCustomField (custom_field_params) {
+    let selector = $('#tab-customer-set-' + custom_field_params[0] + ' .custom-field-' + custom_field_params[1]);
+    if (selector.length) {
+      if (!confirm('{{ text_custom_field_confirm }}')) {
+        return false;
+      } else {
+        selector.remove();
+      }
+    }
+
+    let html = '<div class="form-group custom-field-' + custom_field_params[1] + '">';
+    html += '<label class="col-sm-3 control-label">';
+    html += '<div class="text-field-name">' + custom_field_params[2] + '</div>';
+    html += '<div class="text-filed-name-default">[custom_field_id_' + custom_field_params[1] + ']</div>';
+    html += '</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="pull-left mr-10"><span title="{{ text_sorts_field }}" data-toggle="tooltip" class="btn btn-info handle"><i class="fa fa-hand-grab-o"></i></span></div>';
+    html += '<div class="pull-left mr-10"><button type="button" data-custom-field-id="' + custom_field_params[1] +
+      '" data-loading-text="<i class=\'fa fa-spinner fa-spin\'></i>" class="btn btn-default button-custom-field"><i class="fa fa-cog" aria-hidden="true"></i></button></div>';
+    html += '<div class="pull-left">';
+    html += '<div class="btn-group group-show-when" data-toggle="buttons">';
+    html += '<label data-toggle="tooltip" title="{{ text_show_all }}" class="btn btn-default show-all active">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="all" checked="checked">';
+    html += '<i class="fa fa-users" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_guest }}" class="btn btn-default show-guest">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="guest">';
+    html += '<i class="fa fa-user-times" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '<label data-toggle="tooltip" title="{{ text_show_authorized }}" class="btn btn-default show-authorized">';
+    html += '<input autocomplete="off" type="radio" name="customer[' + custom_field_params[0] + '][custom_field_' +
+      custom_field_params[1] + '][show_when]" value="authorized">';
+    html += '<i class="fa fa-user-plus" aria-hidden="true"></i>';
+    html += '</label>';
+    html += '</div>';
+    html += '<input type="hidden" name="customer[' + custom_field_params[0] + '][custom_field_' + custom_field_params[1] +
+      '][id]" value="' + custom_field_params[1] + '">';
+    html += '<input type="hidden" name="customer[' + custom_field_params[0] + '][custom_field_' + custom_field_params[1] +
+      '][sort_order]" value="999" class="sort-order-field">';
+    html += '</div>';
+    html += '<div class="pull-left col-sm-4 col-md-3"><button type="button" data-toggle="tooltip" title="" class="btn btn-danger" onclick="removeItemWithConfirm(\'.form-group.custom-field-' +
+      custom_field_params[1] + '\');" data-original-title="{{ button_remove }}"><i class="fa fa-trash-o"></i></button></div>';
+    html += '</div>';
+    html += '</div>';
+
+    $('#tab-customer-set-' + custom_field_params[0] + ' .custom_fields_add_element').before(html);
+    updateSortOrder('tab-customer-set-' + custom_field_params[0]);
+  }
+</script>

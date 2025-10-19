@@ -1,0 +1,8 @@
+<ul class="nav nav-tabs">
+    {% for t in tabs %}
+        {% set is_active = (active_tab == t.id) and loop.first == false or (active_tab is not defined and loop.first) %}
+        <li class="{{ (active_tab == t.id) or (active_tab is not defined and loop.first) ? 'active' }}">
+            <a href="#tab_{{ t.id }}" data-toggle="tab">{{ t.label }}</a>
+        </li>
+    {% endfor %}
+</ul>

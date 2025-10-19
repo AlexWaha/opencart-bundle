@@ -1,0 +1,36 @@
+<div class="checkout-payment-method">
+    <div class="checkout-title">{{ title_payment_method }}</div>
+    <div class="payment-method">
+        {% if error_warning %}
+            <div class="alert alert-warning">
+                <i class="aw-icon aw-icon-error"></i>
+                {{ error_warning }}</div>
+        {% endif %}
+        {% if payment_methods %}
+            {% for payment_method in payment_methods %}
+                <div class="radio checkout-radio">
+                    <label for="payment-method-{{ payment_method.code }}">
+                        {% if (payment_method.code == payment_code or not payment_code) %}
+                            {% set payment_code = payment_method.code %}
+                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}" checked="checked"/>
+                        {% else %}
+                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}"/>
+                        {% endif %}
+                        {% if payment_method.image %}
+                            <img class="img-responsive"
+                                 width="{{ payment_method.image_width }}"
+                                 height="{{ payment_method.image_height }}"
+                                 src="{{ payment_method.image }}">
+                        {% endif %}
+                        {{ payment_method.title }}
+                    </label>
+                    {% if ((payment_method.code == payment_code or not payment_code) and (payment_method.payment_method_description is not empty)) %}
+                        <div class="text-info-payment-method">
+                            {{ payment_method.payment_method_description }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

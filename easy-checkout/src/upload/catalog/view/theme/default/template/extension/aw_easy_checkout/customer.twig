@@ -1,0 +1,174 @@
+<div class="checkout-title">
+    {{ text_customer }}
+    {% if register_status %}
+        <a class="login" href="javascript:;" data-load-url="index.php?route=common/login_modal">{{ text_i_am_registered }}</a>
+    {% endif %}
+</div>
+<div class="checkout-сustomer-info">
+    {% if register_status %}
+        <div class="form-group{% if customer_groups|length <= 1 %} hidden{% endif %}">
+            <label class="control-label" for="input-customer-group">{{ entry_customer_group }}</label>
+            <select id="input-customer-group" name="customer_group_id" class="form-control">
+                {% if customer_groups is not empty %}
+                    {% for customer_group in customer_groups %}
+                        <option value="{{ customer_group.customer_group_id }}" {% if customer_group.customer_group_id == customer_group_id %}selected="selected"{% endif %}>
+                            {{ customer_group.name }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    {% endif %}
+    {% if customer_fields is not empty %}
+        {% for field_name,customer_field in customerFields %}
+            {% if field_name == 'firstname' %}
+                <div class="form-group {% if customer_field.status == 'required' %}required{% endif %}">
+                    <label for="input-firstname" class="control-label">{{ entry_firstname }}</label>
+                    <input id="input-firstname" type="text" name="firstname" value="{% if firstname is defined %}{{ firstname }}{% endif %}" placeholder="{{ entry_placeholder_firstname }}" class="form-control"/>
+                </div>
+            {% endif %}
+            {% if field_name == 'lastname' %}
+                <div class="form-group {% if customer_field.status == 'required' %}required{% endif %}">
+                    <label for="input-lastname" class="control-label">{{ entry_lastname }}</label>
+                    <input id="input-lastname" type="text" name="lastname" value="{% if lastname is defined %}{{ lastname }}{% endif %}" placeholder="{{ entry_placeholder_lastname }}" class="form-control"/>
+                </div>
+            {% endif %}
+            {% if field_name == 'telephone' %}
+                <div class="form-group {% if customer_field.status == 'required' %}required{% endif %}">
+                    <label for="input-telephone" class="control-label">{{ entry_telephone }}</label>
+                    <input id="input-telephone" type="text" inputmode="tel" name="telephone" value="{% if telephone is defined %}{{ telephone }}{% endif %}" placeholder="{{ entry_placeholder_telephone }}" class="form-control"/>
+                </div>
+            {% endif %}
+            {% if field_name == 'email' %}
+                <div class="form-group {% if customer_field.status == 'required' %}required{% endif %}">
+                    <label for="input-email" class="control-label">{{ entry_email }}</label>
+                    <input autocomplete="off" id="input-email" type="text" name="email" value="{% if email is defined %}{{ email }}{% endif %}" placeholder="{{ entry_placeholder_email }}" class="form-control" {% if customer_id is defined %}readonly{% endif %}/>
+                </div>
+            {% endif %}
+            {% if field_name == 'fax' %}
+                <div class="form-group {% if customer_field.status == 'required' %}required{% endif %}">
+                    <label for="input-fax" class="control-label">{{ entry_fax }}</label>
+                    <input id="input-fax" type="text" name="fax" value="{% if fax is defined %}{{ fax }}{% endif %}" placeholder="{{ entry_placeholder_fax }}" class="form-control"/>
+                </div>
+            {% endif %}
+            {% if customer_field.location is defined and customer_field.location == 'customer' %}
+                {% if customer_field.type == 'select' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <select name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control">
+                            <option value="">{{ text_select }}</option>
+                            {% for custom_field_value in customer_field.custom_field_value %}
+                                <option value="{{ custom_field_value.custom_field_value_id }}" {% if customer_custom_field[customer_field.custom_field_id] is defined and custom_field_value.custom_field_value_id == customer_custom_field[customer_field.custom_field_id] %}selected="selected"{% endif %}>{{ custom_field_value.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'radio' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label">{{ customer_field.name }}</label>
+                        <div id="input-customer-custom-field{{ customer_field.custom_field_id }}">
+                            {% for custom_field_value in customer_field.custom_field_value %}
+                                <div class="radio">
+                                    <label class="checkout-radio">
+                                        <input class="checkbox-input" type="radio" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" value="{{ custom_field_value.custom_field_value_id }}" {% if customer_custom_field[customer_field.custom_field_id] is defined and custom_field_value.custom_field_value_id == customer_custom_field[customer_field.custom_field_id] %}checked="checked"{% endif %} />
+                                        <span class="checkbox-radio"></span>
+                                        {{ custom_field_value.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'checkbox' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label">{{ customer_field.name }}</label>
+                        <div id="input-customer-custom-field{{ customer_field.custom_field_id }}">
+                            {% for custom_field_value in customer_field.custom_field_value %}
+                                <div class="checkbox">
+                                    <label class="checkout-checkbox">
+                                        <input class="checkbox-input" type="checkbox" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}][]" value="{{ custom_field_value.custom_field_value_id }}" {% if customer_custom_field[customer_field.custom_field_id] is defined and custom_field_value.custom_field_value_id in customer_custom_field[customer_field.custom_field_id] %}checked="checked"{% endif %} />
+                                        <span class="checkbox-check"></span>
+                                        {{ custom_field_value.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'text' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <input type="text" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" value="{{ customer_custom_field[customer_field.custom_field_id] ?? customer_field.value }}" placeholder="{{ customer_field.name }}" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control"/>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'textarea' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <textarea name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" rows="1" placeholder="{{ customer_field.name }}" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control">{{ customer_custom_field[customer_field.custom_field_id] ?? customer_field.value }}</textarea>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'date' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <div class="input-group date">
+                            <input type="text" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" value="{{ customer_custom_field[customer_field.custom_field_id] ?? customer_field.value }}" placeholder="{{ customer_field.name }}" data-date-format="YYYY-MM-DD" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control"/>
+                            <span class="input-group-btn">
+									<button type="button" class="btn btn-default">
+                                        <i class="aw-icon aw-icon-calendar"></i>
+                                    </button>
+								</span>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'time' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <div class="input-group time">
+                            <input type="text" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" value="{{ customer_custom_field[customer_field.custom_field_id] ?? customer_field.value }}" placeholder="{{ customer_field.name }}" data-date-format="HH:mm" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control"/>
+                            <span class="input-group-btn">
+									<button type="button" class="btn btn-default">
+                                        <i class="aw-icon aw-icon-calendar"></i>
+                                    </button>
+								</span>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if customer_field.type == 'datetime' %}
+                    <div class="form-group custom-field{{ customer_field.required ? ' required' : '' }}" id="customer-custom-field{{ customer_field.custom_field_id }}">
+                        <label class="control-label" for="input-customer-custom-field{{ customer_field.custom_field_id }}">{{ customer_field.name }}</label>
+                        <div class="input-group datetime">
+                            <input type="text" name="custom_field[{{ customer_field.location }}][{{ customer_field.custom_field_id }}]" value="{{ customer_custom_field[customer_field.custom_field_id] ?? customer_field.value }}" placeholder="{{ customer_field.name }}" data-date-format="YYYY-MM-DD HH:mm" id="input-customer-custom-field{{ customer_field.custom_field_id }}" class="form-control"/>
+                            <span class="input-group-btn">
+									<button type="button" class="btn btn-default">
+                                        <i class="aw-icon aw-icon-calendar"></i>
+                                    </button>
+								</span>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if register_status %}
+        {% if not register_required %}
+            <div class="group-checkbox checkout-register">
+                <label class="checkout-checkbox">
+                    <input class="checkbox-input" type="checkbox" name="register" value="1" {% if register_checked %}checked="checked"{% endif %} />
+                    <span class="checkbox-check"></span>{{ text_register }}
+                </label>
+            </div>
+        {% endif %}
+
+        <div id="register-form" class="register-form-fields {% if not register_checked and not register_required %} hidden{% endif %}">
+            <div class="form-group required">
+                <label for="input-password" class="control-label">{{ entry_password }}</label>
+                <input id="input-password" type="password" name="password" placeholder="{{ entry_password }}" class="form-control"/>
+            </div>
+            <div class="form-group required">
+                <label for="input-confirm" class="control-label">{{ entry_confirm }}</label>
+                <input id="input-confirm" type="password" name="confirm" placeholder="{{ entry_confirm }}" class="form-control"/>
+            </div>
+        </div>
+    {% endif %}
+</div>

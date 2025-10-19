@@ -1,0 +1,72 @@
+<div class="totals-inner">
+    <div class="checkout-title">
+        <span class="cart-title">{{ text_you_order }}</span>
+        {% if show_weight is defined and show_weight == 1 %}
+            <span class="cart-weight">{{ weight }}</span>
+        {% endif %}
+    </div>
+    <div class="checkout-totals">
+        {% if free_shipping_status %}
+            <div class="free-shipping-left">
+                <div class="free-shipping-inner" data-fsl-width="{{ free_shipping_percentage }}">
+                    <div class="free-shipping-progress-bar{% if free_shipping_percentage == 100 %} hidden{% endif %}">
+                        <div class="free-shipping-bar-fill" style="width: {{ free_shipping_percentage }}%"></div>
+                    </div>
+                    {% if free_shipping_percentage < 100 %}
+                        <div class="free-shipping-info">
+                            {{ text_free_shipping_left }}
+                        </div>
+                    {% else %}
+                        <div class="free-shipping-info active-free-shipping">{{ text_free_shipping }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        <table class="table table_total table-cart">
+            {% for key,total in totals %}
+                <tr>
+                    {% if total['value'] != 0 %}
+                        <td class="text-left total-title{% if (key+1 == totals|length) %} total-last{% endif %}">
+                            {{ total['title'] }}:
+                            {% if total['code'] == 'coupon' %}
+                                <button type="button" class="btn-remove-coupon btn-remove-total-item" title="{{ button_remove_coupon }}">
+                                    <i class="aw-icon aw-icon-close"></i>
+                                </button>
+                            {% endif %}
+                            {% if total['code'] == 'voucher' %}
+                                <button type="button" class="btn-remove-voucher btn-remove-total-item" title="{{ button_remove_voucher }}">
+                                    <i class="aw-icon aw-icon-close"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                        <td class="text-right total-text">{{ total['text'] }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% if show_dont_call_me is defined and show_dont_call_me == 1 %}
+            <div class="form-group">
+                <label class="checkout-checkbox">
+                    <input class="checkbox-input" type="checkbox" name="dont_call_me" value="1" {% if dont_call_me %}checked="checked"{% endif %} />
+                    <span class="checkbox-check"></span>{{ text_dont_call_me }}
+                </label>
+            </div>
+        {% endif %}
+
+        {% if text_agree %}
+            <div class="form-group required">
+                <label class="checkout-checkbox">
+                    <input class="checkbox-input" type="checkbox" name="agree" value="1" id="input-agree" {% if agree %}checked="checked"{% endif %} />
+                    <span class="checkbox-check"></span>{{ text_agree }}
+                </label>
+            </div>
+        {% endif %}
+
+        <div class="confirm-block">
+            {% if not payment %}
+                <input type="button" class="btn btn-primary" data-loading-text="{{ text_loading }}" id="button-order" value="{{ button_checkout }} ">
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,373 @@
+<div class="payment_methods">
+    <div class="col-sm-4">
+        <div class="title-payment">{{ text_payment_restriction }}</div>
+        <ul class="nav nav-pills nav-stacked">
+            {% for p_key, paymentMethodData in paymentMethods %}
+                <li id="item-set-{{ paymentMethodData.code }}" {% if p_key == 0 %}class="active"{% endif %}>
+                    <a href="#tab-payment-methods-set-{{ paymentMethodData.code }}" data-toggle="tab">
+                        <span class="text-payment-method">{{ paymentMethodData.name }}</span>
+                        <span class="remove-payment-set" onclick="$('#item-set-{{ paymentMethodData.code }}').remove(); $('#tab-payment-methods-set-{{ paymentMethodData.code }}').remove(); $('#tab-payment-methods .nav-pills li:first-child a').trigger('click'); return false;">
+                            <i class="fa fa-trash-o"></i>
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li id="add_payment_methods">
+                <div class="tab-item-title">{{ text_payment_methods }}</div>
+                <div class="mt-15">
+                    {% if paymentMethodList is not empty %}
+                        <select name="all_payment_methods" id="" class="form-control">
+                            {% for paymentMethod in paymentMethodList %}
+                                <option value="{{ paymentMethod.code }}">{{ paymentMethod.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-success mt-10 w-100" onclick="addPaymentMethod();">
+                            <i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}
+                        </button>
+                    {% else %}
+                        {{ text_empty_payment_method }}
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-8">
+        <div class="tab-content sets-payment">
+            {% if paymentMethods is not empty %}
+                {% for payment_method_key, paymentMethod in paymentMethods %}
+                    <div id="tab-payment-methods-set-{{ paymentMethod.code }}" class="tab-pane {% if payment_method_key == 0 %}active{% endif %}">
+                        <div class="tab-item-title">
+                            <span class="payment-code">{{ paymentMethod.code }}</span> - {{ paymentMethod.name }}
+                            <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][name]" value="{{ paymentMethod.name }}">
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_status_payment_guest }}</div>
+                            <div class="col-xs-9 col-sm-6">
+                                <label class="checkbox-switch" for="payment_method_{{ paymentMethod.code }}_guest">
+                                    <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][guest]" value="0" id="payment_method_{{ paymentMethod.code }}_guest-off" {% if not paymentMethod.guest %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="payment_methods[{{ paymentMethod.code }}][guest]" value="1" id="payment_method_{{ paymentMethod.code }}_guest" {% if paymentMethod.guest %}checked="checked"{% endif %} />
+                                </label>
+                                <p class="help-block">{{ help_payment_guest }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_status_payment_authorized }}</div>
+                            <div class="col-xs-9 col-sm-6">
+                                <label class="checkbox-switch" for="payment_method_{{ paymentMethod.code }}_authorized">
+                                    <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][authorized]" value="0" id="payment_method_{{ paymentMethod.code }}_authorized-off" {% if not paymentMethod.authorized %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="payment_methods[{{ paymentMethod.code }}][authorized]" value="1" id="payment_method_{{ paymentMethod.code }}_authorized" {% if paymentMethod.authorized %}checked="checked"{% endif %} />
+                                </label>
+                                <p class="help-block">{{ help_payment_authorized }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_status_payment_method_title }}</div>
+                            <label class="col-xs-9 col-sm-6 checkbox-switch" for="payment_method_{{ paymentMethod.code }}_status_payment_method_title">
+                                <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][status_payment_method_title]" value="0" id="payment_method_{{ paymentMethod.code }}_status_payment_method_title-off" {% if not paymentMethod.status_payment_method_title %}checked="checked"{% endif %} />
+                                <input type="checkbox" name="payment_methods[{{ paymentMethod.code }}][status_payment_method_title]" value="1" id="payment_method_{{ paymentMethod.code }}_status_payment_method_title" {% if paymentMethod.status_payment_method_title %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                        <div class="payment-new-title form-group{% if paymentMethod.status_payment_method_title is not defined or paymentMethod.status_payment_method_title == 0 %} hidden{% endif %}">
+                            <label class="col-sm-3 control-label" for="input-payment-title-{{ paymentMethod.code }}">{{ entry_method_title }}</label>
+                            <div class="col-sm-9">
+                                {% include 'extension/module/aw_easy_checkout/components/lang-inline-group.twig' with {
+                                    id: 'input-payment-title-' ~ paymentMethod.code,
+                                    namePrefix: 'payment_methods[' ~ paymentMethod.code ~ '][title]',
+                                    value: paymentMethod.title,
+                                    languages: languages,
+                                    defaultLanguageId: defaultLanguageId
+                                } %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_status_payment_method_description }}</div>
+                            <label class="col-xs-9 col-sm-6 checkbox-switch" for="payment_method_{{ paymentMethod.code }}_status_payment_method_description">
+                                <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][status_payment_method_description]" value="0" id="payment_method_{{ paymentMethod.code }}_status_payment_method_description-off" {% if not paymentMethod.status_payment_method_description %}checked="checked"{% endif %} />
+                                <input type="checkbox" name="payment_methods[{{ paymentMethod.code }}][status_payment_method_description]" value="1" id="payment_method_{{ paymentMethod.code }}_status_payment_method_description" {% if paymentMethod.status_payment_method_description %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                        <div class="payment-new-description form-group{% if paymentMethod.status_payment_method_description is not defined or paymentMethod.status_payment_method_description == 0 %} hidden{% endif %}">
+                            <label class="col-sm-3 control-label" for="input-payment-description">{{ entry_payment_method_description }}</label>
+                            <div class="col-sm-9">
+                                {% include 'extension/module/aw_easy_checkout/components/textarea-group.twig' with {
+                                    id: 'input-payment-description-' ~ paymentMethod.code,
+                                    namePrefix: 'payment_methods[' ~ paymentMethod.code ~ '][description]',
+                                    value: paymentMethod.description,
+                                    languages: languages,
+                                    defaultLanguageId: defaultLanguageId
+                                } %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{ entry_image }}</label>
+                            <div class="col-sm-9">
+                                <a href="" id="thumb-group-{{ paymentMethod.code }}" data-toggle="image" class="img-thumbnail"><img src="{{ paymentMethod.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"/></a>
+                                <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][image]" value="{{ paymentMethod.image is defined ? paymentMethod.image : '' }}" id="input-group-{{ paymentMethod.code }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-sm-3 control-label">{{ entry_image_size }}</label>
+                            <div class="col-sm-9 col-md-6">
+                                <div class="input-group d-flex">
+                                    <span class="input-group-addon w-auto">{{ entry_width }}</span>
+                                    <input name="payment_methods[{{ paymentMethod.code }}][image_width]" value="{{ paymentMethod.image_width }}" type="text" class="form-control">
+                                    <span class="input-group-addon w-auto">{{ entry_height }}</span>
+                                    <input name="payment_methods[{{ paymentMethod.code }}][image_height]" value="{{ paymentMethod.image_height }}" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{ entry_payment_shipping_methods }}</label>
+                            <div class="col-sm-9">
+                                <div class="payment-list-items {% if paymentMethod.shipping is empty %}empty{% else %}has-ship{% endif %}">
+                                    <span class="no-shipping-methods{% if paymentMethod.shipping is not empty %} hidden{% endif %}">{{ text_for_all_shipping }}</span>
+                                    {% if paymentMethod.shipping is not empty %}
+                                        {% for payment_method_shipping_key, payment_method_shipping in paymentMethod.shipping %}
+                                            <div class="payment-item" id="shipping-code-{{ paymentMethod.code }}-{{ payment_method_shipping_key }}">
+                                                <span class="shipping-code">{{ payment_method_shipping.code }}</span>
+                                                <span class="shipping-text">{{ payment_method_shipping.text }}</span>
+                                                <span class="shipping-delete"><i class="fa fa-trash-o"></i></span>
+                                                <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][shipping][{{ payment_method_shipping_key }}][code]" value="{{ payment_method_shipping.code }}">
+                                                <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][shipping][{{ payment_method_shipping_key }}][text]" value="{{ payment_method_shipping.text }}">
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <select name="payment_shipping_method" id="input-payment-shipping-method-{{ paymentMethod.code }}" class="form-control"></select>
+                                <button type="button" data-payment-code="{{ paymentMethod.code }}" class="btn btn-success mt-10 add-payment-shipping">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+  $(document).on('click', '.payment-item .shipping-delete', function () {
+
+    let paymentList = $(this).closest('.form-group').find('.payment-list-items');
+    $(this).parent().remove();
+    if (paymentList.find('.payment-item').length === 0) {
+
+      paymentList.addClass('empty').removeClass('has-ship');
+      paymentList.find('.no-shipping-methods').removeClass('hidden');
+    }
+  });
+
+  function addPaymentMethod () {
+    let selectedPaymentOption = $('select[name="all_payment_methods"] option:selected');
+    let paymentCode = selectedPaymentOption.val();
+    let paymentTitle = selectedPaymentOption.text();
+    let itemSet = $('#item-set-' + paymentCode);
+
+    if (itemSet.length) {
+      if (!confirm('{{ text_payment_confirm }}')) {
+        return false;
+      } else {
+        itemSet.remove();
+        $('#tab-payment-methods-set-' + paymentCode).remove();
+      }
+    }
+
+    $('#add_payment_methods').before('<li id="item-set-' + paymentCode +
+      '"><a data-toggle="tab" href="#tab-payment-methods-set-' + paymentCode + '" ><span class="text-payment-method">' +
+      paymentTitle + '</span><span class="remove-payment-set" onclick="$(\'#item-set-' + paymentCode +
+      '\').remove(); $(\'#tab-payment-methods-set-' + paymentCode +
+      '\').remove(); $(\'#tab-payment-methods .nav-pills li:first-child a\').trigger(\'click\'); return false;"><i class="fa fa-trash-o"></i></span></a></li>');
+
+    let html = '<div class="tab-pane" id="tab-payment-methods-set-' + paymentCode + '">';
+    html += '<div class="tab-item-title"><span class="payment-code">' + paymentCode + '</span> - ' +
+      paymentTitle + '</div><input type="hidden" name="payment_methods[' + paymentCode + '][name]" value="' +
+      paymentTitle + '">';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status_payment_guest }}</div>';
+    html += '<div class="col-xs-9 col-sm-6">';
+    html += '<label class="checkbox-switch" for="payment_method_' + paymentCode +
+      '_guest">';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode +
+      '][guest]" value="0" id="payment_method_' + paymentCode +
+      '_guest-off" checked="checked" />';
+    html += '<input type="checkbox" name="payment_methods[' + paymentCode +
+      '][guest]" value="1" id="payment_method_' + paymentCode +
+      '_guest" checked="checked" />';
+    html += '</label>';
+    html += '<p class="help-block">{{ help_payment_guest }}</p>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status_payment_authorized }}</div>';
+    html += '<div class="col-xs-9 col-sm-6">';
+    html += '<label class="checkbox-switch" for="payment_method_' + paymentCode +
+      '_authorized">';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode +
+      '][authorized]" value="0" id="payment_method_' + paymentCode +
+      '_authorized-off" />';
+    html += '<input type="checkbox" name="payment_methods[' + paymentCode +
+      '][authorized]" value="1" id="payment_method_' + paymentCode +
+      '_authorized" />';
+    html += '</label>';
+    html += '<p class="help-block">{{ help_payment_authorized }}</p>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status_payment_method_title }}</div>';
+    html += '<div class="col-xs-9 col-sm-6">';
+    html += '<label class="checkbox-switch" for="payment_method_' + paymentCode +
+      '_status_payment_method_title">';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode +
+      '][status_payment_method_title]" value="0" id="payment_method_' + paymentCode +
+      '_status_payment_method_title-off" />';
+    html += '<input type="checkbox" name="payment_methods[' + paymentCode +
+      '][status_payment_method_title]" value="1" id="payment_method_' + paymentCode +
+      '_status_payment_method_title" />';
+    html += '</label>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="payment-new-title form-group hidden">';
+    html += '<label class="col-sm-3 control-label" for="input-payment-title-' + paymentCode +
+      '">{{ entry_method_title }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<input class="form-control" type="text" name="payment_methods[' + paymentCode +
+      '][title][{{ language.language_id }}]" value="" />';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_status_payment_method_description }}</div>';
+    html += '<div class="col-xs-9 col-sm-6">';
+    html += '<label class="checkbox-switch" for="payment_method_' + paymentCode +
+      '_status_payment_method_description">';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode +
+      '][status_payment_method_description]" value="0" id="payment_method_' + paymentCode +
+      '_status_payment_method_description-off" />';
+    html += '<input type="checkbox" name="payment_methods[' + paymentCode +
+      '][status_payment_method_description]" value="1" id="payment_method_' + paymentCode +
+      '_status_payment_method_description" />';
+    html += '</label>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="payment-new-description form-group hidden">';
+    html += '<label class="col-sm-3 control-label" for="input-payment-description">{{ entry_payment_method_description }}</label>';
+    html += '<div class="col-sm-9">';
+      {% for language in languages %}
+    html += '<div class="input-group">';
+    html += '<span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+    html += '<textarea rows="5" class="form-control" type="text" name="payment_methods[' + paymentCode +
+      '][description][{{ language.language_id }}]"></textarea>';
+    html += '</div>';
+      {% endfor %}
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ entry_image }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<a href="" id="thumb-group-' + paymentCode +'" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode + '][image]" value="" id="input-group-' +
+      paymentCode + '" />';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group required">';
+    html += '<label class="col-sm-3 control-label">{{ entry_image_size }}</label>';
+    html += '<div class="col-sm-9 col-md-6">';
+    html += '<div class="input-group d-flex">';
+    html += '<span class="input-group-addon w-auto">{{ entry_width }}</span>';
+    html += '<input name="payment_methods[' + paymentCode +
+      '][image_width]" value="32" type="text" class="form-control">';
+    html += '<span class="input-group-addon w-auto">{{ entry_height }}</span>';
+    html += '<input name="payment_methods[' + paymentCode +
+      '][image_height]" value="32" type="text" class="form-control">';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-3 control-label">{{ entry_payment_shipping_methods }}</label>';
+    html += '<div class="col-sm-9">';
+    html += '<div class="payment-list-items empty">';
+    html += '<span class="no-shipping-methods">{{ text_for_all_shipping }}</span>';
+    html += '</div>';
+    html += '<select name="payment_shipping_method" id="input-payment-shipping-method-' + paymentCode +
+      '" class="form-control"></select>';
+    html += '<button type="button" data-payment-code="' + paymentCode +
+      '" class="btn btn-success mt-10 add-payment-shipping"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}</button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    $('.sets-payment').append(html);
+
+    $('a[href=\'#tab-payment-methods-set-' + paymentCode + '\']').trigger('click');
+
+    getApiShipMethods();
+  }
+
+  $(document).on('click', '.add-payment-shipping', function () {
+
+    let paymentCode = $(this).data('payment-code');
+    let tabPaymentMethodSet = $('#tab-payment-methods-set-' + paymentCode);
+    let paymentList = tabPaymentMethodSet.find('.payment-list-items');
+
+    let selectedShippingOption;
+    if ($(this).closest('.sets-payment').length > 0) {
+      selectedShippingOption = tabPaymentMethodSet.find('select[name="payment_shipping_method"] option:selected');
+    } else {
+      selectedShippingOption = $('select[name="new_select_shipping_method"] option:selected');
+    }
+
+    let selectedShippingValue = selectedShippingOption.val();
+    let selectedShippingText = selectedShippingOption.text().replace(/\s*-\s*\[.*?]/g, '');
+    let selectedShippingMethod = selectedShippingOption.data('shipping-method');
+
+    paymentList.removeClass('empty').addClass('has-ship');
+    paymentList.find('.no-shipping-methods').addClass('hidden');
+
+    if (!paymentList.find('#shipping-code-' + paymentCode + '-' + selectedShippingValue).length) {
+      let html = '<div class="payment-item" id="shipping-code-' + paymentCode + '-' + selectedShippingValue + '">';
+      html += '<span class="shipping-code">' + selectedShippingMethod + '</span>';
+      html += '<span class="shipping-text">' + selectedShippingText + '</span>';
+      html += '<span class="shipping-delete"><i class="fa fa-trash-o"></i></span>';
+      html += '<input type="hidden" name="payment_methods[' + paymentCode + '][shipping][' + selectedShippingValue +
+        '][code]" value="' + selectedShippingMethod + '">';
+      html += '<input type="hidden" name="payment_methods[' + paymentCode + '][shipping][' + selectedShippingValue +
+        '][text]" value="' + selectedShippingText + '">';
+      html += '</div>';
+
+      paymentList.append(html);
+    }
+    $('#modal-shipping-methods').modal('hide');
+  });
+
+  $(document).on('change', "[name^='payment_method'][name$='[status_payment_method_title]']", function () {
+    if ($(this).prop('checked')) {
+      $(this).closest('.tab-pane').find('.payment-new-title').removeClass('hidden');
+    } else {
+      $(this).closest('.tab-pane').find('.payment-new-title').addClass('hidden');
+    }
+  });
+
+  $(document).on('change', "[name^='payment_method'][name$='[status_payment_method_description]']", function () {
+    if ($(this).prop('checked')) {
+      $(this).closest('.tab-pane').find('.payment-new-description').removeClass('hidden');
+    } else {
+      $(this).closest('.tab-pane').find('.payment-new-description').addClass('hidden');
+    }
+  });
+</script>

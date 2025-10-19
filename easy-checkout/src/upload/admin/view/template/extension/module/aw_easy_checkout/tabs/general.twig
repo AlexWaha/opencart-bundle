@@ -1,0 +1,212 @@
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_status }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="status">
+        <input type="hidden" name="status" value="0" id="status-off" {% if not status %}checked="checked"{% endif %} />
+        <input type="checkbox" name="status" value="1" id="status" {% if status %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_replace_cart }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="replace_cart">
+        <input type="hidden" name="replace_cart" value="0" id="replace_cart-off" {% if not replace_cart %}checked="checked"{% endif %} />
+        <input type="checkbox" name="replace_cart" value="1" id="replace_cart" {% if replace_cart %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_replace_checkout }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="replace_checkout">
+        <input type="hidden" name="replace_checkout" value="0" id="replace_checkout-off" {% if not replace_checkout %}checked="checked"{% endif %} />
+        <input type="checkbox" name="replace_checkout" value="1" id="replace_checkout" {% if replace_checkout %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ text_payment_address_same_as_shipping }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="payment_address_same_as_shipping">
+        <input type="hidden" name="payment_address_same_as_shipping" value="0" id="payment_address_same_as_shipping-off" {% if not payment_address_same_as_shipping %}checked="checked"{% endif %} />
+        <input type="checkbox" name="payment_address_same_as_shipping" value="1" id="payment_address_same_as_shipping" {% if payment_address_same_as_shipping %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ text_show_customer_addresses }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="show_customer_addresses">
+        <input type="hidden" name="show_customer_addresses" value="0" id="show_customer_addresses-off" {% if not show_customer_addresses %}checked="checked"{% endif %} />
+        <input type="checkbox" name="show_customer_addresses" value="1" id="show_customer_addresses" {% if show_customer_addresses %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="mask_type">{{ text_phone_mask_type }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <select name="mask_type" id="mask_type" class="form-control">
+            <option value="disabled" {% if mask_type == 'disabled' %}selected{% endif %}>{{ text_mask_disabled }}</option>
+            <option value="static" {% if mask_type == 'static' %}selected{% endif %}>{{ text_mask_static }}</option>
+            <option value="dynamic" {% if mask_type == 'dynamic' or mask_type is empty %}selected{% endif %}>{{ text_mask_dynamic }}</option>
+        </select>
+        <div class="form-text">
+            {{ text_mask_type_help }}
+        </div>
+    </div>
+</div>
+<div class="form-group" id="mask-group">
+    <label class="col-sm-3 control-label" for="mask">{{ text_phone_mask }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="text" name="mask" id="mask" value="{{ mask is not empty ? mask : '' }}" placeholder="+## (###) ###-##-##"/>
+        <div class="form-text" id="mask-help-text">
+            <b>{{ text_maska_help }}</b>
+            <br>{{ text_maska_tokens }}
+        </div>
+        <div class="form-text" id="mask-fallback-text" style="display: none;">
+            <b>{{ text_phone_mask_fallback }}</b>
+            <br>{{ text_phone_mask_fallback_help }}
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ text_min_price_order }}</label>
+    <div class="col-xs-9 col-sm-4">
+        {% if customerGroups is not empty %}
+            {% for group in customerGroups %}
+                <div class="input-group mb-15">
+                    <span class="input-group-addon w-20"><b>{{ group.name }}</b></span>
+                    <input class="form-control" type="text" name="min_price_order[{{ group.customer_group_id }}]" value="{{ min_price_order[group.customer_group_id] ?? '' }}"/>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ text_agree_default }}</div>
+    <label class="col-sm-9 checkbox-switch" for="agree_default">
+        <input type="hidden" name="agree_default" value="0" id="agree_default-off" {% if not agree_default %}checked="checked"{% endif %} />
+        <input type="checkbox" name="agree_default" value="1" id="agree_default" {% if agree_default %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ text_show_weight }}</div>
+    <label class="col-sm-9 checkbox-switch" for="show_weight">
+        <input type="hidden" name="show_weight" value="0" id="show_weight-off" {% if not show_weight %}checked="checked"{% endif %} />
+        <input type="checkbox" name="show_weight" value="1" id="show_weight" {% if show_weight %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ text_show_dont_call_me }}</div>
+    <label class="col-sm-9 checkbox-switch" for="show_dont_call_me">
+        <input type="hidden" name="show_dont_call_me" value="0" id="show_dont_call_me-off" {% if not show_dont_call_me %}checked="checked"{% endif %} />
+        <input type="checkbox" name="show_dont_call_me" value="1" id="show_dont_call_me" {% if show_dont_call_me %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="register_status">{{ entry_register }}</label>
+    <div class="col-sm-9">
+        <div class="btn-group" data-toggle="buttons">
+            <select name="register_status" id="register_status" class="form-control">
+                <option value="default" {% if (register_status == 'default') %}selected{% endif %}>{{ text_register_default }}</option>
+                <option value="required" {% if (register_status == 'required') %}selected{% endif %}>{{ text_register_required }}</option>
+                <option value="disabled" {% if (register_status == 'disabled') %}selected{% endif %}>{{ text_register_disabled }}</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label pt-0">{{ text_email_default }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="text" name="email_default" value="{{ email_default ?? '' }}"/>
+    </div>
+</div>
+<div class="form-group required">
+    <label class="col-sm-2 control-label">{{ entry_seo_url }}</label>
+    <div class="col-sm-10 table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <td class="text-left col-sm-2">{{ entry_store }}</td>
+                <td class="text-left col-sm-10">{{ entry_seo_url }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for store in store_list %}
+                <tr>
+                    <td class="text-left">{{ store.name }}</td>
+                    <td class="text-left">
+                        {% if isLegacy %}
+                            {% set lang = languages|filter(l => l.language_id == defaultLanguageId)|first %}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <img src="language/{{ lang.code }}/{{ lang.code }}.png" title="{{ lang.name }}" alt="{{ lang.name }}">
+                                </span>
+                                <input type="text"
+                                       name="seo_url[{{ store.store_id }}][{{ lang.language_id }}]"
+                                       value="{% if seo_url[store.store_id][lang.language_id] %}{{ seo_url[store.store_id][lang.language_id] }}{% endif %}"
+                                       placeholder="{{ entry_seo_url }}"
+                                       class="form-control"/>
+                            </div>
+                            {% if error.seo_url[store.store_id][lang.language_id] %}
+                                <div class="text-danger">{{ error.seo_url[store.store_id][lang.language_id] }}</div>
+                            {% endif %}
+                        {% endif %}
+                        {% if not isLegacy %}
+                            {% for language in languages %}
+                                <div class="input-group">
+                                <span class="input-group-addon">
+                                    <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" alt="{{ language.name }}">
+                                </span>
+                                    <input type="text"
+                                           name="seo_url[{{ store.store_id }}][{{ language.language_id }}]"
+                                           value="{% if seo_url[store.store_id][language.language_id] %}{{ seo_url[store.store_id][language.language_id] }}{% endif %}"
+                                           placeholder="{{ entry_seo_url }}"
+                                           class="form-control"/>
+                                </div>
+                                {% if error.seo_url[store.store_id][language.language_id] %}
+                                    <div class="text-danger">{{ error.seo_url[store.store_id][language.language_id] }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    const $maskType = $('#mask_type');
+    const $maskInput = $('#mask');
+    const $maskGroup = $maskInput.closest('.form-group');
+
+    function toggleMaskField () {
+      const maskType = $maskType.val();
+      const $helpText = $('#mask-help-text');
+      const $fallbackText = $('#mask-fallback-text');
+
+      if (maskType === 'disabled') {
+        $maskGroup.hide();
+      } else if (maskType === 'static') {
+        $maskGroup.show();
+        $helpText.show();
+        $fallbackText.hide();
+      } else if (maskType === 'dynamic') {
+        $maskGroup.show();
+        $helpText.hide();
+        $fallbackText.show();
+      }
+    }
+
+    toggleMaskField();
+
+    $maskType.on('change', toggleMaskField);
+  });
+</script>
+<div class="form-group">
+    <div class="col-sm-3 control-label">
+        {{ entry_use_theme_css }}
+    </div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="use_theme_css">
+        <input type="hidden" name="use_theme_css" value="0" id="use_theme_css-off" {% if not use_theme_css %}checked="checked"{% endif %} />
+        <input type="checkbox" name="use_theme_css" value="1" id="use_theme_css" {% if use_theme_css %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ text_help_use_theme_css }}</p>
+    </div>
+</div>

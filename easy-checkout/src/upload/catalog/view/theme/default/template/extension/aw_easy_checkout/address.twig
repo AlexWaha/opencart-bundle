@@ -1,0 +1,360 @@
+{% set addressType = addressType|default('shipping') %}
+{% set addressFields = shippingAddressFields|default([]) %}
+{% set addressTitle = addressType == 'payment' ? title_payment_address : title_shipping_address %}
+
+<div class="checkout-address{% if addressFields is empty %} hidden{% endif %}">
+    <div class="checkout-title">{{ addressTitle }}</div>
+    <div class="checkout-address-info">
+        {% if addressFields is not empty %}
+            {% if showCustomerAddresses and customerAddresses is not empty %}
+                <div class="form-group">
+                    <label for="customer-address-select" class="control-label">{{ entry_select_address }}</label>
+                    <select id="customer-address-select" class="form-control">
+                        <option value="">{{ text_select_address }}</option>
+                        {% for address in customerAddresses %}
+                            <option value="{{ address.address_id }}" {% if address.address_id == currentAddressId %}selected="selected"{% endif %}>
+                                {{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}{% if address.city %}, {{ address.city }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            <div id="{{ addressType }}-address" class="checkout-address-fields">
+                {% for field_name,address_field in addressFields %}
+                    {% if field_name == 'country' %}
+                        <div class="form-group {% if address_field.status == 'required' %}required{% endif %}">
+                            <label for="input-{{ addressType }}-country" class="control-label">{{ entry_country }}</label>
+                            <select {{ address_field.type }} {% if (address_field.type == 'select2') %}data-type="select2"{% endif %} id="input-{{ addressType }}-country" name="{{ addressType }}_country_id" class="form-control">
+                                <option value="">{{ text_select }}</option>
+                                {% for country in countries %}
+                                    {% if country.country_id == country_id %}
+                                        <option value="{{ country.country_id }}" data-iso="{{ country.iso_code_2 }}" selected="selected">{{ country.name }}</option>
+                                    {% else %}
+                                        <option value="{{ country.country_id }}" data-iso="{{ country.iso_code_2 }}">{{ country.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if field_name == 'zone_id' %}
+                        <div class="form-group{% if address_field.status == 'required' %} required{% endif %}{% if country_id == '' %} hidden{% endif %}">
+                            <label for="input-{{ addressType }}-zone" class="control-label">{{ entry_zone }}</label>
+                            <select {% if (address_field.type == 'select2') %}data-type="select2"{% endif %} id="input-{{ addressType }}-zone" name="{{ addressType }}_zone_id" class="form-control">
+                                {% if zones is not empty %}
+                                    <option value="">{{ text_select }}</option>
+                                    {% for zone in zones %}
+                                        {% if zone.zone_id == zone_id %}
+                                            <option value="{{ zone.zone_id }}" selected="selected">{{ zone.name }}</option>
+                                        {% else %}
+                                            <option value="{{ zone.zone_id }}">{{ zone.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if field_name == 'city' %}
+                        {% if address_field.type == 'input' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-city" class="control-label">{{ entry_city }}</label>
+                                <input autocomplete="off" id="input-{{ addressType }}-city" type="text" name="{{ addressType }}_city" value="{% if city is defined %}{{ city }}{% endif %}" placeholder="{{ entry_placeholder_city }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select2' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-city" class="control-label">{{ entry_city }}</label>
+                                <select data-type="select2" name="{{ addressType }}_city" id="input-{{ addressType }}-city" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% if city is not empty %}
+                                        <option value="{{ city }}" selected="selected">{{ city }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-city" class="control-label">{{ entry_city }}</label>
+                                <select name="{{ addressType }}_city" id="input-{{ addressType }}-city" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <option {% if city == custom_field.value %}selected="selected"{% endif %} value="{{ custom_field.value }}">{{ custom_field.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-city" class="control-label">{{ entry_city }}</label>
+                                <div id="input-{{ addressType }}-city">
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <div class="radio checkout-radio">
+                                            <label>
+                                                <input {% if city == custom_field.value %}checked="checked"{% endif %} type="radio" name="{{ addressType }}_city" value="{{ custom_field.value }}"/>
+                                                {{ custom_field.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if field_name == 'address_1' %}
+                        {% if address_field.type == 'input' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-1" class="control-label">{{ entry_address_1 }}</label>
+                                <input autocomplete="off" id="input-{{ addressType }}-address-1" type="text" name="{{ addressType }}_address_1" value="{% if address_1 is defined %}{{ address_1 }}{% endif %}" placeholder="{{ entry_placeholder_address_1 }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select2' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-1" class="control-label">{{ entry_address_1 }}</label>
+                                <select data-type="select2" name="{{ addressType }}_address_1" id="input-{{ addressType }}-address-1" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% if address_1 is not empty %}
+                                        <option value="{{ address_1 }}" selected="selected">{{ address_1 }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-1" class="control-label">{{ entry_address_1 }}</label>
+                                <select name="{{ addressType }}_address_1" id="input-{{ addressType }}-address-1" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <option {% if address_1 == custom_field.value %}selected="selected"{% endif %} value="{{ custom_field.value }}">{{ custom_field.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-1" class="control-label">{{ entry_address_1 }}</label>
+                                <div id="input-{{ addressType }}-address-1">
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <div class="radio checkout-radio">
+                                            <label>
+                                                <input {% if address_1 == custom_field.value %}checked="checked"{% endif %} type="radio" name="{{ addressType }}_address_1" value="{{ custom_field.value }}"/>
+                                                {{ custom_field.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if field_name == 'address_2' %}
+                        {% if address_field.type == 'input' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-2" class="control-label">{{ entry_address_2 }}</label>
+                                <input autocomplete="off" id="input-{{ addressType }}-address-2" type="text" name="{{ addressType }}_address_2" value="{% if address_2 is defined %}{{ address_2 }}{% endif %}" placeholder="{{ entry_placeholder_address_2 }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-2" class="control-label">{{ entry_address_2 }}</label>
+                                <select name="{{ addressType }}_address_2" id="input-{{ addressType }}-address-2" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <option {% if address_2 == custom_field.value %}selected="selected"{% endif %} value="{{ custom_field.value }}">{{ custom_field.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-address-2" class="control-label">{{ entry_address_2 }}</label>
+                                <div id="input-{{ addressType }}-address-2">
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <div class="radio checkout-radio">
+                                            <label>
+                                                <input {% if address_2 == custom_field.value %}checked="checked"{% endif %} type="radio" name="{{ addressType }}_address_2" value="{{ custom_field.value }}"/>
+                                                {{ custom_field.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if field_name == 'postcode' %}
+                        {% if address_field.type == 'input' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-postcode" class="control-label">{{ entry_postcode }}</label>
+                                <input autocomplete="off" id="input-{{ addressType }}-postcode" type="text" name="{{ addressType }}_postcode" value="{% if postcode is defined %}{{ postcode }}{% endif %}" placeholder="{{ entry_placeholder_postcode }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-postcode" class="control-label">{{ entry_postcode }}</label>
+                                <select name="{{ addressType }}_postcode" id="input-{{ addressType }}-postcode" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <option {% if postcode == custom_field.value %}selected="selected"{% endif %} value="{{ custom_field.value }}">{{ custom_field.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-postcode" class="control-label">{{ entry_postcode }}</label>
+                                <div id="input-{{ addressType }}-postcode">
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <div class="radio checkout-radio">
+                                            <label>
+                                                <input {% if city == custom_field.value %}checked="checked"{% endif %} type="radio" name="{{ addressType }}_postcode" value="{{ custom_field.value }}"/>
+                                                {{ custom_field.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if field_name == 'company' %}
+                        {% if address_field.type == 'input' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-company" class="control-label">{{ entry_company }}</label>
+                                <input autocomplete="off" id="input-{{ addressType }}-company" type="text" name="{{ addressType }}_company" value="{% if company is defined %}{{ company }}{% endif %}" placeholder="{{ entry_placeholder_company }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-company" class="control-label">{{ entry_company }}</label>
+                                <select name="{{ addressType }}_company" id="input-{{ addressType }}-company" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <option {% if company == custom_field.value %}selected="selected"{% endif %} value="{{ custom_field.value }}">{{ custom_field.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group{% if address_field.status == 'required' %} required{% endif %}">
+                                <label for="input-{{ addressType }}-company" class="control-label">{{ entry_company }}</label>
+                                <div id="input-{{ addressType }}-company">
+                                    {% for custom_field in address_field.custom_fields %}
+                                        <div class="radio checkout-radio">
+                                            <label>
+                                                <input {% if company == custom_field.value %}checked="checked"{% endif %} type="radio" name="{{ addressType }}_company" value="{{ custom_field.value }}"/>
+                                                {{ custom_field.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if address_field.location is defined and address_field.location == 'address' %}
+                        {% if address_field.type == 'select' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <select name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control">
+                                    <option value="">{{ text_select }}</option>
+                                    {% for custom_field_value in address_field.custom_field_value %}
+                                        <option value="{{ custom_field_value.custom_field_value_id }}" {% if address_custom_field[address_field.custom_field_id] is defined and custom_field_value.custom_field_value_id == address_custom_field[address_field.custom_field_id] %}selected="selected"{% endif %}>{{ custom_field_value.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'radio' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label">{{ address_field.name }}</label>
+                                <div id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                    {% for custom_field_value in address_field.custom_field_value %}
+                                        <div class="radio">
+                                            <label class="checkout-radio">
+                                                <input class="checkbox-input" type="radio" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" value="{{ custom_field_value.custom_field_value_id }}" {% if address_custom_field[address_field.custom_field_id] is defined and custom_field_value.custom_field_value_id == address_custom_field[address_field.custom_field_id] %}checked="checked"{% endif %} />
+                                                <span class="checkbox-radio"></span>
+                                                {{ custom_field_value.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'checkbox' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label">{{ address_field.name }}</label>
+                                <div id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                    {% for custom_field_value in address_field.custom_field_value %}
+                                        <div class="checkbox">
+                                            <label class="checkout-checkbox">
+                                                <input class="checkbox-input" type="checkbox" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}][]" value="{{ custom_field_value.custom_field_value_id }}" {% if address_custom_field[address_field.custom_field_id] is defined and custom_field_value.custom_field_value_id in address_custom_field[address_field.custom_field_id] %}checked="checked"{% endif %} />
+                                                <span class="checkbox-check"></span>
+                                                {{ custom_field_value.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'text' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <input type="text" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" value="{{ guest_custom_field[address_field.custom_field_id] ?? address_field.value }}" placeholder="{{ address_field.name }}" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control"/>
+                            </div>
+                        {% endif %}
+
+                        {% if address_field.type == 'textarea' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <textarea name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" rows="1" placeholder="{{ address_field.name }}" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control">{{ guest_custom_field[address_field.custom_field_id] ?? address_field.value }}</textarea>
+                            </div>
+                        {% endif %}
+
+                        {% if address_field.type == 'date' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <div class="input-group date">
+                                    <input type="text" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" value="{{ guest_custom_field[address_field.custom_field_id] ?? address_field.value }}" placeholder="{{ address_field.name }}" data-date-format="YYYY-MM-DD" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control"/>
+                                    <span class="input-group-btn">
+										<button type="button" class="btn btn-default">
+                                            <i class="aw-icon aw-icon-calendar"></i>
+                                        </button>
+									</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if address_field.type == 'time' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <div class="input-group time">
+                                    <input type="text" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" value="{{ guest_custom_field[address_field.custom_field_id] ?? address_field.value }}" placeholder="{{ address_field.name }}" data-date-format="HH:mm" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control"/>
+                                    <span class="input-group-btn">
+										<button type="button" class="btn btn-default">
+                                            <i class="aw-icon aw-icon-calendar"></i>
+                                        </button>
+									</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if address_field.type == 'datetime' %}
+                            <div class="form-group custom-field{{ address_field.required ? ' required' : '' }}" id="{{ addressType }}-custom-field{{ address_field.custom_field_id }}">
+                                <label class="control-label" for="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}">{{ address_field.name }}</label>
+                                <div class="input-group datetime">
+                                    <input type="text" name="custom_field[{{ addressType }}_address][{{ address_field.custom_field_id }}]" value="{{ guest_custom_field[address_field.custom_field_id] ?? address_field.value }}" placeholder="{{ address_field.name }}" data-date-format="YYYY-MM-DD HH:mm" id="input-{{ addressType }}-custom-field{{ address_field.custom_field_id }}" class="form-control"/>
+                                    <span class="input-group-btn">
+										<button type="button" class="btn btn-default">
+                                            <i class="aw-icon aw-icon-calendar"></i>
+                                        </button>
+									</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% if addressType == 'shipping' and showPaymentAddressCheckbox %}
+                <div class="form-group">
+                    <label class="checkout-checkbox">
+                        <input type="checkbox" name="payment_address_same_as_shipping" id="payment-address-same-as-shipping" value="1" {% if paymentAddressSameAsShippingChecked %}checked="checked"{% endif %} class="checkbox-input"/>
+                        <span class="checkbox-check"></span>
+                        {{ text_payment_address_same_as_shipping }}
+                    </label>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
