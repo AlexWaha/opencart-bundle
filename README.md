@@ -1,4 +1,4 @@
-![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg?style=flat-square)
+![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)  ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
 ![Static Badge](https://img.shields.io/badge/7%20-%20gray?label=Modules%20count&labelColor=green)
 
