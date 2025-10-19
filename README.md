@@ -1,6 +1,6 @@
 ![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)  ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Static Badge](https://img.shields.io/badge/5%20-%20gray?label=Modules%20count&labelColor=green)
+![Static Badge](https://img.shields.io/badge/6%20-%20gray?label=Modules%20count&labelColor=green)
 
 # <center>OpenCart Extension Bundle</center>
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
@@ -22,12 +22,13 @@ For detailed installation instructions, please refer to the ***/readme/index.htm
 ---
 ## Avalaible extensions:
 
-1. [Sms Notifications for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip)
-2. [Landing pages and links for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip)
-3. [Age Verification Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip)
-4. [Alcohol Dilution Calculator page for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip)
-5. [Global Layout for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/global-layout/dist/aw_global_layout_oc2.3-3x.ocmod.zip)
-6. More extensions will be added soon (approx 30+)
+1. [Easy Checkout Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/easy-checkout/dist/aw_easy_checkout_oc2.3-3.x.ocmod.zip) ⭐
+2. [Sms Notifications for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip) ⭐
+3. [Landing pages and links for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip)
+4. [Age Verification Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip)
+5. [Alcohol Dilution Calculator page for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip)
+6. [Global Layout for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/global-layout/dist/aw_global_layout_oc2.3-3x.ocmod.zip)
+7. More extensions will be added soon (approx 30+)
 ---
 
 ## Reporting Issues
