@@ -2,11 +2,8 @@
 
 /**
  * @author  Alexander Vakhovski (AlexWaha)
- *
  * @link    https://alexwaha.com
- *
  * @email   support@alexwaha.com
- *
  * @license GPLv3
  */
 
@@ -21,8 +18,23 @@ class AwXmlFeed extends Kernel
             $this->request->get['feed_id'] = (int) $feedId;
         }
 
+        $this->initSeoUrl();
+
         $controller = new ControllerExtensionFeedAwXmlFeed($this->getRegistry());
         $controller->index();
+    }
+
+    private function initSeoUrl()
+    {
+        $registry = $this->getRegistry();
+        $config = $registry->get('config');
+
+        $config->set('config_seo_url', true);
+
+        require_once DIR_APPLICATION . 'controller/startup/seo_url.php';
+
+        $seoUrl = new ControllerStartupSeoUrl($registry);
+        $seoUrl->index();
     }
 }
 
