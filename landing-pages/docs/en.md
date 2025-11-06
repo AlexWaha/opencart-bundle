@@ -20,7 +20,7 @@ The module allows you to create separate landing pages with a set of products, a
 
    Make sure you have installed the module **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
-   > This is an auxiliary function for all my modules
+   > This is an auxiliary function for all my modules. **Critically required**, the module will not work without it
 
 2. **FTP Upload Settings (OpenCart 2.x only)**
 
