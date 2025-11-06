@@ -17,7 +17,7 @@ These extensions compatible with **Opencart 2.3.x, 3.x**, 4.x* and provided **as
 1. Install **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)** first, this is a helper functionality for all my Opencart extensions
 2. Each extension has a **dist** folder, where you can find ready to install ***.ocmod.zip** files
 
-For detailed installation instructions, please refer to the ***/readme/index.html** file in Extension folder.
+For detailed installation instructions, please refer to the ***/docs/{en,ru}.md** file in Extension folder.
 
 ---
 ## Avalaible extensions:
