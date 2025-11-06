@@ -37,7 +37,9 @@
     $.ajax({
       url: $(this).data('url'),
       type: 'post',
-      data: 'sms_message=' + $('#input-sms-message').val(),
+      data: {
+        sms_message: $('#input-sms-message').val()
+      },
       dataType: 'json',
       crossDomain: true,
       beforeSend: function () {

@@ -41,6 +41,7 @@
                         <li><a href="#tab-setting" data-toggle="tab">{{ tab_setting }}</a></li>
                         <li><a href="#tab-gate-setting" data-toggle="tab">{{ tab_gate_setting }}</a></li>
                         <li><a href="#tab-log" data-toggle="tab">{{ tab_log }}</a></li>
+                        <li><a href="#tab-import-export" data-toggle="tab">{{ tab_import_export }}</a></li>
                         <li><a href="#tab-support" data-toggle="tab">{{ tab_support }}</a></li>
                     </ul>
                     <div class="tab-content">
@@ -801,6 +802,54 @@
                                 </div>
                             </fieldset>
                         </div>
+                        <div class="tab-pane" id="tab-import-export">
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><i class="fa fa-exchange"></i> {{ text_import_export_title }}</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="alert alert-info">
+                                            <i class="fa fa-info-circle"></i> {{ text_import_export_info }}
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title"><i class="fa fa-download"></i> {{ button_export }}</h4>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <p>{{ text_export_description }}</p>
+                                                        <button type="button" id="btn-export-config" class="btn btn-success btn-lg btn-block">
+                                                            <i class="fa fa-download"></i> {{ button_export }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title"><i class="fa fa-upload"></i> {{ button_import }}</h4>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <p>{{ text_import_description }}</p>
+                                                        <div class="alert alert-warning">
+                                                            {{ text_import_warning }}
+                                                        </div>
+                                                        <button type="button" id="button-import-config" data-loading-text="{{ text_loading }}" class="btn btn-primary btn-lg btn-block">
+                                                            <i class="fa fa-upload"></i> {{ button_import }}
+                                                        </button>
+                                                        <input type="file" id="import-file" name="import_file" accept=".json" style="display: none;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-pane" id="tab-support">
                             <div class="panel-body">
                                 {{ text_aw_support }}
@@ -818,7 +867,10 @@
     $.ajax({
       url: $(this).data('url'),
       type: 'post',
-      data: 'sms_message=' + $('#input-custom-client-sms').val() + '&phone=' + $('#input-custom-client-phone').val(),
+      data: {
+        sms_message: $('#input-custom-client-sms').val(),
+        phone: $('#input-custom-client-phone').val()
+      },
       dataType: 'json',
       crossDomain: true,
       beforeSend: function () {
@@ -880,6 +932,80 @@
         alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
       },
     });
+  });
+
+  // Import/Export handlers
+  $('#btn-export-config').on('click', function() {
+    const btn = $(this);
+    btn.button('loading');
+
+    window.location.href = 'index.php?route=extension/module/aw_sms_notify/exportConfig&{{ token_param }}';
+
+    setTimeout(function() {
+      btn.button('reset');
+    }, 2000);
+  });
+
+  $('#button-import-config').on('click', function() {
+    $('#import-file').trigger('click');
+  });
+
+  $('#import-file').on('change', function() {
+    const fileInput = $(this);
+    const importBtn = $('#button-import-config');
+
+    if (!fileInput.val()) {
+      return;
+    }
+
+    if (confirm('{{ text_import_warning|replace({'<strong>': '', '</strong>': ''})|striptags }}')) {
+      const formData = new FormData();
+      formData.append('import_file', fileInput[0].files[0]);
+
+      importBtn.button('loading');
+
+      $.ajax({
+        url: 'index.php?route=extension/module/aw_sms_notify/importConfig&{{ token_param }}',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+          importBtn.prop('disabled', true);
+        },
+        complete: function() {
+          importBtn.prop('disabled', false);
+        },
+        success: function(json) {
+          $('#tab-import-export .alert-dismissable').remove();
+          importBtn.button('reset');
+
+          if (json.error) {
+            let html = '<div class="alert alert-danger alert-dismissable"><i class="fa fa-exclamation-circle"></i> ' + json.error + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+            $('#tab-import-export .panel-body').prepend(html);
+          }
+
+          if (json.success) {
+            let html = '<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json.success + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+            $('#tab-import-export .panel-body').prepend(html);
+
+            setTimeout(function() {
+              location.reload();
+            }, 1500);
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          importBtn.button('reset');
+          $('#tab-import-export .alert-dismissable').remove();
+          let html = '<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+          $('#tab-import-export .panel-body').prepend(html);
+        }
+      });
+    } else {
+      fileInput.val('');
+    }
   });
 </script>
 {% if ckeditor %}

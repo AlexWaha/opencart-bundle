@@ -560,6 +560,65 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         }
     }
 
+    public function exportConfig()
+    {
+        if (! $this->validate()) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode([
+                'error' => $this->language->get('error_permission'),
+            ]));
+
+            return;
+        }
+
+        try {
+            $jsonData = $this->awCore->exportConfig($this->moduleName);
+
+            $filename = $this->moduleName . '_settings_' . date('Y-m-d_H-i-s') . '.json';
+
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->addHeader('Content-Disposition: attachment; filename="' . $filename . '"');
+            $this->response->setOutput($jsonData);
+
+        } catch (Exception $e) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode([
+                'error' => sprintf($this->language->get('error_export_failed'), $e->getMessage()),
+            ]));
+        }
+    }
+
+    public function importConfig()
+    {
+        $json = [];
+
+        if (! $this->validate()) {
+            $json['error'] = $this->language->get('error_permission');
+        } else {
+            if (isset($this->request->files['import_file']) && is_uploaded_file($this->request->files['import_file']['tmp_name'])) {
+                try {
+                    $fileContent = file_get_contents($this->request->files['import_file']['tmp_name']);
+
+                    if ($fileContent === false) {
+                        throw new Exception($this->language->get('error_import_read_file'));
+                    }
+
+                    $this->awCore->importConfig($this->moduleName, $fileContent);
+
+                    $json['success'] = $this->language->get('text_import_success');
+
+                } catch (Exception $e) {
+                    $json['error'] = sprintf($this->language->get('error_import_failed'), $e->getMessage());
+                }
+            } else {
+                $json['error'] = $this->language->get('error_import_file');
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
     protected function getLegacyList(): array
     {
         return [
