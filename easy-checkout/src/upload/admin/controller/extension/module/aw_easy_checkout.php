@@ -1056,7 +1056,6 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->model_extension_module_aw_easy_checkout->install();
 
         $this->installPermissions();
-        $this->installEvents();
     }
 
     public function uninstall()
@@ -1067,53 +1066,6 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
 
         $this->awCore->removeConfig($this->moduleName);
         $this->awCore->removeConfig($this->moduleChildName);
-        $this->uninstallEvents();
-    }
-
-    protected function installEvents()
-    {
-        if ($this->awCore->isLegacy()) {
-            $this->load->model('extension/event');
-            $this->model_extension_event->addEvent(
-                'aw_easy_checkout_url_rewrite',
-                'catalog/controller/*/after',
-                'extension/aw_easy_checkout/event',
-                1
-            );
-            $this->model_extension_event->addEvent(
-                'aw_easy_checkout_redirect',
-                'catalog/controller/*/before',
-                'extension/aw_easy_checkout/event/redirect',
-                1
-            );
-        } else {
-            $this->load->model('setting/event');
-            $this->model_setting_event->addEvent(
-                'aw_easy_checkout_url_rewrite',
-                'catalog/controller/*/after',
-                'extension/aw_easy_checkout/event',
-                1
-            );
-            $this->model_setting_event->addEvent(
-                'aw_easy_checkout_redirect',
-                'catalog/controller/*/before',
-                'extension/aw_easy_checkout/event/redirect',
-                1
-            );
-        }
-    }
-
-    protected function uninstallEvents()
-    {
-        if ($this->awCore->isLegacy()) {
-            $this->load->model('extension/event');
-            $this->model_extension_event->deleteEvent('aw_easy_checkout_url_rewrite');
-            $this->model_extension_event->deleteEvent('aw_easy_checkout_redirect');
-        } else {
-            $this->load->model('setting/event');
-            $this->model_setting_event->deleteEventByCode('aw_easy_checkout_url_rewrite');
-            $this->model_setting_event->deleteEventByCode('aw_easy_checkout_redirect');
-        }
     }
 
     protected function installPermissions()

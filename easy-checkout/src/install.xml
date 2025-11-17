@@ -5,6 +5,12 @@
     <version>1.0</version>
     <author>alexwaha</author>
     <link>https://alexwaha.com</link>
+    <file path="catalog/controller/startup/startup.php">
+        <operation error="skip">
+            <search><![CDATA[$this->registry->set('url']]></search>
+            <add position="after"><![CDATA[$this->url->addRewrite(new \Alexwaha\EasyCheckoutHelper($this->registry));]]></add>
+        </operation>
+    </file>
     <file path="admin/controller/common/header.php">
         <operation>
             <search><![CDATA[$data['logged'] = true;]]></search>

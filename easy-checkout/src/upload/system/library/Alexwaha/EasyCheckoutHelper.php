@@ -28,44 +28,29 @@ class EasyCheckoutHelper
         $this->moduleConfig = $this->core->getConfig($this->moduleName);
     }
 
-    public function shouldRedirect()
-    {
-        $route = $_GET['route'] ?? ($_GET['_route_'] ?? '');
-        $status = $this->moduleConfig->get('status');
-
-        if (! $status) {
-            return false;
-        }
-
-        if ($this->moduleConfig->get('replace_cart') && ($route === 'checkout/cart' || $route === 'cart')) {
-            return 'extension/' . $this->moduleName . '/main';
-        }
-
-        if ($this->moduleConfig->get('replace_checkout') && ($route === 'checkout/checkout' || $route === 'checkout')) {
-            return 'extension/' . $this->moduleName . '/main';
-        }
-
-        return false;
-    }
-
     public function rewrite($url)
     {
-        $route = $_GET['route'] ?? ($_GET['_route_'] ?? '');
+        $getRoute = isset($_GET['route']) ? $_GET['route'] : (isset($_GET['_route_']) ? $_GET['_route_'] : '');
         $status = $this->moduleConfig->get('status');
 
-        $config = $this->registry->get('config');
-        $storeId = (int)$config->get('config_store_id');
-        $languageId = (int)$config->get('config_language_id');
+        if (!$status) {
+            return $url;
+        }
 
-        $seoKeyword = $this->getSeoKeyword($storeId, $languageId);
+        // Replace cart links
+        if ($this->moduleConfig->get('replace_cart') && strpos($url, 'checkout/cart') !== false && $getRoute != 'checkout/cart') {
+            $url = str_replace('checkout/cart', 'extension/' . $this->moduleName . '/main', $url);
+        }
 
-        if ($status && $seoKeyword) {
-            $baseUrl = $config->get('config_ssl') ?: $config->get('config_url');
-            $easyCheckoutUrl = rtrim($baseUrl, '/') . '/' . $seoKeyword;
+        // Replace checkout links
+        if ($this->moduleConfig->get('replace_checkout') && strpos($url, 'checkout/checkout') !== false && $getRoute != 'checkout/checkout') {
+            $url = str_replace('checkout/checkout', 'extension/' . $this->moduleName . '/main', $url);
+        }
 
+        // Replace other checkout pages
+        if ($this->moduleConfig->get('replace_checkout')) {
             $pages = [
                 'checkout/buy',
-                'checkout/checkout',
                 'checkout/oct_fastorder',
                 'checkout/newstorecheckout',
                 'checkout/pixelshopcheckout',
@@ -77,74 +62,15 @@ class EasyCheckoutHelper
                 'lightcheckout/checkout',
             ];
 
-            if ($this->moduleConfig->get('replace_cart') && $route != 'checkout/cart' && $route != 'cart') {
-                if (strpos($url, 'checkout/cart') !== false) {
-                    $url = str_replace('checkout/cart', 'extension/' . $this->moduleName . '/main', $url);
-                }
-
-                $cartUrl = rtrim($baseUrl, '/') . '/cart';
-                if ($url === $cartUrl) {
-                    $url = $easyCheckoutUrl;
+            foreach ($pages as $page) {
+                if (strpos($url, $page) !== false && $getRoute != $page) {
+                    $url = str_replace($page, 'extension/' . $this->moduleName . '/main', $url);
+                    break;
                 }
             }
-
-            if ($this->moduleConfig->get('replace_checkout')) {
-                foreach ($pages as $page) {
-                    $shortPage = basename($page);
-                    if ($route != $page && $route != $shortPage) {
-                        if (strpos($url, $page) !== false) {
-                            $url = str_replace($page, 'extension/' . $this->moduleName . '/main', $url);
-                        }
-
-                        if ($shortPage === 'checkout') {
-                            $checkoutUrl = rtrim($baseUrl, '/') . '/checkout';
-                            if ($url === $checkoutUrl) {
-                                $url = $easyCheckoutUrl;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($seoKeyword && strpos($url, 'route=extension/' . $this->moduleName . '/main') !== false) {
-            $urlParts = parse_url(str_replace('&amp;', '&', $url));
-            parse_str($urlParts['query'] ?? '', $queryParams);
-
-            unset($queryParams['route']);
-
-            $newUrl = str_replace('index.php?route=extension/' . $this->moduleName . '/main', $seoKeyword, $url);
-
-            if (!empty($queryParams)) {
-                $newUrl = preg_replace('/[?&].*$/', '', $newUrl);
-                $newUrl .= '?' . http_build_query($queryParams);
-            }
-
-            $url = str_replace('&', '&amp;', $newUrl);
         }
 
         return $url;
-    }
-
-    private function getSeoKeyword($storeId, $languageId)
-    {
-        $seoUrls = $this->core->getSeoUrls('extension/' . $this->moduleName . '/main');
-
-        if (empty($seoUrls)) {
-            return null;
-        }
-
-        if (isset($seoUrls[$storeId][$languageId])) {
-            return $seoUrls[$storeId][$languageId];
-        }
-
-        foreach ($seoUrls as $store => $languages) {
-            if (is_array($languages) && isset($languages[$languageId])) {
-                return $languages[$languageId];
-            }
-        }
-
-        return null;
     }
 
     /**
