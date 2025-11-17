@@ -125,6 +125,14 @@ final class Model
         return $query->row['code'] ?: '';
     }
 
+    public function getDefaultLanguage(): int
+    {
+        $query = $this->db->query('SELECT language_id FROM `' . DB_PREFIX . "language` WHERE `status` = '1' AND `code` = '" . $this->config->get('config_language') . "'");
+
+        return (int) $query->row['language_id'] ?? (int) $this->config->get('config_language_id');
+    }
+
+
     public function getLanguages(): array
     {
         $query = $this->db->query('SELECT * FROM `' . DB_PREFIX . "language` WHERE `status` = '1'");
@@ -139,7 +147,8 @@ final class Model
     {
         $queryParam = $entityId ? $entityQuery . '=' . $entityId : $entityQuery;
 
-        $languageId = $this->config->get('config_language_id');
+        $languageId = $this->getDefaultLanguage();
+
         $defaultStoreId = (int) $this->config->get('config_store_id');
 
         if ($isLegacy) {
