@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
+    <name>alexwaha.com - Easy Checkout</name>
     <code>aw_easy_checkout</code>
-    <name>AW Easy Checkout</name>
+    <version>1.0</version>
     <version>1.0</version>
     <author>alexwaha</author>
     <link>https://alexwaha.com</link>
