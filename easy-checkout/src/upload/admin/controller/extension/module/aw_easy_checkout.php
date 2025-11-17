@@ -78,7 +78,14 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
 
         $this->params['error'] = $this->error;
 
-        $this->params['defaultLanguageId'] = $this->config->get('config_language_id');
+        $this->load->model('localisation/language');
+        $this->params['languages'] = $this->model_localisation_language->getLanguages();
+
+        $configLanguage = $this->config->get('config_language');
+
+        $defaultLanguage = $this->model_localisation_language->getLanguageByCode($configLanguage);
+
+        $this->params['defaultLanguageId'] = $defaultLanguage['language_id'] ?? $this->config->get('config_language_id');
 
         $this->load->model('localisation/country');
 
@@ -97,10 +104,6 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
             true
         );
 
-        $this->load->model('localisation/language');
-        $this->params['languages'] = $this->model_localisation_language->getLanguages();
-
-        $this->load->model('setting/extension');
         $this->load->model('tool/image');
 
         $this->params['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);

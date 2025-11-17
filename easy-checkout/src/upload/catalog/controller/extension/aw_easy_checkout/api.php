@@ -15,9 +15,17 @@ class ControllerExtensionAwEasyCheckoutApi extends Controller
     {
         $this->load->language('extension/' . $this->moduleName . '/lang');
 
+        $isLegacy = $this->awCore->isLegacy();
+
         $json = [];
 
-        if (! isset($this->session->data['api_id'])) {
+        if ($isLegacy) {
+            $apiToken = $this->session->data['api_token'] ?? false;
+        } else {
+            $apiToken = $this->session->data['api_id'] ?? false;
+        }
+
+        if (! isset($apiToken)) {
             $json['error'] = $this->language->get('error_permission');
         } else {
             if (empty($data['shipping_address'])) {
@@ -33,7 +41,7 @@ class ControllerExtensionAwEasyCheckoutApi extends Controller
 
             $shippingMethods = [];
 
-            if ($this->awCore->isLegacy()) {
+            if ($isLegacy) {
                 $this->load->model('extension/extension');
 
                 $results = $this->model_extension_extension->getExtensions('shipping');

@@ -128,20 +128,23 @@
                     <td class="text-left">{{ store.name }}</td>
                     <td class="text-left">
                         {% if isLegacy %}
-                            {% set lang = languages|filter(l => l.language_id == defaultLanguageId)|first %}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <img src="language/{{ lang.code }}/{{ lang.code }}.png" title="{{ lang.name }}" alt="{{ lang.name }}">
-                                </span>
-                                <input type="text"
-                                       name="seo_url[{{ store.store_id }}][{{ lang.language_id }}]"
-                                       value="{% if seo_url[store.store_id][lang.language_id] %}{{ seo_url[store.store_id][lang.language_id] }}{% endif %}"
-                                       placeholder="{{ entry_seo_url }}"
-                                       class="form-control"/>
-                            </div>
-                            {% if error.seo_url[store.store_id][lang.language_id] %}
-                                <div class="text-danger">{{ error.seo_url[store.store_id][lang.language_id] }}</div>
-                            {% endif %}
+                            {% for language in languages %}
+                                {% if language.language_id == defaultLanguageId %}
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" alt="{{ language.name }}">
+                                        </span>
+                                        <input type="text"
+                                               name="seo_url[{{ store.store_id }}][{{ language.language_id }}]"
+                                               value="{% if seo_url[store.store_id][language.language_id] %}{{ seo_url[store.store_id][language.language_id] }}{% endif %}"
+                                               placeholder="{{ entry_seo_url }}"
+                                               class="form-control"/>
+                                    </div>
+                                    {% if error.seo_url[store.store_id][language.language_id] %}
+                                        <div class="text-danger">{{ error.seo_url[store.store_id][language.language_id] }}</div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
                         {% if not isLegacy %}
                             {% for language in languages %}

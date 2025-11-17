@@ -1119,7 +1119,7 @@
         e.preventDefault();
         $.ajax({
           type: 'get',
-          url: self.controllerPath + 'login',
+          url: self.controllerPath + 'main/login',
           beforeSend: function () {
             self.loading(true);
           },

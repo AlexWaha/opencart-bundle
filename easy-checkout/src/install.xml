@@ -9,7 +9,15 @@
         <operation>
             <search><![CDATA[$data['logged'] = true;]]></search>
             <add position="after"><![CDATA[
-      	$data['aw_abandoned_widget'] = $this->load->controller('extension/module/aw_easy_abandoned/widget');
+             $this->load->model('extension/module/aw_easy_abandoned');
+
+             $abandonedTableExists = $this->model_extension_module_aw_easy_abandoned->isTableExists();
+
+             $data['aw_abandoned_widget'] = false;
+
+             if($abandonedTableExists) {
+      	         $data['aw_abandoned_widget'] = $this->load->controller('extension/module/aw_easy_abandoned/widget');
+             }
 			]]></add>
         </operation>
     </file>
