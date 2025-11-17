@@ -82,17 +82,14 @@
 
    **alexwaha.com - Easy Checkout**
 
-   > **Important:** When enabled, the module will automatically create Database Tables, Events and Access Rights
+   > **Important:** When enabled, the module will automatically create Database Tables and Access Rights. The module uses built-in OCMOD modification to integrate with OpenCart's routing system.
 
 ### Step 3: Post-Installation Self-Check
 
 Verify correct installation:
 
 - ✓ Module is present in the extensions list
-- ✓ In **Extensions → Events** section the following entries appeared:
-  - `aw_easy_checkout_url_rewrite`
-  - `aw_easy_checkout_redirect`
-- ✓ Modification cache has been refreshed
+- ✓ Modification cache has been refreshed (OCMOD modification is active)
 - ✓ Module settings page opens without errors
 
 ---
@@ -1439,21 +1436,25 @@ $mask = $helper->getPhoneMaskByCountry('UA');
 // Returns: +3 (###) ###-##-##
 ```
 
-### Events
+### URL Rewrite Integration
 
-Module registers following events:
+The module uses OpenCart's built-in URL Rewrite system for routing integration.
 
-#### aw_easy_checkout_url_rewrite
-Intercepts all catalog requests for cart/checkout redirect.
+#### How It Works
 
-**Trigger:** `catalog/controller/*/after`
-**Action:** `extension/aw_easy_checkout/event`
+Through OCMOD modification, the `catalog/controller/startup/startup.php` file is modified to register the `\Alexwaha\EasyCheckoutHelper` class as a URL Rewrite handler:
 
-#### aw_easy_checkout_redirect
-Handles redirects from standard cart/checkout pages to Easy Checkout.
+```php
+$this->url->addRewrite(new \Alexwaha\EasyCheckoutHelper($this->registry));
+```
 
-**Trigger:** `catalog/controller/*/before`
-**Action:** `extension/aw_easy_checkout/event/redirect`
+This approach allows the module to intercept and handle requests to cart and checkout pages without using Events.
+
+**Advantages:**
+- More performant mechanism (no extra event triggers)
+- Lower system load
+- Built-in compatibility with OpenCart architecture
+- No conflicts with other modules using events
 
 ### Adding Custom Block
 
@@ -1648,15 +1649,13 @@ echo '</pre>';
 #### Problem 1: Checkout Page Not Opening (404 Error)
 
 **Causes:**
-- Module events not installed
+- OCMOD modification not applied
 - Modification cache not refreshed
 - SEO URL configured incorrectly
 
 **Solution:**
-1. Check for events in **Extensions → Events**:
-   - `aw_easy_checkout_url_rewrite`
-   - `aw_easy_checkout_redirect`
-2. Refresh modification cache: **Extensions → Modifications → Refresh**
+1. Refresh modification cache: **Extensions → Modifications → Refresh**
+2. Verify that `alexwaha.com - Easy Checkout` modification is active in modifications list
 3. Check SEO URL on "General" tab
 4. Try disabling and re-enabling module
 
