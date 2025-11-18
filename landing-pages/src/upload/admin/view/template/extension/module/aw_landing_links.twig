@@ -64,9 +64,9 @@
                             <input type="text" name="autocomplete_page" value="" placeholder="{{ entry_page }}" id="input-page" class="form-control" />
                             <div id="page-list" class="well well-sm" style="height: 150px; overflow: auto;">
                                 {% for page in pages %}
-                                    <div id="page-list{{ page.page_id }}"><i class="fa fa-minus-circle text-danger remove-page"></i> {{ page.name }}
+                                    <div id="page-list{{ page.landing_page_id }}"><i class="fa fa-minus-circle text-danger remove-page"></i> {{ page.name }}
                                         <i class="fa fa-hand-grab-o handle"></i>
-                                        <input type="hidden" name="pages[]" value="{{ page.page_id }}" />
+                                        <input type="hidden" name="pages[]" value="{{ page.landing_page_id }}" />
                                     </div>
                                 {% endfor %}
                             </div>

@@ -39,15 +39,13 @@ class ControllerExtensionModuleAwLandingLinks extends Controller
 
         $pages = [];
 
-        if ($pagesConfig) {
-            $allPages = $this->model_extension_module_aw_landing_links->getPages($pagesConfig);
+        $allPages = $this->model_extension_module_aw_landing_links->getPages($pagesConfig);
 
-            foreach ($allPages as $page) {
-                $pages[] = [
-                    'landing_page_id' => $page['landing_page_id'],
-                    'name'            => $page['name'],
-                ];
-            }
+        foreach ($allPages as $page) {
+            $pages[] = [
+                'landing_page_id' => $page['landing_page_id'],
+                'name'            => $page['name'],
+            ];
         }
 
         $grouped = [];

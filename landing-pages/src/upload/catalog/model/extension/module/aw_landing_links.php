@@ -11,23 +11,26 @@ class ModelExtensionModuleAwLandingLinks extends Model
 {
     public function getPages(array $pageIds = []): array
     {
-        if (empty($pageIds)) {
-            return [];
+        $languageId = (int) $this->config->get('config_language_id');
+
+        $sql = "SELECT l.landing_page_id, ld.name
+                FROM `" . DB_PREFIX . "aw_landing_page` l
+                LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` ld
+                    ON l.landing_page_id = ld.landing_page_id
+                WHERE l.status = 1
+                  AND ld.language_id = '" . $languageId . "'";
+
+        if (!empty($pageIds)) {
+            $ids = array_map(function ($v) {
+                return is_string($v)
+                    ? "'" . addslashes($v) . "'"
+                    : (int) $v;
+            }, $pageIds);
+
+            $sql .= " AND l.landing_page_id IN (" . implode(', ', $ids) . ")";
         }
 
-        $idsList = implode(', ', array_map(function ($v) {
-            return is_string($v) ? "'" . addslashes($v) . "'" : $v;
-        }, $pageIds));
-
-        $languageId = (int)$this->config->get('config_language_id');
-
-        $query = $this->db->query("SELECT l.landing_page_id, ld.name
-        FROM `" . DB_PREFIX . "aw_landing_page` l
-        LEFT JOIN `" . DB_PREFIX . "aw_landing_page_description` ld
-            ON l.landing_page_id = ld.landing_page_id
-        WHERE l.landing_page_id IN ($idsList)
-          AND l.status = 1
-          AND ld.language_id = '" . $languageId . "'");
+        $query = $this->db->query($sql);
 
         return $query->rows;
     }
