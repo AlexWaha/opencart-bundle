@@ -19,15 +19,15 @@ return [
     'github_url' => 'https://github.com/alexwaha/opencart-bundle',
 
     'review_text' => 'Оставьте свой отзыв на моем сайте:',
-    'review_url' => 'https://alexwaha.com/plugin-reviews',
-    'review_link_text' => 'Отзывы о плагинах',
+    'review_url' => 'https://alexwaha.com/reviews',
+    'review_link_text' => 'Отзывы',
 
     'contacts_title' => 'Контакты',
     'telegram_url' => 'https://t.me/alexwaha_dev',
     'telegram_handle' => '@alexwaha_dev',
     'email' => 'support@alexwaha.com',
-    'bug_report_url' => 'https://alexwaha.com/bug-report',
-    'bug_report_text' => 'Сообщить об ошибке',
+    'bug_report_url' => 'https://alexwaha.com/contact',
+    'bug_report_text' => 'Форма обратной связи',
 
     'website_url' => 'https://alexwaha.com',
     'website_logo' => 'https://alexwaha.com/img/logo.png',
