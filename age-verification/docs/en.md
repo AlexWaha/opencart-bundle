@@ -115,7 +115,7 @@ The module uses the Twig templating engine, and does not require declaring langu
 
 This project is licensed under the [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
 
-The rights and authorship of this software belong to the developer Oleksandr Vakhovskyi, also known as: Alexwaha, Ocdev.pro, website [https://alexwaha.com](https://alexwaha.com)
+The rights and authorship of this software belong to the developer Oleksandr Vakhovskyi (Alexwaha), website [https://alexwaha.com](https://alexwaha.com)
 
 ---
 
@@ -131,7 +131,8 @@ The rights and authorship of this software belong to the developer Oleksandr Vak
 
 - **Telegram:** [@alexwaha_dev](https://t.me/alexwaha_dev)
 - **Email:** [support@alexwaha.com](mailto:support@alexwaha.com)
-- **Bug report:** [https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+- **Bug Report:** [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+- **Contact Form:** [https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 ---
 
