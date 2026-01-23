@@ -1,0 +1,58 @@
+<div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> {{ text_events_description }}
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_login }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_login">
+        <input type="hidden" name="track_login" value="0" {% if not trackLogin %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_login" value="1" id="track_login" {% if trackLogin %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_login_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_signup }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_signup">
+        <input type="hidden" name="track_signup" value="0" {% if not trackSignup %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_signup" value="1" id="track_signup" {% if trackSignup %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_signup_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_wishlist }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_wishlist">
+        <input type="hidden" name="track_wishlist" value="0" {% if not trackWishlist %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_wishlist" value="1" id="track_wishlist" {% if trackWishlist %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_wishlist_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_select_item }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_select_item">
+        <input type="hidden" name="track_select_item" value="0" {% if not trackSelectItem %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_select_item" value="1" id="track_select_item" {% if trackSelectItem %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_select_item_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_coupon }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_coupon">
+        <input type="hidden" name="track_coupon" value="0" {% if not trackCoupon %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_coupon" value="1" id="track_coupon" {% if trackCoupon %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_coupon_help }}</p>
+    </div>
+</div>

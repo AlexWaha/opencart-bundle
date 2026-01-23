@@ -1,0 +1,7 @@
+{% if trackingCode %}
+    {{ trackingCode|raw }}
+{% endif %}
+{% if jsConfig %}
+    <script>window.awEcommerceTrackingConfig = {{ jsConfig|raw }};</script>
+    <script src="catalog/view/javascript/aw_ecommerce_tracking.js"></script>
+{% endif %}

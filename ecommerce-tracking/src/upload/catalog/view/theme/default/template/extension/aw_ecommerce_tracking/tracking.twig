@@ -1,0 +1,16 @@
+{% if eventDataJson %}
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({ ecommerce: null });
+      dataLayer.push({{ eventDataJson|raw }});
+      {% if debug %}
+      console.log('alexwaha.com - E-commerce Tracking:', {{ eventDataJson|raw }});
+      {% endif %}
+    </script>
+{% endif %}
+{% if productsDataJson %}
+    <script>
+      window.awProductsData = window.awProductsData || {};
+      Object.assign(window.awProductsData, {{ productsDataJson|raw }});
+    </script>
+{% endif %}

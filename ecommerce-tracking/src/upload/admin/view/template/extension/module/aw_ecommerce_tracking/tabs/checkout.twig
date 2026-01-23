@@ -1,0 +1,115 @@
+<div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> {{ text_checkout_description }}
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_add_to_cart }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_add_to_cart">
+        <input type="hidden" name="track_add_to_cart" value="0" {% if not trackAddToCart %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_add_to_cart" value="1" id="track_add_to_cart" {% if trackAddToCart %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_add_to_cart_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_remove_from_cart }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_remove_from_cart">
+        <input type="hidden" name="track_remove_from_cart" value="0" {% if not trackRemoveFromCart %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_remove_from_cart" value="1" id="track_remove_from_cart" {% if trackRemoveFromCart %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_remove_from_cart_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_view_cart }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_view_cart">
+        <input type="hidden" name="track_view_cart" value="0" {% if not trackViewCart %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_view_cart" value="1" id="track_view_cart" {% if trackViewCart %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_view_cart_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_begin_checkout }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_begin_checkout">
+        <input type="hidden" name="track_begin_checkout" value="0" {% if not trackBeginCheckout %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_begin_checkout" value="1" id="track_begin_checkout" {% if trackBeginCheckout %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_begin_checkout_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_shipping_info }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_shipping_info">
+        <input type="hidden" name="track_shipping_info" value="0" {% if not trackShippingInfo %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_shipping_info" value="1" id="track_shipping_info" {% if trackShippingInfo %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_shipping_info_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_payment_info }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_payment_info">
+        <input type="hidden" name="track_payment_info" value="0" {% if not trackPaymentInfo %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_payment_info" value="1" id="track_payment_info" {% if trackPaymentInfo %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_payment_info_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_purchase }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_purchase">
+        <input type="hidden" name="track_purchase" value="0" {% if not trackPurchase %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_purchase" value="1" id="track_purchase" {% if trackPurchase %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_purchase_help }}</p>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_include_tax }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="include_tax">
+        <input type="hidden" name="include_tax" value="0" {% if not includeTax %}checked="checked"{% endif %} />
+        <input type="checkbox" name="include_tax" value="1" id="include_tax" {% if includeTax %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_include_tax_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_include_shipping }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="include_shipping">
+        <input type="hidden" name="include_shipping" value="0" {% if not includeShipping %}checked="checked"{% endif %} />
+        <input type="checkbox" name="include_shipping" value="1" id="include_shipping" {% if includeShipping %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_include_shipping_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_include_coupons }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="include_coupons">
+        <input type="hidden" name="include_coupons" value="0" {% if not includeCoupons %}checked="checked"{% endif %} />
+        <input type="checkbox" name="include_coupons" value="1" id="include_coupons" {% if includeCoupons %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_include_coupons_help }}</p>
+    </div>
+</div>

@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>alexwaha.com - E-commerce Tracking (GA4)</name>
+    <code>aw_ecommerce_tracking</code>
+    <version>2.0.0</version>
+    <author>Alexander Vakhovski (AlexWaha)</author>
+    <link>https://alexwaha.com</link>
+
+    <!-- ==================== HEADER - GTM Code ==================== -->
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search><![CDATA[$data['title']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTrackingHeader'] = $this->load->controller('extension/module/aw_ecommerce_tracking/getHeader');
+            $data['awTrackingBody'] = $this->load->controller('extension/module/aw_ecommerce_tracking/getBody');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Header Template - Insert GTM Code in head -->
+    <file path="catalog/view/theme/*/template/common/header.tpl" error="skip">
+        <operation>
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTrackingHeader ?? ''; ?>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<body class="<?php echo $class; ?>">]]></search>
+            <add position="replace"><![CDATA[<body class="<?php echo $class; ?>">
+<?php echo $awTrackingBody ?? ''; ?>            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/common/header.twig" error="skip">
+        <operation>
+            <search><![CDATA[</head>]]></search>
+            <add position="before"><![CDATA[
+{{ awTrackingHeader|default('')|raw }}
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search regex="true"><![CDATA[(<body[^>]*>)]]></search>
+            <add position="replace"><![CDATA[$1
+{{ awTrackingBody|default('')|raw }}            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== CATEGORY PAGE ==================== -->
+    <file path="catalog/controller/product/category.php">
+        <operation>
+            <search><![CDATA[$data['continue']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/category', ['products' => $results, 'category_info' => $category_info ?? [], 'category_id' => $category_id ?? 0]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== SEARCH PAGE ==================== -->
+    <file path="catalog/controller/product/search.php">
+        <operation>
+            <search><![CDATA[$data['column_left'] = $this->load->controller('common/column_left');]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/search', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== MANUFACTURER INFO PAGE (with products) ==================== -->
+    <file path="catalog/controller/product/manufacturer.php" error="skip">
+        <operation>
+            <search><![CDATA[$data['limit'] = $limit;]]></search>
+            <add position="after"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/manufacturer', ['products' => $results, 'manufacturer_info' => $manufacturer_info ?? [], 'manufacturer_id' => $manufacturer_id ?? 0]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== SPECIAL PAGE ==================== -->
+    <file path="catalog/controller/product/special.php">
+        <operation>
+            <search><![CDATA[$data['continue']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/special', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== PRODUCT PAGE ==================== -->
+    <file path="catalog/controller/product/product.php">
+        <operation>
+            <search><![CDATA[$data['heading_title']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/product', ['product_info' => $product_info]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== CART PAGE ==================== -->
+    <file path="catalog/controller/checkout/cart.php">
+        <operation>
+            <search><![CDATA[$data['continue']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/cart');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== STANDARD CHECKOUT PAGE ==================== -->
+    <file path="catalog/controller/checkout/checkout.php">
+        <operation>
+            <search><![CDATA[$data['logged'] = $this->customer->isLogged();]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/checkout');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Standard Checkout Template - Insert tracking -->
+    <file path="catalog/view/theme/*/template/checkout/checkout.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/checkout.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== CHECKOUT SUCCESS ==================== -->
+    <!-- Note: order_id is unset before $data['continue'], so we capture it early -->
+    <file path="catalog/controller/checkout/success.php">
+        <operation>
+            <search><![CDATA[$this->cart->clear();]]></search>
+            <add position="after"><![CDATA[
+            $awTrackingOrderId = (int) $this->session->data['order_id'];
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$data['continue']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/success', ['order_id' => $awTrackingOrderId ?? 0]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== LOGIN ==================== -->
+    <file path="catalog/controller/account/login.php">
+        <operation>
+            <search><![CDATA[$this->response->redirect($this->url->link('account/account']]></search>
+            <add position="before"><![CDATA[
+            $this->load->controller('extension/module/aw_ecommerce_tracking/setLoginFlag');
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/account/account.php">
+        <operation>
+            <search><![CDATA[$data['content_top']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/accountLogin');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== REGISTRATION ==================== -->
+    <file path="catalog/controller/account/register.php">
+        <operation>
+            <search><![CDATA[$this->response->redirect($this->url->link('account/success']]></search>
+            <add position="before"><![CDATA[
+            $this->load->controller('extension/module/aw_ecommerce_tracking/setSignupFlag');
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/account/success.php">
+        <operation>
+            <search><![CDATA[$data['continue']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/accountSuccess');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== MODULES ==================== -->
+
+    <!-- Featured Module -->
+    <file path="catalog/controller/extension/module/featured.php" error="skip">
+        <operation>
+            <search><![CDATA[return $this->load->view(]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleFeatured', ['products' => $awTrackingProducts ?? []]);
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$data['products'] = array();]]></search>
+            <add position="before"><![CDATA[
+            $awTrackingProducts = [];
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$data['products'][] = array(]]></search>
+            <add position="before"><![CDATA[
+            $awTrackingProducts[] = $product_info;
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Latest Module -->
+    <file path="catalog/controller/extension/module/latest.php" error="skip">
+        <operation>
+            <search><![CDATA[return $this->load->view(]]></search>
+            <add position="before"><![CDATA[
+        $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleLatest', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Bestseller Module -->
+    <file path="catalog/controller/extension/module/bestseller.php" error="skip">
+        <operation>
+            <search><![CDATA[return $this->load->view(]]></search>
+            <add position="before"><![CDATA[
+        $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleBestseller', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Special Module -->
+    <file path="catalog/controller/extension/module/special.php" error="skip">
+        <operation>
+            <search><![CDATA[return $this->load->view(]]></search>
+            <add position="before"><![CDATA[
+        $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleSpecial', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== MODULE TEMPLATES ==================== -->
+
+    <!-- Featured Module Template -->
+    <file path="catalog/view/theme/*/template/extension/module/featured.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/featured.twig" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Latest Module Template -->
+    <file path="catalog/view/theme/*/template/extension/module/latest.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/latest.twig" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Bestseller Module Template -->
+    <file path="catalog/view/theme/*/template/extension/module/bestseller.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/bestseller.twig" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Special Module Template -->
+    <file path="catalog/view/theme/*/template/extension/module/special.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/special.twig" error="skip">
+        <operation>
+            <search><![CDATA[<h3>]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== PAGE TEMPLATES - Add tracking output ==================== -->
+
+    <!-- Category Template -->
+    <file path="catalog/view/theme/*/template/product/category.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/category.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Search Template -->
+    <file path="catalog/view/theme/*/template/product/search.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/search.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Manufacturer Template -->
+    <file path="catalog/view/theme/*/template/product/manufacturer_info.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/manufacturer_info.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Special Template -->
+    <file path="catalog/view/theme/*/template/product/special.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/special.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Product Template -->
+    <file path="catalog/view/theme/*/template/product/product.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/product.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Cart Template -->
+    <file path="catalog/view/theme/*/template/checkout/cart.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/cart.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Success Template (Checkout) -->
+    <file path="catalog/view/theme/*/template/common/success.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/common/success.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Account Template (Login event) -->
+    <file path="catalog/view/theme/*/template/account/account.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/account/account.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Account Success Template (SignUp event) -->
+    <file path="catalog/view/theme/*/template/account/success.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/account/success.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== AW Viewed Module Integration ==================== -->
+
+    <!-- AW Viewed Module - Shows recently viewed products (module block) -->
+    <file path="catalog/controller/extension/module/aw_viewed.php" error="skip">
+        <operation>
+            <search><![CDATA[$this->response->setOutput($this->load->view('extension/module/]]></search>
+            <add position="before"><![CDATA[
+        $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleViewed', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- AW Viewed Page - Shows all recently viewed products (full page) -->
+    <file path="catalog/controller/product/aw_viewed.php" error="skip">
+        <operation>
+            <search><![CDATA[$data['continue'] = $this->url->link('common/home');]]></search>
+            <add position="after"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/pageViewed', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- AW Viewed Templates -->
+    <file path="catalog/view/theme/*/template/extension/module/aw_viewed.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div class="]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/aw_viewed.twig" error="skip">
+        <operation>
+            <search><![CDATA[<div class="]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/aw_viewed_products.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div class="]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/aw_viewed_products.twig" error="skip">
+        <operation>
+            <search><![CDATA[<div class="]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/aw_viewed.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/aw_viewed.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== Simple Checkout Integration (simpleopencart.com) ==================== -->
+    <file path="catalog/controller/checkout/simplecheckout.php" error="skip">
+        <operation>
+            <search><![CDATA[$this->_templateData['breadcrumbs'] = array();]]></search>
+            <add position="before"><![CDATA[
+            $this->_templateData['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/checkout');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Simple Checkout Login (modal login) -->
+    <file path="catalog/controller/checkout/simplecheckout_login.php" error="skip">
+        <operation>
+            <search><![CDATA[if ($this->simplecheckout->getOpencartVersion()]]></search>
+            <add position="before"><![CDATA[
+                    $this->load->controller('extension/module/aw_ecommerce_tracking/setLoginFlag');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Simple Register (sign_up event) -->
+    <file path="catalog/controller/account/simpleregister.php" error="skip">
+        <operation>
+            <search><![CDATA[$this->simpleregister->redirect($this->url->link('account/success'));]]></search>
+            <add position="before"><![CDATA[
+                $this->load->controller('extension/module/aw_ecommerce_tracking/setSignupFlag');
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->_templateData['redirect'] = $this->url->link('account/success');]]></search>
+            <add position="before"><![CDATA[
+                $this->load->controller('extension/module/aw_ecommerce_tracking/setSignupFlag');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Simple Checkout Cart (view_cart event) -->
+    <file path="catalog/controller/checkout/simplecheckout_cart.php" error="skip">
+        <operation>
+            <search><![CDATA[$this->setOutputContent($this->renderPage('checkout/simplecheckout_cart']]></search>
+            <add position="before"><![CDATA[
+            $this->_templateData['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/simpleCart', ['products' => $products]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Simple Checkout Templates -->
+    <file path="catalog/view/theme/*/template/checkout/simplecheckout.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div id="simplecheckout"]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/simplecheckout.twig" error="skip">
+        <operation>
+            <search><![CDATA[<div id="simplecheckout"]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/simplecheckout_cart.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div class="simple-cart]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/simplecheckout_cart.twig" error="skip">
+        <operation>
+            <search><![CDATA[<div class="simple-cart]]></search>
+            <add position="before"><![CDATA[
+{{ awTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== AW Easy Checkout Integration ==================== -->
+    <!-- Controller: adds tracking data -->
+    <file path="catalog/controller/extension/aw_easy_checkout/main.php" error="skip">
+        <operation>
+            <search><![CDATA[$data['header']]]></search>
+            <add position="before"><![CDATA[
+        $data['awEcommerceTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/checkout');
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Template: outputs tracking code -->
+    <file path="catalog/view/theme/*/template/extension/aw_easy_checkout/main.twig" error="skip">
+        <operation>
+            <search><![CDATA[{{ header }}]]></search>
+            <add position="after"><![CDATA[
+{{ awEcommerceTracking|default('')|raw }}
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== OCD Viewed Module Integration ==================== -->
+
+    <!-- OCD Viewed Module - Shows recently viewed products (module block via AJAX) -->
+    <file path="catalog/controller/extension/module/ocd_viewed.php" error="skip">
+        <operation>
+            <search><![CDATA[$this->response->setOutput($this->load->view('extension/module/ocd_viewed_products', $data));]]></search>
+            <add position="before"><![CDATA[
+        $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/moduleViewed', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- OCD Viewed Page - Non-AJAX version (full page) -->
+    <file path="catalog/controller/product/ocd_viewed.php" error="skip">
+        <operation>
+            <search><![CDATA[$data['continue'] = $this->url->link('common/home');
+
+        $data['column_left']]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/pageViewed', ['products' => $results]);
+
+            ]]></add>
+        </operation>
+        <!-- AJAX version - getProducts method -->
+        <operation>
+            <search><![CDATA[$this->response->setOutput($this->load->view('product/ocd_viewed_products', $data));]]></search>
+            <add position="before"><![CDATA[
+            $data['awTracking'] = $this->load->controller('extension/module/aw_ecommerce_tracking/pageViewed', ['products' => $results]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- OCD Viewed Templates -->
+    <file path="catalog/view/theme/*/template/extension/module/ocd_viewed.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div class="]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/extension/module/ocd_viewed_products.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php foreach ($products as $product) { ?>]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/ocd_viewed.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<?php echo $header; ?>]]></search>
+            <add position="after"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/ocd_viewed_products.tpl" error="skip">
+        <operation>
+            <search><![CDATA[<div id="ocd-viewed"]]></search>
+            <add position="before"><![CDATA[
+<?php echo $awTracking ?? ''; ?>
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ==================== COUPON/VOUCHER - Return discount value ==================== -->
+
+    <!-- Coupon Controller - Add discount value to response -->
+    <file path="catalog/controller/extension/total/coupon.php">
+        <operation>
+            <search><![CDATA[$json['redirect'] = $this->url->link('checkout/cart');]]></search>
+            <add position="after"><![CDATA[
+            $json['discount'] = $this->load->controller('extension/module/aw_ecommerce_tracking/getCouponDiscount', ['coupon_info' => $coupon_info]);
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- Voucher Controller - Add discount value to response -->
+    <file path="catalog/controller/extension/total/voucher.php">
+        <operation>
+            <search><![CDATA[$json['redirect'] = $this->url->link('checkout/cart');]]></search>
+            <add position="after"><![CDATA[
+            $json['discount'] = $this->load->controller('extension/module/aw_ecommerce_tracking/getVoucherDiscount', ['voucher_info' => $voucher_info]);
+            ]]></add>
+        </operation>
+    </file>
+
+</modification>

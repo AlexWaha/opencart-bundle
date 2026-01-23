@@ -1,0 +1,102 @@
+<div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> {{ text_ga4_reference_description|raw }}
+</div>
+
+<div class="text-right" style="margin-bottom: 15px;">
+    <a href="{{ text_ga4_doc_url }}" target="_blank" class="btn btn-primary">
+        <i class="fa fa-external-link"></i> {{ text_ga4_doc_link }}
+    </a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th style="width: 180px;">{{ text_ga4_event }}</th>
+            <th style="width: 100px;">{{ text_ga4_type }}</th>
+            <th>{{ text_ga4_description }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code class="badge-code">view_item_list</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_view_item_list }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">view_item</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_view_item }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">select_item</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_select_item }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_to_cart</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_to_cart }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">remove_from_cart</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_remove_from_cart }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">view_cart</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_view_cart }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">begin_checkout</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_begin_checkout }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_shipping_info</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_shipping_info }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_payment_info</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_payment_info }}</td>
+        </tr>
+        <tr class="success">
+            <td><code class="badge-code">purchase</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td><strong>{{ text_ga4_purchase }}</strong></td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">login</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_login }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">sign_up</code></td>
+            <td><span class="label label-info">{{ text_ga4_type_server }}</span></td>
+            <td>{{ text_ga4_sign_up }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_to_wishlist</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_to_wishlist }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_coupon</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_coupon }}</td>
+        </tr>
+        <tr>
+            <td><code class="badge-code">add_voucher</code></td>
+            <td><span class="label label-warning">{{ text_ga4_type_js }}</span></td>
+            <td>{{ text_ga4_add_voucher }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="well well-sm">
+    <strong><i class="fa fa-lightbulb-o"></i> {{ text_ga4_legend }}:</strong>
+    <span class="label label-info">{{ text_ga4_type_server }}</span> - {{ text_ga4_legend_server }}
+    <span class="label label-warning">{{ text_ga4_type_js }}</span> - {{ text_ga4_legend_js }}
+</div>

@@ -1,0 +1,69 @@
+<div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> {{ text_pages_description }}
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_category }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_category">
+        <input type="hidden" name="track_category" value="0" {% if not trackCategory %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_category" value="1" id="track_category" {% if trackCategory %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_category_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_search }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_search">
+        <input type="hidden" name="track_search" value="0" {% if not trackSearch %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_search" value="1" id="track_search" {% if trackSearch %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_search_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_manufacturer }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_manufacturer">
+        <input type="hidden" name="track_manufacturer" value="0" {% if not trackManufacturer %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_manufacturer" value="1" id="track_manufacturer" {% if trackManufacturer %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_manufacturer_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_special }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_special">
+        <input type="hidden" name="track_special" value="0" {% if not trackSpecial %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_special" value="1" id="track_special" {% if trackSpecial %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_special_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_product }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_product">
+        <input type="hidden" name="track_product" value="0" {% if not trackProduct %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_product" value="1" id="track_product" {% if trackProduct %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_product_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_compare }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_compare">
+        <input type="hidden" name="track_compare" value="0" {% if not trackCompare %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_compare" value="1" id="track_compare" {% if trackCompare %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_track_compare_help }}</p>
+    </div>
+</div>

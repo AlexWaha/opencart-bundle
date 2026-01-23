@@ -1,0 +1,34 @@
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_status }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="status">
+        <input type="hidden" name="status" value="0" id="status-off" {% if not status %}checked="checked"{% endif %} />
+        <input type="checkbox" name="status" value="1" id="status" {% if status %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="tracking_code">{{ entry_tracking_code }}</label>
+    <div class="col-sm-9">
+        <textarea name="tracking_code" id="tracking_code" rows="10" class="form-control" placeholder="<!-- Google Tag Manager -->...">{{ trackingCode }}</textarea>
+        <p class="help-block">{{ entry_tracking_code_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="tracking_code_body">{{ entry_tracking_code_body }}</label>
+    <div class="col-sm-9">
+        <textarea name="tracking_code_body" id="tracking_code_body" rows="6" class="form-control" placeholder="<!-- Google Tag Manager (noscript) -->...">{{ trackingCodeBody }}</textarea>
+        <p class="help-block">{{ entry_tracking_code_body_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_debug_mode }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="debug_mode">
+        <input type="hidden" name="debug_mode" value="0" id="debug_mode-off" {% if not debugMode %}checked="checked"{% endif %} />
+        <input type="checkbox" name="debug_mode" value="1" id="debug_mode" {% if debugMode %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_debug_mode_help }}</p>
+    </div>
+</div>

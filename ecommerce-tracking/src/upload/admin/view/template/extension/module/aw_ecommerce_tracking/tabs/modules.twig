@@ -1,0 +1,43 @@
+<div class="alert alert-info">
+    <i class="fa fa-info-circle"></i> {{ text_modules_description }}
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_module_latest }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_module_latest">
+        <input type="hidden" name="track_module_latest" value="0" {% if not trackModuleLatest %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_module_latest" value="1" id="track_module_latest" {% if trackModuleLatest %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_module_featured }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_module_featured">
+        <input type="hidden" name="track_module_featured" value="0" {% if not trackModuleFeatured %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_module_featured" value="1" id="track_module_featured" {% if trackModuleFeatured %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_module_bestseller }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_module_bestseller">
+        <input type="hidden" name="track_module_bestseller" value="0" {% if not trackModuleBestseller %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_module_bestseller" value="1" id="track_module_bestseller" {% if trackModuleBestseller %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_module_special }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_module_special">
+        <input type="hidden" name="track_module_special" value="0" {% if not trackModuleSpecial %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_module_special" value="1" id="track_module_special" {% if trackModuleSpecial %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_track_module_aw_viewed }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="track_module_aw_viewed">
+        <input type="hidden" name="track_module_aw_viewed" value="0" {% if not trackModuleAwViewed %}checked="checked"{% endif %} />
+        <input type="checkbox" name="track_module_aw_viewed" value="1" id="track_module_aw_viewed" {% if trackModuleAwViewed %}checked="checked"{% endif %} />
+    </label>
+</div>

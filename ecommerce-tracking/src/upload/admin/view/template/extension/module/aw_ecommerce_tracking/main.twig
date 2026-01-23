@@ -1,0 +1,73 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-ecommerce-tracking" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-ecommerce-tracking" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'general', label: tab_general },
+                                { id: 'pages', label: tab_pages },
+                                { id: 'modules', label: tab_modules },
+                                { id: 'checkout', label: tab_checkout },
+                                { id: 'events', label: tab_events },
+                                { id: 'advanced', label: tab_advanced },
+                                { id: 'ga4_reference', label: tab_ga4_reference },
+                                { id: 'support', label: tab_support }
+                            ] %}
+                            {% set active_tab = 'general' %}
+
+                            {% include 'extension/module/aw_ecommerce_tracking/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_ecommerce_tracking/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}
