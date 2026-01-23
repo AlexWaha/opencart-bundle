@@ -40,6 +40,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
     public function index()
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
+        $this->awCore->addStyles();
 
         $this->load->model('extension/module/' . $this->moduleName);
 

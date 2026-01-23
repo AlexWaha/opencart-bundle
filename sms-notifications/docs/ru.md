@@ -294,7 +294,7 @@ $this->model_extension_module_aw_sms_notify->sendMessage($smsData);
 
 Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
 
-Права и авторство на ПО принадлежат разработчику Ваховскому Александру Витальевичу, он же: Alexwaha, Ocdev.pro, сайт [https://alexwaha.com](https://alexwaha.com)
+Права и авторство на ПО принадлежат разработчику Ваховскому Александру Витальевичу (Alexwaha), сайт [https://alexwaha.com](https://alexwaha.com)
 
 ---
 
@@ -310,7 +310,8 @@ $this->model_extension_module_aw_sms_notify->sendMessage($smsData);
 
 - **Telegram:** [@alexwaha_dev](https://t.me/alexwaha_dev)
 - **Email:** [support@alexwaha.com](mailto:support@alexwaha.com)
-- **Bug report:** [https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+- **Bug Report:** [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+- **Contact Form:** [https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 ---
 
