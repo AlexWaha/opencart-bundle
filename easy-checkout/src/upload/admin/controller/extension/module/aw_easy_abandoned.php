@@ -41,8 +41,7 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
     public function index()
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
-
-        $this->document->addStyle('view/stylesheet/' . $this->moduleParentName . '/style.min.css');
+        $this->awCore->addStyles();
 
         $this->load->model('extension/module/' . $this->moduleName);
 
@@ -279,7 +278,7 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
     {
         $this->document->setTitle($this->language->get('heading_title_setting'));
 
-        $this->document->addStyle('view/stylesheet/' . $this->moduleParentName . '/style.css');
+        $this->awCore->addStyles();
 
         $this->document->addStyle('view/javascript/summernote/summernote.css');
         $this->document->addScript('view/javascript/summernote/summernote.js');

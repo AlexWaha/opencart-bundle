@@ -42,12 +42,12 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
     public function index()
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
+        $this->awCore->addStyles();
 
         $this->load->model('setting/setting');
         $this->load->model('extension/module/' . $this->moduleName);
 
         $this->document->addScript('view/javascript/' . $this->moduleName . '/Sortable.min.js');
-        $this->document->addStyle('view/stylesheet/' . $this->moduleName . '/style.min.css');
 
         $this->document->addStyle('view/javascript/summernote/summernote.css');
         $this->document->addScript('view/javascript/summernote/summernote.js');
