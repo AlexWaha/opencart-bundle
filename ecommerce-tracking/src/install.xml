@@ -245,80 +245,73 @@
     </file>
 
     <!-- ==================== MODULE TEMPLATES ==================== -->
+    <!-- Using regex with delimiters to find last </div> and insert tracking after it -->
 
     <!-- Featured Module Template -->
     <file path="catalog/view/theme/*/template/extension/module/featured.tpl" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-<?php echo $awTracking ?? ''; ?>
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+<?php echo $awTracking ?? ''; ?>]]></add>
         </operation>
     </file>
 
     <file path="catalog/view/theme/*/template/extension/module/featured.twig" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-{{ awTracking|default('')|raw }}
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+{{ awTracking|default('')|raw }}]]></add>
         </operation>
     </file>
 
     <!-- Latest Module Template -->
     <file path="catalog/view/theme/*/template/extension/module/latest.tpl" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-<?php echo $awTracking ?? ''; ?>
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+<?php echo $awTracking ?? ''; ?>]]></add>
         </operation>
     </file>
 
     <file path="catalog/view/theme/*/template/extension/module/latest.twig" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-{{ awTracking|default('')|raw }}
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+{{ awTracking|default('')|raw }}]]></add>
         </operation>
     </file>
 
     <!-- Bestseller Module Template -->
     <file path="catalog/view/theme/*/template/extension/module/bestseller.tpl" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-<?php echo $awTracking ?? ''; ?>
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+<?php echo $awTracking ?? ''; ?>]]></add>
         </operation>
     </file>
 
     <file path="catalog/view/theme/*/template/extension/module/bestseller.twig" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-{{ awTracking|default('')|raw }}
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+{{ awTracking|default('')|raw }}]]></add>
         </operation>
     </file>
 
     <!-- Special Module Template -->
     <file path="catalog/view/theme/*/template/extension/module/special.tpl" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-<?php echo $awTracking ?? ''; ?>
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+<?php echo $awTracking ?? ''; ?>]]></add>
         </operation>
     </file>
 
     <file path="catalog/view/theme/*/template/extension/module/special.twig" error="skip">
         <operation>
-            <search><![CDATA[<h3>]]></search>
-            <add position="before"><![CDATA[
-{{ awTracking|default('')|raw }}
-            ]]></add>
+            <search regex="true"><![CDATA[~(.*)(</div>)\s*$~s]]></search>
+            <add position="replace"><![CDATA[$1$2
+{{ awTracking|default('')|raw }}]]></add>
         </operation>
     </file>
 
@@ -766,5 +759,4 @@
             ]]></add>
         </operation>
     </file>
-
 </modification>
