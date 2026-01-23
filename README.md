@@ -85,7 +85,6 @@ Learn more about me on my [website](https://alexwaha.com) and connect with me on
 [![Developer's Homepage](https://img.shields.io/badge/Developer%27s%20Homepage-alexwaha.com-blue)](https://alexwaha.com)  
 [![Bug Report](https://img.shields.io/badge/Bug%20Report-GitHub%20Issues-red)](https://github.com/AlexWaha/opencart-bundle/issues)
 [![Contact Form](https://img.shields.io/badge/Contact%20Form-alexwaha.com/contact-yellow)](https://alexwaha.com/contact)
-[![Documentation](https://img.shields.io/badge/Documentation-alexwaha.com/docs-brightgreen)](https://alexwaha.com/docs)  
 [![Blog](https://img.shields.io/badge/Blog-alexwaha.com/blog-orange)](https://alexwaha.com/blog)  
 [![Medium](https://img.shields.io/badge/Medium-@mr.alexwaha-blueviolet)](https://medium.com/@mr.alexwaha)  
 [![Telegram](https://img.shields.io/badge/Telegram-alexwaha_dev-9cf)](https://t.me/alexwaha_dev)
