@@ -37,6 +37,7 @@ class ControllerExtensionModuleAwGlobalLayout extends Controller
     public function index(array $postData = [])
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
+        $this->awCore->addStyles();
 
         $this->document->addScript('view/javascript/Sortable.min.js');
 
