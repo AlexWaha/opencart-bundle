@@ -37,6 +37,7 @@ class ControllerExtensionModuleAwMoonshineCalculator extends Controller
     public function index()
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
+        $this->awCore->addStyles();
 
         if ($this->config->get('config_editor_default')) {
             $this->document->addScript('view/javascript/ckeditor/ckeditor.js');
