@@ -81,12 +81,23 @@ final class View
 
             $fullPath = $baseDir . $templateFile;
 
-            if (! is_file($fullPath)) {
+            // Check OCMOD modification folder first
+            $modificationDir = defined('DIR_MODIFICATION') ? DIR_MODIFICATION : DIR_STORAGE . 'modification/';
+            $modificationBaseDir = $isAdmin
+                ? $modificationDir . 'admin/view/template/'
+                : $modificationDir . 'catalog/view/theme/' . ($theme ?? 'default') . '/template/';
+            $modificationPath = $modificationBaseDir . $templateFile;
+
+            $originalBaseDir = $baseDir;
+
+            if (is_file($modificationPath)) {
+                $fullPath = $modificationPath;
+            } elseif (! is_file($fullPath)) {
                 $fallbackDir = DIR_TEMPLATE . 'default/template/';
                 $fallbackPath = $fallbackDir . $templateFile;
 
                 if (is_file($fallbackPath)) {
-                    $baseDir = $fallbackDir;
+                    $originalBaseDir = $fallbackDir;
                     $fullPath = $fallbackPath;
                 } else {
                     throw new Exception('Template not found: ' . $fullPath);
@@ -95,10 +106,13 @@ final class View
 
             $content = file_get_contents($fullPath);
 
-            $loader = new ChainLoader([
-                new FilesystemLoader($baseDir),
+            $loaders = [
+                new FilesystemLoader($modificationBaseDir),
+                new FilesystemLoader($originalBaseDir),
                 new ArrayLoader(['template' => $content]),
-            ]);
+            ];
+
+            $loader = new ChainLoader($loaders);
 
             $twig = new Environment($loader, $config);
             $twig->addExtension(new DebugExtension());

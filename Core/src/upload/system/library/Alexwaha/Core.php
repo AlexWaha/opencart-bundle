@@ -56,6 +56,16 @@ final class Core
         return $this->view->render($template, $data, $isString);
     }
 
+    public function addStyles(): void
+    {
+        $document = $this->registry->get('document');
+
+        if ($document) {
+            $document->addStyle('view/stylesheet/awcore/ui.min.css');
+        }
+    }
+
+
     public function isLegacy(): int
     {
         if (is_file(DIR_SYSTEM . 'engine/router.php')) {
