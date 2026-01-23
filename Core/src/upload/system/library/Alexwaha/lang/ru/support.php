@@ -26,8 +26,10 @@ return [
     'telegram_url' => 'https://t.me/alexwaha_dev',
     'telegram_handle' => '@alexwaha_dev',
     'email' => 'support@alexwaha.com',
-    'bug_report_url' => 'https://alexwaha.com/contact',
-    'bug_report_text' => 'Форма обратной связи',
+    'bug_report_url' => 'https://github.com/alexwaha/opencart-bundle/issues',
+    'bug_report_text' => 'Сообщить об ошибке (GitHub Issues)',
+    'contact_form_url' => 'https://alexwaha.com/contact',
+    'contact_form_text' => 'Форма обратной связи',
 
     'website_url' => 'https://alexwaha.com',
     'website_logo' => 'https://alexwaha.com/img/logo.png',

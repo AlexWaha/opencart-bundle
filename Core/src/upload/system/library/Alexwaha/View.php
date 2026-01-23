@@ -106,11 +106,17 @@ final class View
 
             $content = file_get_contents($fullPath);
 
-            $loaders = [
-                new FilesystemLoader($modificationBaseDir),
-                new FilesystemLoader($originalBaseDir),
-                new ArrayLoader(['template' => $content]),
-            ];
+            $loaders = [];
+
+            if (is_dir($modificationBaseDir)) {
+                $loaders[] = new FilesystemLoader($modificationBaseDir);
+            }
+
+            if (is_dir($originalBaseDir)) {
+                $loaders[] = new FilesystemLoader($originalBaseDir);
+            }
+
+            $loaders[] = new ArrayLoader(['template' => $content]);
 
             $loader = new ChainLoader($loaders);
 
