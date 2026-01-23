@@ -1144,7 +1144,8 @@ If you can't solve the problem yourself:
 2. **Contact support:**
    - Telegram: [@alexwaha_dev](https://t.me/alexwaha_dev)
    - Email: [support@alexwaha.com](mailto:support@alexwaha.com)
-   - Bug report: [https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+   - Bug Report: [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+   - Contact Form: [https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 > **Important:** Technical support for this module is available on a paid basis only. Bug fixes in the main repository are performed without schedule, as the developer has free time.
 
@@ -1161,9 +1162,7 @@ This project is distributed under the [GNU General Public License version 3 (GPL
 Rights and authorship of this software belong to the developer:
 **Alexander Vakhovski (Oleksandr Vakhovskyi)**
 
-Also known as:
-- Alexwaha
-- Ocdev.pro
+Also known as: Alexwaha
 
 Official website: [https://alexwaha.com](https://alexwaha.com)
 
@@ -1206,8 +1205,11 @@ Module setup by author, customization, creating custom templates, resolving conf
 **Email:**
 [support@alexwaha.com](mailto:support@alexwaha.com)
 
-**Report Bug:**
-[https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+**Bug Report:**
+[GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+
+**Contact Form:**
+[https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 **GitHub:**
 [https://github.com/AlexWaha/opencart-bundle](https://github.com/AlexWaha/opencart-bundle)

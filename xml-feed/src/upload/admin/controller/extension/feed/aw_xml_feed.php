@@ -44,6 +44,7 @@ class ControllerExtensionFeedAwXmlFeed extends Controller
     public function index()
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
+        $this->awCore->addStyles();
 
         $this->params['success'] = $this->session->data['success'] ?? '';
         unset($this->params['success']);

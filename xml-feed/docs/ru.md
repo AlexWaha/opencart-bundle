@@ -1144,7 +1144,8 @@ CLI генерация работает быстрее и стабильнее, 
 2. **Обратитесь в поддержку:**
    - Telegram: [@alexwaha_dev](https://t.me/alexwaha_dev)
    - Email: [support@alexwaha.com](mailto:support@alexwaha.com)
-   - Bug report: [https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+   - Bug Report: [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+   - Contact Form: [https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 > **Важно:** Техническая поддержка этого модуля доступна только на платной основе. Исправление ошибок в основном репозитории выполняется без графика, по мере наличия свободного времени у разработчика.
 
@@ -1161,9 +1162,7 @@ CLI генерация работает быстрее и стабильнее, 
 Права и авторство данного программного обеспечения принадлежат разработчику:
 **Александр Ваховский (Oleksandr Vakhovskyi)**
 
-Также известен как:
-- Alexwaha
-- Ocdev.pro
+Также известен как: Alexwaha
 
 Официальный сайт: [https://alexwaha.com](https://alexwaha.com)
 
@@ -1206,8 +1205,11 @@ CLI генерация работает быстрее и стабильнее, 
 **Email:**
 [support@alexwaha.com](mailto:support@alexwaha.com)
 
-**Сообщить об ошибке:**
-[https://alexwaha.com/bug-report](https://alexwaha.com/bug-report)
+**Bug Report:**
+[GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues)
+
+**Форма обратной связи:**
+[https://alexwaha.com/contact](https://alexwaha.com/contact)
 
 **GitHub:**
 [https://github.com/AlexWaha/opencart-bundle](https://github.com/AlexWaha/opencart-bundle)
