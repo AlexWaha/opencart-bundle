@@ -1,6 +1,6 @@
 ![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)  ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Static Badge](https://img.shields.io/badge/7%20-%20gray?label=Modules%20count&labelColor=green)
+![Static Badge](https://img.shields.io/badge/8%20-%20gray?label=Modules%20count&labelColor=green)
 
 # <center>OpenCart Extension Bundle</center>
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
@@ -29,7 +29,8 @@ For detailed installation instructions, please refer to the ***/docs/{en,ru}.md*
 5. [Age Verification Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip)
 6. [Alcohol Dilution Calculator page for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip)
 7. [Global Layout for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/global-layout/dist/aw_global_layout_oc2.3-3x.ocmod.zip)
-8. More extensions will be added soon (approx 30+)
+8. [E-commerce Tracking (GA4) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/ecommerce-tracking/dist/aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip) ⭐
+9. More extensions will be added soon (approx 30+)
 ---
 
 ## Reporting Issues
@@ -39,8 +40,8 @@ Before submitting a bug report, please follow these steps:
 1. **Search Existing Issues:**  
    Check both open and closed issues on the [GitHub bug tracker](https://github.com/alexwaha/opencart-bundle/issues).
 
-2. **Submit a Bug Report:**  
-   Use the [bug report page](https://alexwaha.com/bug-report) to create a new ticket.
+2. **Submit a Bug Report:**
+   Create a new issue on [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues).
 
 3. **Contact Me Directly:**  
    You can also reach me via [Telegram](https://t.me/alexwaha_dev).
@@ -82,7 +83,8 @@ Learn more about me on my [website](https://alexwaha.com) and connect with me on
 ## Useful Links
 
 [![Developer's Homepage](https://img.shields.io/badge/Developer%27s%20Homepage-alexwaha.com-blue)](https://alexwaha.com)  
-[![Bug Report](https://img.shields.io/badge/Bug%20Report-alexwaha.com/bug--report-red)](https://alexwaha.com/bug-report)  
+[![Bug Report](https://img.shields.io/badge/Bug%20Report-GitHub%20Issues-red)](https://github.com/AlexWaha/opencart-bundle/issues)
+[![Contact Form](https://img.shields.io/badge/Contact%20Form-alexwaha.com/contact-yellow)](https://alexwaha.com/contact)
 [![Documentation](https://img.shields.io/badge/Documentation-alexwaha.com/docs-brightgreen)](https://alexwaha.com/docs)  
 [![Blog](https://img.shields.io/badge/Blog-alexwaha.com/blog-orange)](https://alexwaha.com/blog)  
 [![Medium](https://img.shields.io/badge/Medium-@mr.alexwaha-blueviolet)](https://medium.com/@mr.alexwaha)  
