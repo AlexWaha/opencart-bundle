@@ -292,12 +292,19 @@
                 });
               });
 
-              const headerHeight = $('header').outerHeight() || 0;
-              $('html, body').animate({
-                scrollTop: $validationBlock.offset().top - headerHeight - 50,
-              }, 250);
+              const $selectedPayment = $('input[name="payment_method"]:checked', self.$elem);
+              const autoConfirmEnabled = $selectedPayment.data('auto-confirm') == 1;
 
-              self.loading(false);
+              if (autoConfirmEnabled) {
+                $buttonConfirm.trigger('click');
+              } else {
+                const headerHeight = $('header').outerHeight() || 0;
+                $('html, body').animate({
+                  scrollTop: $validationBlock.offset().top - headerHeight - 50,
+                }, 250);
+
+                self.loading(false);
+              }
             } else {
               self.loading(false);
             }

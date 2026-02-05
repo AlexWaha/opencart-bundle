@@ -214,6 +214,8 @@ $_['entry_payment_method_description'] = 'Описание [отображает
 $_['entry_status_payment_guest'] = 'Вариант доступен гостям';
 $_['entry_status_payment_authorized'] = 'Вариант доступен авторизованным пользователям';
 $_['entry_payment_shipping_methods'] = 'Вариант доступен выбранным способам доставки:';
+$_['entry_auto_confirm'] = 'Автоподтверждение';
+$_['help_auto_confirm'] = 'Автоматически подтверждать заказ без дополнительного клика';
 
 // Button
 $_['button_apply'] = 'Применить';

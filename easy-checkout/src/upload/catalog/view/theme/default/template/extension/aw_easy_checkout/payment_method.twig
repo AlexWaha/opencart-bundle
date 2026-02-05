@@ -12,9 +12,9 @@
                     <label for="payment-method-{{ payment_method.code }}">
                         {% if (payment_method.code == payment_code or not payment_code) %}
                             {% set payment_code = payment_method.code %}
-                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}" checked="checked"/>
+                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}" data-auto-confirm="{{ payment_method.auto_confirm|default(0) }}" checked="checked"/>
                         {% else %}
-                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}"/>
+                            <input type="radio" id="payment-method-{{ payment_method.code }}" name="payment_method" value="{{ payment_method.code }}" data-auto-confirm="{{ payment_method.auto_confirm|default(0) }}"/>
                         {% endif %}
                         {% if payment_method.image %}
                             <img class="img-responsive"

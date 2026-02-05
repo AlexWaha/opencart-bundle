@@ -47,7 +47,7 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         }
 
         $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/select2.min.js';
-        $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/script.js';
+        $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/script.min.js';
         $scripts[] = 'catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js';
         $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/maska.min.js';
 

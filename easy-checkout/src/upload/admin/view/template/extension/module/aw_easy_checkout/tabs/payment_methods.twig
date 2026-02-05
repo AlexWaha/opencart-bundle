@@ -140,6 +140,16 @@
                                 </button>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-sm-3 control-label">{{ entry_auto_confirm }}</div>
+                            <div class="col-xs-9 col-sm-6">
+                                <label class="checkbox-switch" for="payment_method_{{ paymentMethod.code }}_auto_confirm">
+                                    <input type="hidden" name="payment_methods[{{ paymentMethod.code }}][auto_confirm]" value="0" id="payment_method_{{ paymentMethod.code }}_auto_confirm-off" {% if not paymentMethod.auto_confirm %}checked="checked"{% endif %} />
+                                    <input type="checkbox" name="payment_methods[{{ paymentMethod.code }}][auto_confirm]" value="1" id="payment_method_{{ paymentMethod.code }}_auto_confirm" {% if paymentMethod.auto_confirm %}checked="checked"{% endif %} />
+                                </label>
+                                <p class="help-block">{{ help_auto_confirm }}</p>
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -308,6 +318,18 @@
       '" class="btn btn-success mt-10 add-payment-shipping"><i class="fa fa-plus" aria-hidden="true"></i> {{ button_add }}</button>';
     html += '</div>';
     html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<div class="col-sm-3 control-label">{{ entry_auto_confirm }}</div>';
+    html += '<div class="col-xs-9 col-sm-6">';
+    html += '<label class="checkbox-switch" for="payment_method_' + paymentCode + '_auto_confirm">';
+    html += '<input type="hidden" name="payment_methods[' + paymentCode + '][auto_confirm]" value="0" id="payment_method_' + paymentCode + '_auto_confirm-off" checked="checked" />';
+    html += '<input type="checkbox" name="payment_methods[' + paymentCode + '][auto_confirm]" value="1" id="payment_method_' + paymentCode + '_auto_confirm" />';
+    html += '</label>';
+    html += '<p class="help-block">{{ help_auto_confirm }}</p>';
+    html += '</div>';
+    html += '</div>';
+
     html += '</div>';
     html += '</div>';
     html += '</div>';

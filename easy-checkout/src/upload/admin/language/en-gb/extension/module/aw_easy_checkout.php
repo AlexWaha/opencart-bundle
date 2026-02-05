@@ -214,6 +214,8 @@ $_['entry_payment_method_description'] = 'Description [displayed under selected 
 $_['entry_status_payment_guest'] = 'Option available to guests';
 $_['entry_status_payment_authorized'] = 'Option available to authorized users';
 $_['entry_payment_shipping_methods'] = 'Option available for selected shipping methods:';
+$_['entry_auto_confirm'] = 'Auto confirm';
+$_['help_auto_confirm'] = 'Automatically confirm order without additional click';
 
 // Button
 $_['button_apply'] = 'Apply';

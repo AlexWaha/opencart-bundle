@@ -210,6 +210,8 @@ class ControllerExtensionAwEasyCheckoutPaymentMethod extends Controller
                     'UTF-8'
                 );
             }
+
+            $method['auto_confirm'] = !empty($paymentMethod[$paymentCode]['auto_confirm']) ? 1 : 0;
         }
         unset($method);
 
