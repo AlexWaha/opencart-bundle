@@ -66,6 +66,10 @@
 .theme-origin .nav-pills > li > a {
     border-radius: 6px;
     color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
 }
 
 .theme-origin .nav-pills > li > a:hover,
@@ -665,12 +669,18 @@
 .theme-origin .cursor-move { cursor: move; }
 
 /* Control Elements */
-.theme-origin .btn-remove {
+.theme-origin .btn-remove,
+.theme-origin .remove-shipping-set,
+.theme-origin .remove-shipping-method,
+.theme-origin .remove-payment-set {
     font-size: 15px;
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    color: var(--color-danger);
-    transform: translateY(-50%);
+    margin-left: auto;
     cursor: pointer;
+}
+
+.theme-origin .btn-remove i,
+.theme-origin .remove-shipping-set i,
+.theme-origin .remove-shipping-method i,
+.theme-origin .remove-payment-set i {
+    color: var(--color-danger);
 }
