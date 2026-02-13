@@ -21,13 +21,13 @@
         </operation>
     </file>
 
-    <file path="catalog/view/theme/default/template/common/footer.tpl">
+    <file path="catalog/view/theme/*/template/common/footer.tpl">
         <operation>
             <search><![CDATA[</body></html>]]></search>
             <add position="before"><![CDATA[<?php echo $aw_age_verification; ?>]]></add>
         </operation>
     </file>
-        <file path="catalog/view/theme/default/template/common/footer.twig">
+        <file path="catalog/view/theme/*/template/common/footer.twig">
         <operation>
             <search><![CDATA[</body></html>]]></search>
             <add position="before"><![CDATA[{{ aw_age_verification }}]]></add>
