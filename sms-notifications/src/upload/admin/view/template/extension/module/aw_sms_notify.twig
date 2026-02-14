@@ -55,7 +55,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input-client-template">{{ entry_client_sms }}</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="custom_client_sms" id="input-custom-client-sms" class="form-control" value=""/>
+                                    <textarea name="custom_client_sms" id="input-custom-client-sms" class="form-control" rows="5">{{ custom_client_sms_template ? custom_client_sms_template : '' }}</textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -710,6 +710,12 @@
                                 <label class="col-sm-2 control-label" for="input-sms-template">{{ entry_sms_template }}</label>
                                 <div class="col-sm-10">
                                     <textarea name="sms_notify_sms_template" id="input-sms-template" class="form-control" cols="80" rows="5">{{ sms_template ? sms_template : '' }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-custom-client-sms-template">{{ entry_custom_client_sms_template }}</label>
+                                <div class="col-sm-10">
+                                    <textarea name="sms_notify_custom_client_sms_template" id="input-custom-client-sms-template" class="form-control" cols="80" rows="3">{{ custom_client_sms_template ? custom_client_sms_template : '' }}</textarea>
                                 </div>
                             </div>
                         </div>

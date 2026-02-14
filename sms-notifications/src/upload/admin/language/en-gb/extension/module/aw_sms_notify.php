@@ -40,6 +40,7 @@ $_['tab_support'] = 'Support';
 // Entry
 $_['entry_template'] = 'Message template </br>';
 $_['entry_sms_template'] = 'SMS templates for order viewing';
+$_['entry_custom_client_sms_template'] = 'Custom SMS preset';
 $_['entry_order_status'] = 'SMS for statuses:';
 $_['entry_admin_alert'] = 'Send SMS to admin';
 $_['entry_client_alert'] = 'Send SMS to customer';

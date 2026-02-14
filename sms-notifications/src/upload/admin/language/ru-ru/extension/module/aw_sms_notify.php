@@ -43,6 +43,7 @@ $_['tab_support'] = 'Служба поддержки';
 // Entry
 $_['entry_template'] = 'Шаблон сообщения </br>';
 $_['entry_sms_template'] = 'Заготовки для смс при просмотре заказа';
+$_['entry_custom_client_sms_template'] = 'Заготовка для произвольного смс';
 $_['entry_order_status'] = 'Смс для статусов:';
 $_['entry_admin_alert'] = 'Отправить смс админу';
 $_['entry_client_alert'] = 'Отправить смс покупателю';

@@ -115,6 +115,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             ENT_QUOTES,
             'UTF-8'
         );
+        $this->params['custom_client_sms_template'] = $this->moduleConfig->get('sms_notify_custom_client_sms_template', '');
         $this->params['order_status_template'] = $this->moduleConfig->get('sms_notify_status_template', []);
         $this->params['sms_order_status'] = $this->moduleConfig->get('sms_notify_order_status', []);
         $this->params['sms_notify_log'] = $this->moduleConfig->get('sms_notify_log', true);
