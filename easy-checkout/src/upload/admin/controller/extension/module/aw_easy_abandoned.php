@@ -75,7 +75,7 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
         $filterAbandonedId = $this->request->get['filter_abandoned_id'] ?? null;
         $filterCustomer = $this->request->get['filter_customer'] ?? null;
         $filterCreatedAt = $this->request->get['filter_created_at'] ?? null;
-        $sort = $this->request->get['sort'] ?? 'a.abandoned_id';
+        $sort = $this->request->get['sort'] ?? 'a.created_at';
         $order = $this->request->get['order'] ?? 'DESC';
         $page = $this->request->get['page'] ?? 1;
         $limit = $this->config->get('config_limit_admin');
@@ -149,6 +149,7 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
                     'email' => $result['email'],
                     'email_sent_at' => ! empty($result['email_sent_at']) ? $this->language->get('text_send_message') . $result['email_sent_at'] : '',
                     'sms_sent_at' => ! empty($result['sms_sent_at']) ? $this->language->get('text_send_sms_message') . $result['sms_sent_at'] : '',
+                    'viewed' => ! empty($result['viewed']),
                     'created_at' => date($this->language->get('datetime_format'), strtotime($result['created_at'])),
                     'delete' => $this->url->link(
                         'extension/module/' . $this->moduleName . '/delete',
@@ -398,7 +399,7 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
                             ),
                             'created_at' => date(
                                 $this->language->get('datetime_format'),
-                                strtotime($abandonedOrderInfo['created_at'])
+                                strtotime($order['date_added'])
                             ),
                         ];
                     }

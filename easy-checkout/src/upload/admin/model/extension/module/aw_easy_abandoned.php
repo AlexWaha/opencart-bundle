@@ -11,30 +11,31 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
 {
     public function getOrders($data = [])
     {
-        $sql = "SELECT a.abandoned_id, a.email, a.email_sent_at, a.sms_sent_at, a.telephone, CONCAT(a.firstname, ' ', a.lastname) AS customer, a.created_at FROM `" . DB_PREFIX . 'aw_easy_abandoned` a';
-        $sql .= " WHERE a.abandoned_id > '0'";
-        $implode = [];
+        $sql = "SELECT a.abandoned_id, a.email, a.email_sent_at, a.sms_sent_at, a.viewed, a.telephone, CONCAT(a.firstname, ' ', a.lastname) AS customer, a.created_at FROM `" . DB_PREFIX . 'aw_easy_abandoned` a';
+
+        $conditions = [];
 
         if (! empty($data['filter_customer'])) {
-            $implode[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
-        }
-        if ($implode) {
-            $sql .= ' AND ' . implode(' AND ', $implode);
+            $conditions[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
         }
 
         if (! empty($data['filter_created_at'])) {
-            $sql .= " AND DATE(a.created_at) = DATE('" . $this->db->escape($data['filter_created_at']) . "')";
+            $conditions[] = "DATE(a.created_at) = DATE('" . $this->db->escape($data['filter_created_at']) . "')";
+        }
+
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
         $sort_data = [
-            'o.order_id',
+            'a.abandoned_id',
             'customer',
-            'o.created_at',
+            'a.created_at',
         ];
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
             $sql .= ' ORDER BY ' . $data['sort'];
         } else {
-            $sql .= ' ORDER BY a.abandoned_id';
+            $sql .= ' ORDER BY a.created_at';
         }
 
         if (isset($data['order']) && ($data['order'] == 'DESC')) {
@@ -63,23 +64,23 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
     public function getTotalOrders($data = [])
     {
         $sql = 'SELECT COUNT(*) AS total FROM `' . DB_PREFIX . 'aw_easy_abandoned`';
-        $sql .= ' WHERE abandoned_id > 0';
+
+        $conditions = [];
 
         if (! empty($data['filter_abandoned_id'])) {
-            $sql .= " AND filter_abandoned_id = '" . (int) $data['filter_abandoned_id'] . "'";
+            $conditions[] = "abandoned_id = '" . (int) $data['filter_abandoned_id'] . "'";
         }
-
-        $implode = [];
 
         if (! empty($data['filter_customer'])) {
-            $implode[] = "CONCAT(firstname, ' ', lastname, ' ', email, ' ', telephone) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
-        }
-        if ($implode) {
-            $sql .= ' AND ' . implode(' AND ', $implode);
+            $conditions[] = "CONCAT(firstname, ' ', lastname, ' ', email, ' ', telephone) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
         }
 
         if (! empty($data['filter_created_at'])) {
-            $sql .= " AND DATE(created_at) = DATE('" . $this->db->escape($data['filter_created_at']) . "')";
+            $conditions[] = "DATE(created_at) = DATE('" . $this->db->escape($data['filter_created_at']) . "')";
+        }
+
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
         $query = $this->db->query($sql);
@@ -89,7 +90,7 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
 
     public function getTotalCountOrder()
     {
-        $query = $this->db->query('SELECT COUNT(*) AS total FROM ' . DB_PREFIX . 'aw_easy_abandoned WHERE email_sent_at IS NULL AND sms_sent_at IS NULL AND viewed IS NULL');
+        $query = $this->db->query('SELECT COUNT(*) AS total FROM ' . DB_PREFIX . 'aw_easy_abandoned WHERE viewed IS NULL AND email_sent_at IS NULL AND sms_sent_at IS NULL');
 
         return $query->row['total'] ?: 0;
     }
@@ -128,32 +129,24 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
         $sql = "SELECT o.order_id, CONCAT(TRIM(o.firstname), ' ', TRIM(o.lastname)) AS customer, o.email, o.telephone, o.total, o.order_status_id, o.date_added, o.currency_code, o.currency_value";
         $sql .= ', (SELECT os.name FROM ' . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int) $this->config->get('config_language_id') . "') AS order_status";
         $sql .= ' FROM `' . DB_PREFIX . 'order` o';
-        $sql .= " WHERE o.order_id > '0'";
-        $implode = [];
+
+        $conditions = ["o.order_status_id > '0'"];
 
         if (! empty($data['email'])) {
-            $implode[] = "o.email LIKE '%" . $this->db->escape($data['email']) . "%'";
+            $conditions[] = "o.email LIKE '%" . $this->db->escape($data['email']) . "%'";
         }
 
         if (! empty($data['telephone'])) {
-            $implode[] = "o.telephone LIKE '%" . $this->db->escape($data['telephone']) . "%'";
-        }
-        if ($implode) {
-            $sql .= ' AND (' . implode(' OR ', $implode) . ')';
+            $conditions[] = "o.telephone LIKE '%" . $this->db->escape($data['telephone']) . "%'";
         }
 
-        $sort_data = ['o.order_id'];
-        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-            $sql .= ' ORDER BY ' . $data['sort'];
-        } else {
-            $sql .= ' ORDER BY o.order_id';
+        $sql .= ' WHERE ' . $conditions[0];
+
+        if (count($conditions) > 1) {
+            $sql .= ' AND (' . implode(' OR ', array_slice($conditions, 1)) . ')';
         }
 
-        if (isset($data['order']) && ($data['order'] == 'DESC')) {
-            $sql .= ' DESC';
-        } else {
-            $sql .= ' ASC';
-        }
+        $sql .= ' ORDER BY o.date_added DESC LIMIT 10';
 
         $query = $this->db->query($sql);
 
@@ -163,14 +156,15 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
     public function getCustomers($data = [])
     {
         $sql = "SELECT *, CONCAT(TRIM(a.firstname), ' ', TRIM(a.lastname)) AS name FROM `" . DB_PREFIX . 'aw_easy_abandoned` a';
-        $sql .= " WHERE a.abandoned_id > '0'";
-        $implode = [];
+
+        $conditions = [];
 
         if (! empty($data['filter_name'])) {
-            $implode[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+            $conditions[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
         }
-        if ($implode) {
-            $sql .= ' AND ' . implode(' AND ', $implode);
+
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
         $sort_data = ['abandoned_id'];

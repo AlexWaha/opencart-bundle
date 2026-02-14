@@ -925,12 +925,14 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
         }
 
         $sortOrder = array_column($results, null, 'code');
+
         foreach ($sortOrder as $key => $value) {
             $sortOrderKey = $this->awCore->isLegacy()
                 ? $value['code'] . '_sort_order'
                 : 'total_' . $value['code'] . '_sort_order';
             $sortOrder[$key] = $this->config->get($sortOrderKey);
         }
+
         array_multisort($sortOrder, SORT_ASC, $results);
 
         foreach ($results as $result) {
@@ -1308,15 +1310,6 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
         $json = [];
 
         $json['success']['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
-
-        if ($json['success']) {
-            $this->load->model('extension/' . $this->moduleName . '/model');
-
-            if (isset($this->session->data['abandoned_id']) && $this->session->data['abandoned_id'] != '') {
-                $abandonedId = $this->session->data['abandoned_id'];
-                $this->model_extension_aw_easy_checkout_model->removeAbandonedOrder($abandonedId);
-            }
-        }
 
         return $json;
     }

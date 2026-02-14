@@ -72,4 +72,16 @@
 			]]></add>
         </operation>
     </file>
+    <file path="catalog/controller/checkout/success.php">
+      <operation>
+        <search><![CDATA[unset($this->session->data['shipping_method']);]]></search>
+        <add position="before"><![CDATA[
+              if (!empty($this->session->data['abandoned_id'])) {
+                  $this->load->model('extension/aw_easy_checkout/model');
+                  $this->model_extension_aw_easy_checkout_model->removeAbandonedOrder($this->session->data['abandoned_id']);
+                  unset($this->session->data['abandoned_id']);
+              }
+              ]]></add>
+      </operation>
+    </file>
 </modification>

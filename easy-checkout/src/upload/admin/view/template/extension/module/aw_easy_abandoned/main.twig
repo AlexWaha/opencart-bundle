@@ -87,7 +87,7 @@
                             <tbody>
                             {% if orders %}
                                 {% for order in orders %}
-                                    <tr>
+                                    <tr class="{% if order.viewed or order.email_sent_at is not empty or order.sms_sent_at is not empty %}aw-abandoned-viewed{% else %}aw-abandoned-new{% endif %}">
                                         <td class="text-center">
                                             {% if order.abandoned_id in selected %}
                                                 <input type="checkbox" name="selected[]" value="{{ order.abandoned_id }}" checked="checked"/>
@@ -145,6 +145,11 @@
             </div>
         </div>
     </div>
+    <style>
+        .aw-abandoned-new { background-color: #f0fff0; }
+        .aw-abandoned-viewed { background-color: #f9f9f9; color: #999; }
+        .aw-abandoned-viewed a { color: #999; }
+    </style>
     <script>
 
       $(document).on('click', '.send-sms', function (e) {
