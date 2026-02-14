@@ -1,26 +1,61 @@
-.idea
-.vscode
-.fleet
-.zed
-.cursor
-.windsurf
-.claude
-/.osp
-/vendor
+# ======================
+# IDE & Editors
+# ======================
+.idea/
+.vscode/
+.fleet/
+.zed/
+.cursor/
+.windsurf/
+
+# ======================
+# AI Assistants
+# ======================
+.claude/
+CLAUDE.md
+
+# ======================
+# Windows artifacts
+# ======================
+NUL
+nul
+Thumbs.db
+Desktop.ini
+
+# ======================
+# PHP / Composer
+# ======================
+/vendor/
 composer.json
 composer.lock
-pint.json
-/development/
-/.phpunit.cache
-/node_modules
-.env
-.env.backup
-.env.production
+auth.json
 .phpactor.json
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
+/.phpunit.cache/
+pint.json
+
+# ======================
+# Node.js / Frontend
+# ======================
+/node_modules/
+package-lock.json
 npm-debug.log
 yarn-error.log
-package-lock.json
+
+# ======================
+# Environment
+# ======================
+.env
+.env.*
+
+# ======================
+# Laravel / Homestead
+# ======================
+Homestead.json
+Homestead.yaml
+
+# ======================
+# Project specific
+# ======================
+/development/
+/popup-promo/
