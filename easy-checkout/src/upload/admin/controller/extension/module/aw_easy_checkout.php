@@ -119,6 +119,7 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->params['col_left_width'] = $this->moduleConfig->get('col_left_width', '65');
         $this->params['col_right_width'] = $this->moduleConfig->get('col_right_width', '35');
         $this->params['use_theme_css'] = $this->moduleConfig->get('use_theme_css', false);
+        $this->params['custom_theme_css'] = $this->moduleConfig->get('custom_theme_css', '');
         $this->params['mask'] = $this->moduleConfig->get('mask', '');
         $this->params['mask_type'] = $this->moduleConfig->get('mask_type', 'dynamic');
         $this->params['email_default'] = $this->moduleConfig->get('email_default', '');

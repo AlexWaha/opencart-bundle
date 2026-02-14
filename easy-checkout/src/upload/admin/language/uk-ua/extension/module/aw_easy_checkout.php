@@ -187,6 +187,8 @@ $_['entry_left_column_width'] = 'Ліва колонка';
 $_['entry_right_column_width'] = 'Права колонка';
 $_['entry_use_theme_css'] = 'Використовувати альтернативну тему оформлення';
 $_['text_help_use_theme_css'] = 'Підключити файл theme.css для зміни колірної схеми модуля. Цей файл дозволяє легко адаптувати зовнішній вигляд оформлення замовлення під кольори вашого шаблону без зміни основних стилів. Файл знаходиться в catalog/view/javascript/aw_easy_checkout/theme.css';
+$_['entry_custom_theme_css'] = 'Власний файл теми';
+$_['text_help_custom_theme_css'] = 'Вкажіть назву вашого CSS-файлу без розширення .css (наприклад mytheme). Файл має знаходитися в catalog/view/javascript/aw_easy_checkout/. Якщо поле порожнє, буде використовуватися вбудований файл theme.css.';
 
 // Field Settings
 $_['entry_name'] = 'Назва';

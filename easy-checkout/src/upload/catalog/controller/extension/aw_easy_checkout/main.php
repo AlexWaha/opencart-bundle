@@ -58,7 +58,9 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         ];
 
         if (!empty($this->moduleConfig->get('use_theme_css'))) {
-            $styles[] = 'catalog/view/javascript/' . $this->moduleName . '/theme.css';
+            $customTheme = $this->moduleConfig->get('custom_theme_css');
+            $themeFile = !empty($customTheme) ? trim($customTheme) . '.css' : 'theme.css';
+            $styles[] = 'catalog/view/javascript/' . $this->moduleName . '/' . $themeFile;
         }
 
         foreach ($scripts as $script) {

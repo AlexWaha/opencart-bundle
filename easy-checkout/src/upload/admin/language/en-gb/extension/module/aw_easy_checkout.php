@@ -187,6 +187,8 @@ $_['entry_left_column_width'] = 'Left column';
 $_['entry_right_column_width'] = 'Right column';
 $_['entry_use_theme_css'] = 'Use alternative theme';
 $_['text_help_use_theme_css'] = 'Include theme.css file to customize the module color scheme. This file allows you to easily adapt the checkout appearance to match your template colors without modifying the base styles. The file is located in catalog/view/javascript/aw_easy_checkout/theme.css';
+$_['entry_custom_theme_css'] = 'Custom theme file';
+$_['text_help_custom_theme_css'] = 'Specify the name of your custom CSS file without the .css extension (e.g. mytheme). The file must be placed in catalog/view/javascript/aw_easy_checkout/. If left empty, the built-in theme.css will be used.';
 
 // Field Settings
 $_['entry_name'] = 'Name';
