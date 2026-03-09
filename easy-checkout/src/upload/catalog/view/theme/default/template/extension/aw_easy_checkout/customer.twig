@@ -161,6 +161,12 @@
         {% endif %}
 
         <div id="register-form" class="register-form-fields {% if not register_checked and not register_required %} hidden{% endif %}">
+            {% if not email_in_customer_fields %}
+                <div class="form-group required">
+                    <label for="input-register-email" class="control-label">{{ entry_email }}</label>
+                    <input autocomplete="off" id="input-register-email" type="text" name="email" value="{% if email is defined %}{{ email }}{% endif %}" placeholder="{{ entry_placeholder_email }}" class="form-control"/>
+                </div>
+            {% endif %}
             <div class="form-group required">
                 <label for="input-password" class="control-label">{{ entry_password }}</label>
                 <input id="input-password" type="password" name="password" placeholder="{{ entry_password }}" class="form-control"/>

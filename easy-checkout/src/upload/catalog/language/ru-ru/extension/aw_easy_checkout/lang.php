@@ -42,7 +42,6 @@ $_['text_register'] = 'Регистрация';
 $_['text_forgotten'] = 'Забыли пароль?';
 $_['text_login_success'] = 'Вы успешно вошли в систему!';
 
-
 // Button
 $_['button_checkout'] = 'Оформление заказа';
 $_['button_login'] = 'Войти';
@@ -108,6 +107,7 @@ $_['text_voucher_success'] = 'Сертификат успешно применё
 $_['text_payment_address_same_as_shipping'] = 'Адрес плательщика совпадает с адресом доставки';
 $_['text_select_address'] = 'Выберите адрес';
 $_['entry_select_address'] = 'Сохраненные адреса';
+$_['text_new_address'] = '+ Указать новый адрес';
 
 // Formatting
 $_['decimal_point'] = '.';

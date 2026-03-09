@@ -83,19 +83,19 @@ class ModelExtensionAwEasyCheckoutModel extends Model
     {
         $custom_field_data = [];
 
-        $custom_field_query = $this->db->query("SELECT custom_field.*, custom_field_description.* FROM `" . DB_PREFIX . "aw_ec_custom_field` custom_field
-        LEFT JOIN `" . DB_PREFIX . "aw_ec_custom_field_description` custom_field_description
+        $custom_field_query = $this->db->query('SELECT custom_field.*, custom_field_description.* FROM `' . DB_PREFIX . 'aw_ec_custom_field` custom_field
+        LEFT JOIN `' . DB_PREFIX . "aw_ec_custom_field_description` custom_field_description
         ON (custom_field.custom_field_id = custom_field_description.custom_field_id)
         WHERE custom_field.status = '1'
         AND custom_field_description.language_id = '" . (int) $this->config->get('config_language_id') . "'
         AND custom_field.location = '" . $this->db->escape($location) . "'
         AND (
             NOT EXISTS (
-                SELECT 1 FROM `" . DB_PREFIX . "aw_ec_custom_field_customer_group` cfcg
+                SELECT 1 FROM `" . DB_PREFIX . 'aw_ec_custom_field_customer_group` cfcg
                 WHERE cfcg.custom_field_id = custom_field.custom_field_id
             )
             OR EXISTS (
-                SELECT 1 FROM `" . DB_PREFIX . "aw_ec_custom_field_customer_group` cfcg2
+                SELECT 1 FROM `' . DB_PREFIX . "aw_ec_custom_field_customer_group` cfcg2
                 WHERE cfcg2.custom_field_id = custom_field.custom_field_id
                 AND cfcg2.customer_group_id = '" . (int) $customer_group_id . "'
             )

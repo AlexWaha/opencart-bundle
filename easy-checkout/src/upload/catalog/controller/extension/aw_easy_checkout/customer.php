@@ -135,10 +135,20 @@ class ControllerExtensionAwEasyCheckoutCustomer extends Controller
                 $data['register_checked'] = $this->session->data['register'];
             }
 
-            if ($data['register_required'] || $data['register_checked']) {
+            if ($data['register_required'] || $data['register_checked'] || ! $this->cart->hasShipping()) {
+                if (! isset($data['customer_fields']['email'])) {
+                    $data['customer_fields']['email'] = [
+                        'status' => 'required',
+                        'show_when' => 'all',
+                        'setting' => [],
+                        'sort_order' => 99,
+                    ];
+                }
                 $data['customer_fields']['email']['status'] = 'required';
             }
         }
+
+        $data['email_in_customer_fields'] = isset($data['customer_fields']['email']);
 
         $data['customerFields'] = $data['customer_fields'];
 

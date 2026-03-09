@@ -28,6 +28,10 @@ class ControllerExtensionAwEasyCheckoutShippingMethod extends Controller
             return;
         }
 
+        if (! $this->cart->hasShipping()) {
+            return;
+        }
+
         $this->load->language('extension/' . $this->moduleName . '/lang');
 
         $this->load->model('account/address');
@@ -210,8 +214,8 @@ class ControllerExtensionAwEasyCheckoutShippingMethod extends Controller
             if (isset($availableShippingMethods[$methodCode]['quote'][$quoteCode])) {
                 $this->session->data['shipping_method'] = $availableShippingMethods[$methodCode]['quote'][$quoteCode];
             }
-        } elseif (!empty($availableShippingMethods)) {
-            if (empty($this->session->data['shipping_method']) || !isset($this->session->data['shipping_method']['code'])) {
+        } elseif (! empty($availableShippingMethods)) {
+            if (empty($this->session->data['shipping_method']) || ! isset($this->session->data['shipping_method']['code'])) {
                 foreach ($availableShippingMethods as $method) {
                     if (is_array($method['quote'])) {
                         $this->session->data['shipping_method'] = reset($method['quote']);
@@ -223,7 +227,7 @@ class ControllerExtensionAwEasyCheckoutShippingMethod extends Controller
                     $methodCode,
                     $quoteCode
                 ] = explode('.', $this->session->data['shipping_method']['code']);
-                if (!isset($availableShippingMethods[$methodCode]['quote'][$quoteCode])) {
+                if (! isset($availableShippingMethods[$methodCode]['quote'][$quoteCode])) {
                     foreach ($availableShippingMethods as $method) {
                         if (is_array($method['quote'])) {
                             $this->session->data['shipping_method'] = reset($method['quote']);

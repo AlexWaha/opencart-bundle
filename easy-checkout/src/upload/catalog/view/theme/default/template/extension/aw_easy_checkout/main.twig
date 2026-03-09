@@ -43,7 +43,19 @@
 						{% endif %}
 						{% if (blocks.center_left or blocks.center_right) %}
 							<div class="two-column">
-									{% if (blocks.center_left is defined) %}
+									{% set has_active_center_left = false %}
+									{% set has_active_center_right = false %}
+									{% if blocks.center_left is defined %}
+										{% for block_item in blocks.center_left %}
+											{% if block_item.status %}{% set has_active_center_left = true %}{% endif %}
+										{% endfor %}
+									{% endif %}
+									{% if blocks.center_right is defined %}
+										{% for block_item in blocks.center_right %}
+											{% if block_item.status %}{% set has_active_center_right = true %}{% endif %}
+										{% endfor %}
+									{% endif %}
+									{% if has_active_center_left %}
 										<div class="left-column">
 											{% for block_item in blocks.center_left %}
 												{% if block_item.status %}
@@ -52,7 +64,7 @@
 											{% endfor %}
 										</div>
 									{% endif %}
-									{% if (blocks.center_right is defined) %}
+									{% if has_active_center_right %}
 										<div class="right-column">
 											{% for block_item in blocks.center_right %}
 												{% if block_item.status %}

@@ -67,6 +67,7 @@ class ControllerExtensionAwEasyCheckoutAddress extends Controller
 
                     $data['shippingAddressFields'][$fieldKey] = $addressCustomFields[$addressField['id']];
                 }
+
                 continue;
             }
 
@@ -166,9 +167,9 @@ class ControllerExtensionAwEasyCheckoutAddress extends Controller
         $data['addressType'] = $addressType;
 
         $paymentAddressSameAsShipping = $this->moduleConfig->get('payment_address_same_as_shipping', true);
-        $data['showPaymentAddressCheckbox'] = !$paymentAddressSameAsShipping;
+        $data['showPaymentAddressCheckbox'] = ! $paymentAddressSameAsShipping;
 
-        if (!isset($this->session->data['payment_address_same_as_shipping'])) {
+        if (! isset($this->session->data['payment_address_same_as_shipping'])) {
             $this->session->data['payment_address_same_as_shipping'] = $paymentAddressSameAsShipping ? 1 : 0;
         }
         $data['paymentAddressSameAsShippingChecked'] = $this->session->data['payment_address_same_as_shipping'];

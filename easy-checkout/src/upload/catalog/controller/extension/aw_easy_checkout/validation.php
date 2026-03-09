@@ -119,7 +119,15 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
         $registerRequired = ! $this->customer->isLogged() && $registerStatus === 'required';
         $registerCheckedInPost = ! empty($this->request->post['register']);
 
-        if ($registerRequired || $registerCheckedInPost) {
+        if ($registerRequired || $registerCheckedInPost || (! $customerLogged && ! $this->cart->hasShipping())) {
+            if (! isset($customerFields['email'])) {
+                $customerFields['email'] = [
+                    'status' => 'required',
+                    'show_when' => 'all',
+                    'setting' => [],
+                    'sort_order' => 99,
+                ];
+            }
             $customerFields['email']['status'] = 'required';
         }
 
@@ -232,130 +240,132 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
             }
         }
 
-        foreach ($shippingMethodsFields as $fieldKey => $shippingField) {
-            if (is_array($shippingField)) {
-                if (
-                    $fieldKey == 'country' && ((isset($shippingField['status']) && $shippingField['status'] == 'required'))
-                ) {
-                    $countryId = $this->request->post['shipping_country_id'] ?? '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if ($countryId == '') {
-                            $json['error']['shipping_country_id'] = $this->language->get('error_country');
+        if ($this->cart->hasShipping()) {
+            foreach ($shippingMethodsFields as $fieldKey => $shippingField) {
+                if (is_array($shippingField)) {
+                    if (
+                        $fieldKey == 'country' && ((isset($shippingField['status']) && $shippingField['status'] == 'required'))
+                    ) {
+                        $countryId = $this->request->post['shipping_country_id'] ?? '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if ($countryId == '') {
+                                $json['error']['shipping_country_id'] = $this->language->get('error_country');
+                            }
                         }
                     }
-                }
 
-                if (
-                    $fieldKey == 'zone_id' && ((isset($shippingField['status']) && $shippingField['status'] == 'required'))
-                ) {
-                    $zoneId = $this->request->post['shipping_zone_id'] ?? '';
-                    $countryId = $this->request->post['shipping_country_id'] ?? '';
+                    if (
+                        $fieldKey == 'zone_id' && ((isset($shippingField['status']) && $shippingField['status'] == 'required'))
+                    ) {
+                        $zoneId = $this->request->post['shipping_zone_id'] ?? '';
+                        $countryId = $this->request->post['shipping_country_id'] ?? '';
 
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        $countryHasZones = false;
-                        if ($countryId) {
-                            $this->load->model('localisation/zone');
-                            $zones = $this->model_localisation_zone->getZonesByCountryId($countryId);
-                            $countryHasZones = !empty($zones);
-                        }
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            $countryHasZones = false;
+                            if ($countryId) {
+                                $this->load->model('localisation/zone');
+                                $zones = $this->model_localisation_zone->getZonesByCountryId($countryId);
+                                $countryHasZones = ! empty($zones);
+                            }
 
-                        if ($countryHasZones && $zoneId == '') {
-                            $json['error']['shipping_zone_id'] = $this->language->get('error_zone');
+                            if ($countryHasZones && $zoneId == '') {
+                                $json['error']['shipping_zone_id'] = $this->language->get('error_zone');
+                            }
                         }
                     }
-                }
 
-                if ($fieldKey == 'city' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
-                    $city = isset($this->request->post['shipping_city']) ? trim($this->request->post['shipping_city']) : '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
-                            if (((utf8_strlen($city) < 1) || (utf8_strlen($city) > 3))) {
+                    if ($fieldKey == 'city' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
+                        $city = isset($this->request->post['shipping_city']) ? trim($this->request->post['shipping_city']) : '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
+                                if (((utf8_strlen($city) < 1) || (utf8_strlen($city) > 3))) {
+                                    $json['error']['shipping_city'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_city');
+                                }
+                            } elseif ((utf8_strlen($city) < 3) || (utf8_strlen($city) > 128)) {
                                 $json['error']['shipping_city'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_city');
                             }
-                        } elseif ((utf8_strlen($city) < 3) || (utf8_strlen($city) > 128)) {
-                            $json['error']['shipping_city'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_city');
                         }
                     }
-                }
 
-                if ($fieldKey == 'address_1' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
-                    $address1 = isset($this->request->post['shipping_address_1']) ? trim($this->request->post['shipping_address_1']) : '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
-                            if ((utf8_strlen($address1) < 1) || (utf8_strlen($address1) > 3)) {
+                    if ($fieldKey == 'address_1' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
+                        $address1 = isset($this->request->post['shipping_address_1']) ? trim($this->request->post['shipping_address_1']) : '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
+                                if ((utf8_strlen($address1) < 1) || (utf8_strlen($address1) > 3)) {
+                                    $json['error']['shipping_address_1'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_1');
+                                }
+                            } elseif ((utf8_strlen($address1) < 1) || (utf8_strlen($address1) > 128)) {
                                 $json['error']['shipping_address_1'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_1');
                             }
-                        } elseif ((utf8_strlen($address1) < 1) || (utf8_strlen($address1) > 128)) {
-                            $json['error']['shipping_address_1'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_1');
                         }
                     }
-                }
 
-                if ($fieldKey == 'address_2' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
-                    $address2 = isset($this->request->post['shipping_address_2']) ? trim($this->request->post['shipping_address_2']) : '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
-                            if ((utf8_strlen($address2) < 1) || (utf8_strlen($address2) > 3)) {
+                    if ($fieldKey == 'address_2' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
+                        $address2 = isset($this->request->post['shipping_address_2']) ? trim($this->request->post['shipping_address_2']) : '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
+                                if ((utf8_strlen($address2) < 1) || (utf8_strlen($address2) > 3)) {
+                                    $json['error']['shipping_address_2'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_2');
+                                }
+                            } elseif ((utf8_strlen($address2) < 1) || (utf8_strlen($address2) > 128)) {
                                 $json['error']['shipping_address_2'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_2');
                             }
-                        } elseif ((utf8_strlen($address2) < 1) || (utf8_strlen($address2) > 128)) {
-                            $json['error']['shipping_address_2'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_address_2');
                         }
                     }
-                }
 
-                if ($fieldKey == 'company' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
-                    $company = isset($this->request->post['shipping_company']) ? trim($this->request->post['shipping_company']) : '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
-                            if ((utf8_strlen($company) < 1) || (utf8_strlen($company) > 3)) {
+                    if ($fieldKey == 'company' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
+                        $company = isset($this->request->post['shipping_company']) ? trim($this->request->post['shipping_company']) : '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
+                                if ((utf8_strlen($company) < 1) || (utf8_strlen($company) > 3)) {
+                                    $json['error']['shipping_company'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_company');
+                                }
+                            } elseif ((utf8_strlen($company) < 1) || (utf8_strlen($company) > 128)) {
                                 $json['error']['shipping_company'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_company');
                             }
-                        } elseif ((utf8_strlen($company) < 1) || (utf8_strlen($company) > 128)) {
-                            $json['error']['shipping_company'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_company');
                         }
                     }
-                }
 
-                if ($fieldKey == 'postcode' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
-                    $postcode = isset($this->request->post['shipping_postcode']) ? trim($this->request->post['shipping_postcode']) : '';
-                    if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                        if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
-                            if ((utf8_strlen($postcode) < 1) || (utf8_strlen($postcode) > 3)) {
+                    if ($fieldKey == 'postcode' && isset($shippingField['status']) && $shippingField['status'] == 'required') {
+                        $postcode = isset($this->request->post['shipping_postcode']) ? trim($this->request->post['shipping_postcode']) : '';
+                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                            if (! empty($shippingField['setting']['custom_fields']) && ($shippingField['setting']['type'] != 'input')) {
+                                if ((utf8_strlen($postcode) < 1) || (utf8_strlen($postcode) > 3)) {
+                                    $json['error']['shipping_postcode'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_postcode');
+                                }
+                            } elseif ((utf8_strlen($postcode) < 1) || (utf8_strlen($postcode) > 128)) {
                                 $json['error']['shipping_postcode'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_postcode');
                             }
-                        } elseif ((utf8_strlen($postcode) < 1) || (utf8_strlen($postcode) > 128)) {
-                            $json['error']['shipping_postcode'] = ! empty($shippingField['setting']['text_error_field'][$this->config->get('config_language_id')]) ? $shippingField['setting']['text_error_field'][$this->config->get('config_language_id')] : $this->language->get('error_postcode');
                         }
                     }
-                }
 
-                if (strpos($fieldKey, 'custom_field_') === 0) {
-                    if (! empty($addressCustomFields[$shippingField['id']])) {
-                        $customField = $addressCustomFields[$shippingField['id']];
-                        if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
-                            if (($customField['location'] == 'address') && in_array($customField['type'], ['text', 'textarea', 'date', 'time', 'datetime'])) {
-                                $value = $this->request->post['custom_field']['shipping_address'][$customField['custom_field_id']] ?? '';
-                                $validationFailed = false;
+                    if (strpos($fieldKey, 'custom_field_') === 0) {
+                        if (! empty($addressCustomFields[$shippingField['id']])) {
+                            $customField = $addressCustomFields[$shippingField['id']];
+                            if ((! $customerLogged && ($shippingField['show_when'] == 'guest')) || ($customerLogged && ($shippingField['show_when'] == 'authorized')) || ($shippingField['show_when'] == 'all')) {
+                                if (($customField['location'] == 'address') && in_array($customField['type'], ['text', 'textarea', 'date', 'time', 'datetime'])) {
+                                    $value = $this->request->post['custom_field']['shipping_address'][$customField['custom_field_id']] ?? '';
+                                    $validationFailed = false;
 
-                                if ($customField['required'] && trim($value) === '') {
-                                    $validationFailed = true;
-                                } elseif (trim($value) !== '') {
-                                    if (! empty($customField['validation'])) {
-                                        if (! preg_match($customField['validation'], $value)) {
-                                            $validationFailed = true;
+                                    if ($customField['required'] && trim($value) === '') {
+                                        $validationFailed = true;
+                                    } elseif (trim($value) !== '') {
+                                        if (! empty($customField['validation'])) {
+                                            if (! preg_match($customField['validation'], $value)) {
+                                                $validationFailed = true;
+                                            }
                                         }
                                     }
-                                }
 
-                                if ($validationFailed) {
-                                    if (! empty($customField['text_error'])) {
-                                        $json['error']['shipping_custom_field' . $customField['custom_field_id']] = $customField['text_error'];
-                                    } else {
-                                        $json['error']['shipping_custom_field' . $customField['custom_field_id']] = sprintf(
-                                            $this->language->get('error_custom_field'),
-                                            $customField['name']
-                                        );
+                                    if ($validationFailed) {
+                                        if (! empty($customField['text_error'])) {
+                                            $json['error']['shipping_custom_field' . $customField['custom_field_id']] = $customField['text_error'];
+                                        } else {
+                                            $json['error']['shipping_custom_field' . $customField['custom_field_id']] = sprintf(
+                                                $this->language->get('error_custom_field'),
+                                                $customField['name']
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -389,7 +399,7 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                         if ($countryId) {
                             $this->load->model('localisation/zone');
                             $zones = $this->model_localisation_zone->getZonesByCountryId($countryId);
-                            $countryHasZones = !empty($zones);
+                            $countryHasZones = ! empty($zones);
                         }
 
                         if ($countryHasZones && $zoneId == '') {
@@ -511,15 +521,17 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
             }
         }
 
-        if (! isset($this->request->post['shipping_method'])) {
-            $json['error']['shipping_method'] = $this->language->get('error_shipping');
-        } else {
-            $shipping = explode('.', $this->request->post['shipping_method']);
-            if (! isset($shipping[0]) || ! isset($shipping[1])) {
+        if ($this->cart->hasShipping()) {
+            if (! isset($this->request->post['shipping_method'])) {
                 $json['error']['shipping_method'] = $this->language->get('error_shipping');
             } else {
-                if (isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
-                    $this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
+                $shipping = explode('.', $this->request->post['shipping_method']);
+                if (! isset($shipping[0]) || ! isset($shipping[1])) {
+                    $json['error']['shipping_method'] = $this->language->get('error_shipping');
+                } else {
+                    if (isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
+                        $this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
+                    }
                 }
             }
         }
@@ -555,13 +567,16 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                         'address_2' => (isset($this->request->post[$addressPrefix . 'address_2'])) ? $this->request->post[$addressPrefix . 'address_2'] : '',
                         'city' => (isset($this->request->post[$addressPrefix . 'city'])) ? $this->request->post[$addressPrefix . 'city'] : '',
                         'postcode' => (isset($this->request->post[$addressPrefix . 'postcode'])) ? $this->request->post[$addressPrefix . 'postcode'] : '',
-                        'country_id' => (isset($this->request->post[$addressPrefix . 'country_id'])) ? $this->request->post[$addressPrefix . 'country_id'] : '',
-                        'zone_id' => (isset($this->request->post[$addressPrefix . 'zone_id'])) ? $this->request->post[$addressPrefix . 'zone_id'] : '',
+                        'country_id' => ! empty($this->request->post[$addressPrefix . 'country_id']) ? $this->request->post[$addressPrefix . 'country_id'] : ($this->session->data[$addressPrefix . 'address']['country_id'] ?? $this->config->get('config_country_id')),
+                        'zone_id' => ! empty($this->request->post[$addressPrefix . 'zone_id']) ? $this->request->post[$addressPrefix . 'zone_id'] : ($this->session->data[$addressPrefix . 'address']['zone_id'] ?? ''),
                         'custom_field' => (isset($this->request->post['custom_field'])) ? $this->request->post['custom_field'] : [],
                         'password' => (isset($this->request->post['password'])) ? $this->request->post['password'] : '',
                     ];
                     $this->session->data['customer_id'] = $customerId = $this->model_account_customer->addCustomer($customerData);
                     $this->session->data['checkout_customer_id'] = true;
+
+                    $this->load->model('account/address');
+                    $this->model_account_address->addAddress($customerId, array_merge($customerData, ['default' => true]));
                 }
 
                 $this->customer->login($this->request->post['email'], $this->request->post['password']);
@@ -781,6 +796,19 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                 }
             } else {
                 $this->session->data['payment_address'] = $this->session->data['shipping_address'];
+            }
+
+            // Save new address to address book for logged-in customers
+            if ($this->customer->isLogged() && empty($this->session->data['shipping_address']['address_id'])) {
+                $this->load->model('account/address');
+                $addressData = $this->session->data['shipping_address'];
+                $addressData['default'] = false;
+                $addressId = $this->model_account_address->addAddress($this->customer->getId(), $addressData);
+                $this->session->data['shipping_address']['address_id'] = $addressId;
+
+                if (empty($paymentAddressFields) || $checkboxChecked) {
+                    $this->session->data['payment_address']['address_id'] = $addressId;
+                }
             }
 
             $this->session->data['comment'] = (isset($this->request->post['comment'])) ? strip_tags($this->request->post['comment']) : '';

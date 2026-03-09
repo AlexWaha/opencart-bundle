@@ -167,6 +167,11 @@
     flex-direction: column;
 }
 
+.aw-easy-checkout .two-column .left-column > .checkout-block:last-child,
+.aw-easy-checkout .two-column .right-column > .checkout-block:last-child {
+    flex: 1;
+}
+
 
 /* Blocks */
 .aw-easy-checkout .checkout-block {

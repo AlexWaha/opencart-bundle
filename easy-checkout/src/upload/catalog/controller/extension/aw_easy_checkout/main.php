@@ -29,7 +29,7 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
     {
         $this->load->language('extension/' . $this->moduleName . '/lang');
 
-        if (!$this->moduleConfig->get('status')) {
+        if (! $this->moduleConfig->get('status')) {
             $this->response->redirect($this->url->link('error/not_found'));
         }
 
@@ -57,9 +57,9 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
             'catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css',
         ];
 
-        if (!empty($this->moduleConfig->get('use_theme_css'))) {
+        if (! empty($this->moduleConfig->get('use_theme_css'))) {
             $customTheme = $this->moduleConfig->get('custom_theme_css');
-            $themeFile = !empty($customTheme) ? trim($customTheme) . '.css' : 'theme.css';
+            $themeFile = ! empty($customTheme) ? trim($customTheme) . '.css' : 'theme.css';
             $styles[] = 'catalog/view/javascript/' . $this->moduleName . '/' . $themeFile;
         }
 
@@ -210,6 +210,10 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
             }
 
             $status = $blockStatus[$blockName] ?? true;
+
+            if (! $this->cart->hasShipping() && in_array($blockName, ['shipping_method', 'shipping_address'])) {
+                $status = false;
+            }
 
             $data['blocks'][$blockPosition][] = [
                 'name' => $blockName,

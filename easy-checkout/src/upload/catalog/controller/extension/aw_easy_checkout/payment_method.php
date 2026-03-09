@@ -211,7 +211,7 @@ class ControllerExtensionAwEasyCheckoutPaymentMethod extends Controller
                 );
             }
 
-            $method['auto_confirm'] = !empty($paymentMethod[$paymentCode]['auto_confirm']) ? 1 : 0;
+            $method['auto_confirm'] = ! empty($paymentMethod[$paymentCode]['auto_confirm']) ? 1 : 0;
         }
         unset($method);
 
@@ -220,9 +220,9 @@ class ControllerExtensionAwEasyCheckoutPaymentMethod extends Controller
         $filteredMethodData = [];
 
         foreach ($methodData as $paymentCode => $method) {
-            if (!empty($paymentMethod[$paymentCode])) {
+            if (! empty($paymentMethod[$paymentCode])) {
                 $availableShippingMethods = $paymentMethod[$paymentCode]['shipping'] ?? [];
-                $hasMatchingShipping = empty($availableShippingMethods) || array_filter(
+                $hasMatchingShipping = !$this->cart->hasShipping() || empty($availableShippingMethods) || array_filter(
                     $availableShippingMethods,
                     fn ($shippingMethod) => $shippingMethod['code'] === $selectedShippingMethod
                 );

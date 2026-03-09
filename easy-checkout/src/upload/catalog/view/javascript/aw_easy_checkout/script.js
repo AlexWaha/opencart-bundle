@@ -378,9 +378,9 @@
                 case 'shipping_method':
                   const $blockShippingMethod = $(self.SELECTORS.BLOCK_SHIPPING_METHOD, self.$elem);
                   if (json['shipping_method']) {
-                    $blockShippingMethod.html(json['shipping_method']);
+                    $blockShippingMethod.html(json['shipping_method']).show();
                   } else {
-                    $blockShippingMethod.html('');
+                    $blockShippingMethod.html('').hide();
                   }
                   break;
                 case 'shipping_address':

@@ -35,5 +35,4 @@ class ControllerExtensionAwEasyCheckoutCustomText extends Controller
 
         return $this->awCore->render('extension/' . $this->moduleName . '/custom_text', $data);
     }
-
 }

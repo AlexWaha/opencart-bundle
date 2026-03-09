@@ -333,35 +333,61 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
         $json = ['success' => false];
 
         if ($this->customer->isLogged() && isset($this->request->post['address_id'])) {
-            $addressId = (int) $this->request->post['address_id'];
+            $addressIdRaw = $this->request->post['address_id'];
 
-            $this->load->model('account/address');
-            $address = $this->model_account_address->getAddress($addressId);
-
-            if ($address) {
-                $addressData = [
-                    'address_id' => $addressId,
-                    'firstname' => $address['firstname'] ?? '',
-                    'lastname' => $address['lastname'] ?? '',
-                    'country_id' => $address['country_id'] ?? '',
-                    'zone_id' => $address['zone_id'] ?? '',
-                    'city' => $address['city'] ?? '',
-                    'address_1' => $address['address_1'] ?? '',
-                    'address_2' => $address['address_2'] ?? '',
-                    'postcode' => $address['postcode'] ?? '',
-                    'company' => $address['company'] ?? '',
+            if ($addressIdRaw === 'new') {
+                $emptyAddress = [
+                    'address_id' => 0,
+                    'firstname' => '',
+                    'lastname' => '',
+                    'country_id' => $this->config->get('config_country_id'),
+                    'zone_id' => '',
+                    'city' => '',
+                    'address_1' => '',
+                    'address_2' => '',
+                    'postcode' => '',
+                    'company' => '',
                 ];
 
-                $this->session->data['shipping_address'] = $addressData;
-                $this->session->data['payment_address'] = $addressData;
-                $this->session->data['customer']['firstname'] = $addressData['firstname'];
-                $this->session->data['customer']['lastname'] = $addressData['lastname'];
+                $this->session->data['shipping_address'] = $emptyAddress;
+                $this->session->data['payment_address'] = $emptyAddress;
 
                 unset($this->session->data['shipping_method_address']);
 
                 $this->session->data['address_just_changed'] = true;
 
                 $json['success'] = true;
+            } else {
+                $addressId = (int) $addressIdRaw;
+
+                $this->load->model('account/address');
+                $address = $this->model_account_address->getAddress($addressId);
+
+                if ($address) {
+                    $addressData = [
+                        'address_id' => $addressId,
+                        'firstname' => $address['firstname'] ?? '',
+                        'lastname' => $address['lastname'] ?? '',
+                        'country_id' => $address['country_id'] ?? '',
+                        'zone_id' => $address['zone_id'] ?? '',
+                        'city' => $address['city'] ?? '',
+                        'address_1' => $address['address_1'] ?? '',
+                        'address_2' => $address['address_2'] ?? '',
+                        'postcode' => $address['postcode'] ?? '',
+                        'company' => $address['company'] ?? '',
+                    ];
+
+                    $this->session->data['shipping_address'] = $addressData;
+                    $this->session->data['payment_address'] = $addressData;
+                    $this->session->data['customer']['firstname'] = $addressData['firstname'];
+                    $this->session->data['customer']['lastname'] = $addressData['lastname'];
+
+                    unset($this->session->data['shipping_method_address']);
+
+                    $this->session->data['address_just_changed'] = true;
+
+                    $json['success'] = true;
+                }
             }
         }
 

@@ -42,7 +42,6 @@ $_['text_register'] = 'Register';
 $_['text_forgotten'] = 'Forgot your password?';
 $_['text_login_success'] = 'You have successfully logged in!';
 
-
 // Button
 $_['button_checkout'] = 'Checkout';
 $_['button_login'] = 'Login';
@@ -108,6 +107,7 @@ $_['text_voucher_success'] = 'Voucher successfully applied';
 $_['text_payment_address_same_as_shipping'] = 'Payer address is the same as shipping address';
 $_['text_select_address'] = 'Select address';
 $_['entry_select_address'] = 'Saved Addresses';
+$_['text_new_address'] = '+ Enter a new address';
 
 // Formatting
 $_['decimal_point'] = '.';

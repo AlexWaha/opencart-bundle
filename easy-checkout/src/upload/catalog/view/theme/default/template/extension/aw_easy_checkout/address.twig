@@ -16,6 +16,7 @@
                                 {{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}{% if address.city %}, {{ address.city }}{% endif %}
                             </option>
                         {% endfor %}
+                        <option value="new" {% if currentAddressId == 0 %}selected="selected"{% endif %}>{{ text_new_address }}</option>
                     </select>
                 </div>
             {% endif %}
