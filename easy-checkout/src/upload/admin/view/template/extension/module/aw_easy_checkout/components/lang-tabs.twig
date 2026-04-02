@@ -4,7 +4,7 @@
             <legend>{{ section.title }}</legend>
         {% endif %}
         <ul class="nav nav-tabs">
-            {% for language in languages if language.status %}
+            {% for language in languages|filter(language => language.status) %}
                 {% set isActive = (defaultLanguageId ? language.language_id == defaultLanguageId : loop.first) %}
                 <li class="{{ isActive ? 'active' }}">
                     <a href="#tab-{{ section.id }}{{ language.language_id }}" data-toggle="tab">
@@ -16,7 +16,7 @@
         </ul>
 
         <div class="tab-content">
-            {% for language in languages if language.status %}
+            {% for language in languages|filter(language => language.status) %}
                 {% set isActive = (defaultLanguageId ? language.language_id == defaultLanguageId : loop.first) %}
                 <div id="tab-{{ section.id }}{{ language.language_id }}" class="tab-pane {{ isActive ? 'active' }}">
                     {% include section.template ignore missing with { language: language, section: section } %}
