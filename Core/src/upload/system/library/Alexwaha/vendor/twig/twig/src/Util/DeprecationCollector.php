@@ -20,9 +20,11 @@ use Twig\Source;
  */
 final class DeprecationCollector
 {
-    public function __construct(
-        private Environment $twig,
-    ) {
+    private $twig;
+
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
     }
 
     /**
@@ -33,7 +35,7 @@ final class DeprecationCollector
      *
      * @return array An array of deprecations
      */
-    public function collectDir(string $dir, string $ext = '.twig'): array
+    public function collectDir($dir, $ext = '.twig')
     {
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
@@ -51,15 +53,13 @@ final class DeprecationCollector
      *
      * @return array An array of deprecations
      */
-    public function collect(\Traversable $iterator): array
+    public function collect(\Traversable $iterator)
     {
         $deprecations = [];
-        set_error_handler(static function ($type, $msg) use (&$deprecations) {
+        set_error_handler(function ($type, $msg) use (&$deprecations) {
             if (\E_USER_DEPRECATED === $type) {
                 $deprecations[] = $msg;
             }
-
-            return false;
         });
 
         foreach ($iterator as $name => $contents) {
@@ -75,3 +75,5 @@ final class DeprecationCollector
         return $deprecations;
     }
 }
+
+class_alias('Twig\Util\DeprecationCollector', 'Twig_Util_DeprecationCollector');

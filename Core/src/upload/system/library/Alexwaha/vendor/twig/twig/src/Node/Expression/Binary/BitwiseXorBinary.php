@@ -13,12 +13,13 @@
 namespace Twig\Node\Expression\Binary;
 
 use Twig\Compiler;
-use Twig\Node\Expression\ReturnNumberInterface;
 
-class BitwiseXorBinary extends AbstractBinary implements ReturnNumberInterface
+class BitwiseXorBinary extends AbstractBinary
 {
-    public function operator(Compiler $compiler): Compiler
+    public function operator(Compiler $compiler)
     {
         return $compiler->raw('^');
     }
 }
+
+class_alias('Twig\Node\Expression\Binary\BitwiseXorBinary', 'Twig_Node_Expression_Binary_BitwiseXor');

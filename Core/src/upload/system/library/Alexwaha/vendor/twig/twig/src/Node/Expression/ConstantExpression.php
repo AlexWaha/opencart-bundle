@@ -14,20 +14,17 @@ namespace Twig\Node\Expression;
 
 use Twig\Compiler;
 
-/**
- * @final
- */
-class ConstantExpression extends AbstractExpression implements SupportDefinedTestInterface, ReturnPrimitiveTypeInterface
+class ConstantExpression extends AbstractExpression
 {
-    use SupportDefinedTestTrait;
-
     public function __construct($value, int $lineno)
     {
         parent::__construct([], ['value' => $value], $lineno);
     }
 
-    public function compile(Compiler $compiler): void
+    public function compile(Compiler $compiler)
     {
-        $compiler->repr($this->definedTest ? true : $this->getAttribute('value'));
+        $compiler->repr($this->getAttribute('value'));
     }
 }
+
+class_alias('Twig\Node\Expression\ConstantExpression', 'Twig_Node_Expression_Constant');

@@ -13,27 +13,10 @@
 namespace Twig\Node\Expression;
 
 use Twig\Compiler;
-use Twig\Error\SyntaxError;
-use Twig\Node\Expression\Variable\AssignContextVariable;
-use Twig\Node\Expression\Variable\ContextVariable;
 
-class AssignNameExpression extends ContextVariable
+class AssignNameExpression extends NameExpression
 {
-    public function __construct(string $name, int $lineno)
-    {
-        if (self::class === static::class) {
-            trigger_deprecation('twig/twig', '3.15', 'The "%s" class is deprecated, use "%s" instead.', self::class, AssignContextVariable::class);
-        }
-
-        // All names supported by ExpressionParser::parsePrimaryExpression() should be excluded
-        if (\in_array(strtolower($name), ['true', 'false', 'none', 'null'], true)) {
-            throw new SyntaxError(\sprintf('You cannot assign a value to "%s".', $name), $lineno);
-        }
-
-        parent::__construct($name, $lineno);
-    }
-
-    public function compile(Compiler $compiler): void
+    public function compile(Compiler $compiler)
     {
         $compiler
             ->raw('$context[')
@@ -42,3 +25,5 @@ class AssignNameExpression extends ContextVariable
         ;
     }
 }
+
+class_alias('Twig\Node\Expression\AssignNameExpression', 'Twig_Node_Expression_AssignName');

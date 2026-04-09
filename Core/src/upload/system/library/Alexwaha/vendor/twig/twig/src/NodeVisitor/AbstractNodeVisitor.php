@@ -17,18 +17,18 @@ use Twig\Node\Node;
 /**
  * Used to make node visitors compatible with Twig 1.x and 2.x.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * To be removed in Twig 3.1.
  *
- * @deprecated since Twig 3.9 (to be removed in 4.0)
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 abstract class AbstractNodeVisitor implements NodeVisitorInterface
 {
-    final public function enterNode(Node $node, Environment $env): Node
+    final public function enterNode(Node $node, Environment $env)
     {
         return $this->doEnterNode($node, $env);
     }
 
-    final public function leaveNode(Node $node, Environment $env): ?Node
+    final public function leaveNode(Node $node, Environment $env)
     {
         return $this->doLeaveNode($node, $env);
     }
@@ -47,3 +47,5 @@ abstract class AbstractNodeVisitor implements NodeVisitorInterface
      */
     abstract protected function doLeaveNode(Node $node, Environment $env);
 }
+
+class_alias('Twig\NodeVisitor\AbstractNodeVisitor', 'Twig_BaseNodeVisitor');

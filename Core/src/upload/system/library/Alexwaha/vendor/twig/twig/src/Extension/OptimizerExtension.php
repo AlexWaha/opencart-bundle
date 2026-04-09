@@ -15,13 +15,17 @@ use Twig\NodeVisitor\OptimizerNodeVisitor;
 
 final class OptimizerExtension extends AbstractExtension
 {
-    public function __construct(
-        private int $optimizers = -1,
-    ) {
+    private $optimizers;
+
+    public function __construct($optimizers = -1)
+    {
+        $this->optimizers = $optimizers;
     }
 
-    public function getNodeVisitors(): array
+    public function getNodeVisitors()
     {
         return [new OptimizerNodeVisitor($this->optimizers)];
     }
 }
+
+class_alias('Twig\Extension\OptimizerExtension', 'Twig_Extension_Optimizer');

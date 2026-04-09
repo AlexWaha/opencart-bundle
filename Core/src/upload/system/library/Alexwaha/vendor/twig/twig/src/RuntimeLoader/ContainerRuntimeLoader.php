@@ -23,13 +23,19 @@ use Psr\Container\ContainerInterface;
  */
 class ContainerRuntimeLoader implements RuntimeLoaderInterface
 {
-    public function __construct(
-        private ContainerInterface $container,
-    ) {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 
-    public function load(string $class)
+    public function load($class)
     {
-        return $this->container->has($class) ? $this->container->get($class) : null;
+        if ($this->container->has($class)) {
+            return $this->container->get($class);
+        }
     }
 }
+
+class_alias('Twig\RuntimeLoader\ContainerRuntimeLoader', 'Twig_ContainerRuntimeLoader');

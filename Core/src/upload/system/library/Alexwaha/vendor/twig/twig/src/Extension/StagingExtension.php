@@ -32,69 +32,71 @@ final class StagingExtension extends AbstractExtension
     private $tokenParsers = [];
     private $tests = [];
 
-    public function addFunction(TwigFunction $function): void
+    public function addFunction(TwigFunction $function)
     {
         if (isset($this->functions[$function->getName()])) {
-            throw new \LogicException(\sprintf('Function "%s" is already registered.', $function->getName()));
+            throw new \LogicException(sprintf('Function "%s" is already registered.', $function->getName()));
         }
 
         $this->functions[$function->getName()] = $function;
     }
 
-    public function getFunctions(): array
+    public function getFunctions()
     {
         return $this->functions;
     }
 
-    public function addFilter(TwigFilter $filter): void
+    public function addFilter(TwigFilter $filter)
     {
         if (isset($this->filters[$filter->getName()])) {
-            throw new \LogicException(\sprintf('Filter "%s" is already registered.', $filter->getName()));
+            throw new \LogicException(sprintf('Filter "%s" is already registered.', $filter->getName()));
         }
 
         $this->filters[$filter->getName()] = $filter;
     }
 
-    public function getFilters(): array
+    public function getFilters()
     {
         return $this->filters;
     }
 
-    public function addNodeVisitor(NodeVisitorInterface $visitor): void
+    public function addNodeVisitor(NodeVisitorInterface $visitor)
     {
         $this->visitors[] = $visitor;
     }
 
-    public function getNodeVisitors(): array
+    public function getNodeVisitors()
     {
         return $this->visitors;
     }
 
-    public function addTokenParser(TokenParserInterface $parser): void
+    public function addTokenParser(TokenParserInterface $parser)
     {
         if (isset($this->tokenParsers[$parser->getTag()])) {
-            throw new \LogicException(\sprintf('Tag "%s" is already registered.', $parser->getTag()));
+            throw new \LogicException(sprintf('Tag "%s" is already registered.', $parser->getTag()));
         }
 
         $this->tokenParsers[$parser->getTag()] = $parser;
     }
 
-    public function getTokenParsers(): array
+    public function getTokenParsers()
     {
         return $this->tokenParsers;
     }
 
-    public function addTest(TwigTest $test): void
+    public function addTest(TwigTest $test)
     {
         if (isset($this->tests[$test->getName()])) {
-            throw new \LogicException(\sprintf('Test "%s" is already registered.', $test->getName()));
+            throw new \LogicException(sprintf('Test "%s" is already registered.', $test->getName()));
         }
 
         $this->tests[$test->getName()] = $test;
     }
 
-    public function getTests(): array
+    public function getTests()
     {
         return $this->tests;
     }
 }
+
+class_alias('Twig\Extension\StagingExtension', 'Twig_Extension_Staging');

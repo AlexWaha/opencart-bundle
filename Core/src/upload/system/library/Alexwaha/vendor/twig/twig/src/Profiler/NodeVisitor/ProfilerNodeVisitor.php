@@ -17,8 +17,7 @@ use Twig\Node\BodyNode;
 use Twig\Node\MacroNode;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
-use Twig\Node\Nodes;
-use Twig\NodeVisitor\NodeVisitorInterface;
+use Twig\NodeVisitor\AbstractNodeVisitor;
 use Twig\Profiler\Node\EnterProfileNode;
 use Twig\Profiler\Node\LeaveProfileNode;
 use Twig\Profiler\Profile;
@@ -26,26 +25,27 @@ use Twig\Profiler\Profile;
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-final class ProfilerNodeVisitor implements NodeVisitorInterface
+final class ProfilerNodeVisitor extends AbstractNodeVisitor
 {
+    private $extensionName;
     private $varName;
 
-    public function __construct(
-        private string $extensionName,
-    ) {
-        $this->varName = \sprintf('__internal_%s', hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $extensionName));
+    public function __construct(string $extensionName)
+    {
+        $this->extensionName = $extensionName;
+        $this->varName = sprintf('__internal_%s', hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $extensionName));
     }
 
-    public function enterNode(Node $node, Environment $env): Node
+    protected function doEnterNode(Node $node, Environment $env)
     {
         return $node;
     }
 
-    public function leaveNode(Node $node, Environment $env): ?Node
+    protected function doLeaveNode(Node $node, Environment $env)
     {
         if ($node instanceof ModuleNode) {
-            $node->setNode('display_start', new Nodes([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $this->varName), $node->getNode('display_start')]));
-            $node->setNode('display_end', new Nodes([new LeaveProfileNode($this->varName), $node->getNode('display_end')]));
+            $node->setNode('display_start', new Node([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $this->varName), $node->getNode('display_start')]));
+            $node->setNode('display_end', new Node([new LeaveProfileNode($this->varName), $node->getNode('display_end')]));
         } elseif ($node instanceof BlockNode) {
             $node->setNode('body', new BodyNode([
                 new EnterProfileNode($this->extensionName, Profile::BLOCK, $node->getAttribute('name'), $this->varName),
@@ -63,8 +63,10 @@ final class ProfilerNodeVisitor implements NodeVisitorInterface
         return $node;
     }
 
-    public function getPriority(): int
+    public function getPriority()
     {
         return 0;
     }
 }
+
+class_alias('Twig\Profiler\NodeVisitor\ProfilerNodeVisitor', 'Twig_Profiler_NodeVisitor_Profiler');

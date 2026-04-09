@@ -16,33 +16,21 @@ use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Node;
 
-abstract class AbstractUnary extends AbstractExpression implements UnaryInterface
+abstract class AbstractUnary extends AbstractExpression
 {
-    /**
-     * @param AbstractExpression $node
-     */
     public function __construct(Node $node, int $lineno)
     {
-        if (!$node instanceof AbstractExpression) {
-            trigger_deprecation('twig/twig', '3.15', 'Not passing a "%s" instance argument to "%s" is deprecated ("%s" given).', AbstractExpression::class, static::class, $node::class);
-        }
-
-        parent::__construct(['node' => $node], ['with_parentheses' => false], $lineno);
+        parent::__construct(['node' => $node], [], $lineno);
     }
 
-    public function compile(Compiler $compiler): void
+    public function compile(Compiler $compiler)
     {
-        if ($this->hasExplicitParentheses()) {
-            $compiler->raw('(');
-        } else {
-            $compiler->raw(' ');
-        }
+        $compiler->raw(' ');
         $this->operator($compiler);
         $compiler->subcompile($this->getNode('node'));
-        if ($this->hasExplicitParentheses()) {
-            $compiler->raw(')');
-        }
     }
 
-    abstract public function operator(Compiler $compiler): Compiler;
+    abstract public function operator(Compiler $compiler);
 }
+
+class_alias('Twig\Node\Expression\Unary\AbstractUnary', 'Twig_Node_Expression_Unary');

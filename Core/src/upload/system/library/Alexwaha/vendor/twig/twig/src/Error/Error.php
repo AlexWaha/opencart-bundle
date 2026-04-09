@@ -29,127 +29,199 @@ use Twig\Template;
  * Whenever possible, you must set these information (original template name
  * and line number) yourself by passing them to the constructor. If some or all
  * these information are not available from where you throw the exception, then
- * this class will guess them automatically.
+ * this class will guess them automatically (when the line number is set to -1
+ * and/or the name is set to null). As this is a costly operation, this
+ * can be disabled by passing false for both the name and the line number
+ * when creating a new instance of this class.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class Error extends \Exception
 {
     private $lineno;
+    private $name;
     private $rawMessage;
-    private ?Source $source;
-    private string $phpFile;
-    private int $phpLine;
+    private $sourcePath;
+    private $sourceCode;
 
     /**
      * Constructor.
      *
-     * By default, automatic guessing is enabled.
+     * Set the line number to -1 to enable its automatic guessing.
+     * Set the name to null to enable its automatic guessing.
      *
-     * @param string      $message The error message
-     * @param int         $lineno  The template line where the error occurred
-     * @param Source|null $source  The source context where the error occurred
+     * @param string             $message  The error message
+     * @param int                $lineno   The template line where the error occurred
+     * @param Source|string|null $source   The source context where the error occurred
+     * @param \Exception         $previous The previous exception
      */
-    public function __construct(string $message, int $lineno = -1, ?Source $source = null, ?\Throwable $previous = null)
+    public function __construct(string $message, int $lineno = -1, $source = null, \Exception $previous = null)
     {
         parent::__construct('', 0, $previous);
 
-        $this->phpFile = $this->getFile();
-        $this->phpLine = $this->getLine();
+        if (null === $source) {
+            $name = null;
+        } elseif (!$source instanceof Source && !$source instanceof \Twig_Source) {
+            @trigger_error(sprintf('Passing a string as a source to %s is deprecated since Twig 2.6.1; pass a Twig\Source instance instead.', __CLASS__), \E_USER_DEPRECATED);
+            $name = $source;
+        } else {
+            $name = $source->getName();
+            $this->sourceCode = $source->getCode();
+            $this->sourcePath = $source->getPath();
+        }
+
         $this->lineno = $lineno;
-        $this->source = $source;
+        $this->name = $name;
         $this->rawMessage = $message;
         $this->updateRepr();
     }
 
-    public function getRawMessage(): string
+    /**
+     * Gets the raw message.
+     *
+     * @return string The raw message
+     */
+    public function getRawMessage()
     {
         return $this->rawMessage;
     }
 
-    public function getTemplateLine(): int
+    /**
+     * Gets the template line where the error occurred.
+     *
+     * @return int The template line
+     */
+    public function getTemplateLine()
     {
         return $this->lineno;
     }
 
-    public function setTemplateLine(int $lineno): void
+    /**
+     * Sets the template line where the error occurred.
+     *
+     * @param int $lineno The template line
+     */
+    public function setTemplateLine($lineno)
     {
         $this->lineno = $lineno;
+
         $this->updateRepr();
     }
 
-    public function getSourceContext(): ?Source
+    /**
+     * Gets the source context of the Twig template where the error occurred.
+     *
+     * @return Source|null
+     */
+    public function getSourceContext()
     {
-        return $this->source;
+        return $this->name ? new Source($this->sourceCode, $this->name, $this->sourcePath) : null;
     }
 
-    public function setSourceContext(?Source $source = null): void
+    /**
+     * Sets the source context of the Twig template where the error occurred.
+     */
+    public function setSourceContext(Source $source = null)
     {
-        $this->source = $source;
-        $this->updateRepr();
-    }
-
-    public function guess(): void
-    {
-        if ($this->lineno > -1) {
-            return;
+        if (null === $source) {
+            $this->sourceCode = $this->name = $this->sourcePath = null;
+        } else {
+            $this->sourceCode = $source->getCode();
+            $this->name = $source->getName();
+            $this->sourcePath = $source->getPath();
         }
 
+        $this->updateRepr();
+    }
+
+    public function guess()
+    {
         $this->guessTemplateInfo();
         $this->updateRepr();
     }
 
-    public function appendMessage($rawMessage): void
+    public function appendMessage($rawMessage)
     {
         $this->rawMessage .= $rawMessage;
         $this->updateRepr();
     }
 
-    private function updateRepr(): void
+    private function updateRepr()
     {
-        if ($this->source && $this->source->getPath()) {
-            // we only update the file and the line together
-            $this->file = $this->source->getPath();
-            if ($this->lineno > 0) {
-                $this->line = $this->lineno;
-            } else {
-                $this->line = -1;
-            }
+        $this->message = $this->rawMessage;
+
+        if ($this->sourcePath && $this->lineno > 0) {
+            $this->file = $this->sourcePath;
+            $this->line = $this->lineno;
+
+            return;
         }
 
-        $this->message = $this->rawMessage;
-        $last = substr($this->message, -1);
-        if ($punctuation = '.' === $last || '?' === $last ? $last : '') {
+        $dot = false;
+        if ('.' === substr($this->message, -1)) {
             $this->message = substr($this->message, 0, -1);
+            $dot = true;
         }
-        if ($this->source && $this->source->getName()) {
-            $this->message .= \sprintf(' in "%s"', $this->source->getName());
+
+        $questionMark = false;
+        if ('?' === substr($this->message, -1)) {
+            $this->message = substr($this->message, 0, -1);
+            $questionMark = true;
         }
-        if ($this->lineno > 0) {
-            $this->message .= \sprintf(' at line %d', $this->lineno);
+
+        if ($this->name) {
+            if (\is_string($this->name) || (\is_object($this->name) && method_exists($this->name, '__toString'))) {
+                $name = sprintf('"%s"', $this->name);
+            } else {
+                $name = json_encode($this->name);
+            }
+            $this->message .= sprintf(' in %s', $name);
         }
-        if ($punctuation) {
-            $this->message .= $punctuation;
+
+        if ($this->lineno && $this->lineno >= 0) {
+            $this->message .= sprintf(' at line %d', $this->lineno);
+        }
+
+        if ($dot) {
+            $this->message .= '.';
+        }
+
+        if ($questionMark) {
+            $this->message .= '?';
         }
     }
 
-    private function guessTemplateInfo(): void
+    private function guessTemplateInfo()
     {
-        // $this->source is never null here (see guess() usage in Template)
-
-        $this->lineno = 0;
         $template = null;
+        $templateClass = null;
+
         $backtrace = debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS | \DEBUG_BACKTRACE_PROVIDE_OBJECT);
         foreach ($backtrace as $trace) {
-            if (isset($trace['object']) && $trace['object'] instanceof Template && $this->source->getName() === $trace['object']->getTemplateName()) {
-                $template = $trace['object'];
-
-                break;
+            if (isset($trace['object']) && $trace['object'] instanceof Template && 'Twig\Template' !== \get_class($trace['object'])) {
+                $currentClass = \get_class($trace['object']);
+                $isEmbedContainer = null === $templateClass ? false : 0 === strpos($templateClass, $currentClass);
+                if (null === $this->name || ($this->name == $trace['object']->getTemplateName() && !$isEmbedContainer)) {
+                    $template = $trace['object'];
+                    $templateClass = \get_class($trace['object']);
+                }
             }
         }
 
-        if (null === $template) {
-            return; // Impossible to guess the info as the template was not found in the backtrace
+        // update template name
+        if (null !== $template && null === $this->name) {
+            $this->name = $template->getTemplateName();
+        }
+
+        // update template path if any
+        if (null !== $template && null === $this->sourcePath) {
+            $src = $template->getSourceContext();
+            $this->sourceCode = $src->getCode();
+            $this->sourcePath = $src->getPath();
+        }
+
+        if (null === $template || $this->lineno > -1) {
+            return;
         }
 
         $r = new \ReflectionObject($template);
@@ -162,7 +234,8 @@ class Error extends \Exception
 
         while ($e = array_pop($exceptions)) {
             $traces = $e->getTrace();
-            array_unshift($traces, ['file' => $e instanceof self ? $e->phpFile : $e->getFile(), 'line' => $e instanceof self ? $e->phpLine : $e->getLine()]);
+            array_unshift($traces, ['file' => $e->getFile(), 'line' => $e->getLine()]);
+
             while ($trace = array_shift($traces)) {
                 if (!isset($trace['file']) || !isset($trace['line']) || $file != $trace['file']) {
                     continue;
@@ -180,3 +253,5 @@ class Error extends \Exception
         }
     }
 }
+
+class_alias('Twig\Error\Error', 'Twig_Error');

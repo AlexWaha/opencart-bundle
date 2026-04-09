@@ -12,29 +12,13 @@
 namespace Twig\Node\Expression\Binary;
 
 use Twig\Compiler;
-use Twig\Node\Expression\ReturnBoolInterface;
 
-class LessBinary extends AbstractBinary implements ReturnBoolInterface
+class LessBinary extends AbstractBinary
 {
-    public function compile(Compiler $compiler): void
-    {
-        if (\PHP_VERSION_ID >= 80000) {
-            parent::compile($compiler);
-
-            return;
-        }
-
-        $compiler
-            ->raw('(-1 === CoreExtension::compare(')
-            ->subcompile($this->getNode('left'))
-            ->raw(', ')
-            ->subcompile($this->getNode('right'))
-            ->raw('))')
-        ;
-    }
-
-    public function operator(Compiler $compiler): Compiler
+    public function operator(Compiler $compiler)
     {
         return $compiler->raw('<');
     }
 }
+
+class_alias('Twig\Node\Expression\Binary\LessBinary', 'Twig_Node_Expression_Binary_Less');
