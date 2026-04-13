@@ -1,0 +1,148 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_category_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="category_schema" value="0">
+            <input type="checkbox" name="category_schema" value="1" {% if category_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_category_type }}</label>
+    <div class="col-sm-9">
+        <select name="category_type" class="form-control">
+            <option value="CollectionPage" {% if category_type == 'CollectionPage' %}selected{% endif %}>CollectionPage</option>
+            <option value="ItemList" {% if category_type == 'ItemList' %}selected{% endif %}>ItemList</option>
+            <option value="OfferCatalog" {% if category_type == 'OfferCatalog' %}selected{% endif %}>OfferCatalog</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_search_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="search_schema" value="0">
+            <input type="checkbox" name="search_schema" value="1" {% if search_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_manufacturer_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="manufacturer_schema" value="0">
+            <input type="checkbox" name="manufacturer_schema" value="1" {% if manufacturer_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_special_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="special_schema" value="0">
+            <input type="checkbox" name="special_schema" value="1" {% if special_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_homepage_products }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="homepage_products" value="0">
+            <input type="checkbox" name="homepage_products" value="1" {% if homepage_products %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_price_range }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="price_range" value="0">
+            <input type="checkbox" name="price_range" value="1" {% if price_range %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_product_count }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="product_count" value="0">
+            <input type="checkbox" name="product_count" value="1" {% if product_count %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_category_rating }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="category_rating" value="0">
+            <input type="checkbox" name="category_rating" value="1" {% if category_rating %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_listing_delivery }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="listing_delivery" value="0">
+            <input type="checkbox" name="listing_delivery" value="1" {% if listing_delivery %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_listing_delivery }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_listing_return_policy }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="listing_return_policy" value="0">
+            <input type="checkbox" name="listing_return_policy" value="1" {% if listing_return_policy %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_listing_return_policy }}</p>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_landing_local }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="landing_local" value="0">
+            <input type="checkbox" name="landing_local" value="1" {% if landing_local %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_area_served }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="area_served" value="0">
+            <input type="checkbox" name="area_served" value="1" {% if area_served %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

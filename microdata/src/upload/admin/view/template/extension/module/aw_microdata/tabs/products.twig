@@ -1,0 +1,235 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_product_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="product_schema" value="0">
+            <input type="checkbox" name="product_schema" value="1" {% if product_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_product_rating }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="product_rating" value="0">
+            <input type="checkbox" name="product_rating" value="1" {% if product_rating %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_review_source }}</label>
+    <div class="col-sm-9">
+        <select name="review_source" class="form-control">
+            <option value="product_only" {% if review_source == 'product_only' %}selected{% endif %}>{{ text_product_only }}</option>
+            <option value="store_only" {% if review_source == 'store_only' %}selected{% endif %}>{{ text_store_only }}</option>
+            <option value="both" {% if review_source == 'both' %}selected{% endif %}>{{ text_both }}</option>
+            <option value="none" {% if review_source == 'none' %}selected{% endif %}>{{ text_none }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_min_reviews }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="min_reviews" value="{{ min_reviews }}" class="form-control" min="0">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_min_rating }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="min_rating" value="{{ min_rating }}" class="form-control" min="1" max="5" step="0.1">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_unit_price }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="unit_price" value="0">
+            <input type="checkbox" name="unit_price" value="1" {% if unit_price %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_unit_code }}</label>
+    <div class="col-sm-9">
+        <select name="unit_code" class="form-control">
+            <option value="" {% if unit_code == '' %}selected{% endif %}>{{ text_none }}</option>
+            <option value="LTR" {% if unit_code == 'LTR' %}selected{% endif %}>LTR (Liter)</option>
+            <option value="MLT" {% if unit_code == 'MLT' %}selected{% endif %}>MLT (Milliliter)</option>
+            <option value="KGM" {% if unit_code == 'KGM' %}selected{% endif %}>KGM (Kilogram)</option>
+            <option value="GRM" {% if unit_code == 'GRM' %}selected{% endif %}>GRM (Gram)</option>
+            <option value="MTR" {% if unit_code == 'MTR' %}selected{% endif %}>MTR (Meter)</option>
+            <option value="CMT" {% if unit_code == 'CMT' %}selected{% endif %}>CMT (Centimeter)</option>
+            <option value="EA" {% if unit_code == 'EA' %}selected{% endif %}>EA (Each / Piece)</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_unit_quantity }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="unit_quantity" value="{{ unit_quantity }}" class="form-control" min="0" step="0.01">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_condition }}</label>
+    <div class="col-sm-9">
+        <select name="condition" class="form-control">
+            <option value="NewCondition" {% if condition == 'NewCondition' %}selected{% endif %}>NewCondition</option>
+            <option value="UsedCondition" {% if condition == 'UsedCondition' %}selected{% endif %}>UsedCondition</option>
+            <option value="RefurbishedCondition" {% if condition == 'RefurbishedCondition' %}selected{% endif %}>RefurbishedCondition</option>
+            <option value="DamagedCondition" {% if condition == 'DamagedCondition' %}selected{% endif %}>DamagedCondition</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_brand_source }}</label>
+    <div class="col-sm-9">
+        <select name="brand_source" class="form-control">
+            <option value="manufacturer" {% if brand_source == 'manufacturer' %}selected{% endif %}>{{ text_manufacturer }}</option>
+            <option value="store_name" {% if brand_source == 'store_name' %}selected{% endif %}>{{ text_store_name }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_availability_map }}</label>
+    <div class="col-sm-9">
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>{{ text_stock_status }}</th>
+                    <th>{{ text_schema_value }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ss in stock_statuses %}
+                <tr>
+                    <td>{{ ss.name }}</td>
+                    <td>
+                        <select name="availability_map[{{ ss.stock_status_id }}]" class="form-control input-sm">
+                            <option value="InStock" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'InStock' %}selected{% endif %}>InStock</option>
+                            <option value="OutOfStock" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'OutOfStock' %}selected{% endif %}>OutOfStock</option>
+                            <option value="PreOrder" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'PreOrder' %}selected{% endif %}>PreOrder</option>
+                            <option value="BackOrder" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'BackOrder' %}selected{% endif %}>BackOrder</option>
+                            <option value="SoldOut" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'SoldOut' %}selected{% endif %}>SoldOut</option>
+                            <option value="LimitedAvailability" {% if availability_map[ss.stock_status_id] is defined and availability_map[ss.stock_status_id] == 'LimitedAvailability' %}selected{% endif %}>LimitedAvailability</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_delivery_lead }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="delivery_lead" value="0">
+            <input type="checkbox" name="delivery_lead" value="1" {% if delivery_lead %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-sm-3">
+                <label>{{ text_min_days }}</label>
+                <input type="number" name="delivery_min" value="{{ delivery_min }}" class="form-control input-sm" min="0">
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_max_days }}</label>
+                <input type="number" name="delivery_max" value="{{ delivery_max }}" class="form-control input-sm" min="0">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_return_policy }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="return_policy" value="0">
+            <input type="checkbox" name="return_policy" value="1" {% if return_policy %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-sm-3">
+                <label>{{ text_return_days }}</label>
+                <input type="number" name="return_days" value="{{ return_days }}" class="form-control input-sm" min="0">
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_return_type }}</label>
+                <select name="return_type" class="form-control input-sm">
+                    <option value="MerchantReturnFiniteReturnWindow" {% if return_type == 'MerchantReturnFiniteReturnWindow' %}selected{% endif %}>FiniteReturnWindow</option>
+                    <option value="MerchantReturnUnlimitedWindow" {% if return_type == 'MerchantReturnUnlimitedWindow' %}selected{% endif %}>UnlimitedWindow</option>
+                    <option value="MerchantReturnNotPermitted" {% if return_type == 'MerchantReturnNotPermitted' %}selected{% endif %}>NotPermitted</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_shipping_details }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="shipping_details" value="0">
+            <input type="checkbox" name="shipping_details" value="1" {% if shipping_details %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_include_weight }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="include_weight" value="0">
+            <input type="checkbox" name="include_weight" value="1" {% if include_weight %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_include_dimensions }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="include_dimensions" value="0">
+            <input type="checkbox" name="include_dimensions" value="1" {% if include_dimensions %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_all_images }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="all_images" value="0">
+            <input type="checkbox" name="all_images" value="1" {% if all_images %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_attributes }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="attributes" value="0">
+            <input type="checkbox" name="attributes" value="1" {% if attributes %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

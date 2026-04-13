@@ -1,0 +1,125 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_info_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="info_schema" value="0">
+            <input type="checkbox" name="info_schema" value="1" {% if info_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_info_type }}</label>
+    <div class="col-sm-9">
+        <select name="info_type" class="form-control">
+            <option value="Article" {% if info_type == 'Article' %}selected{% endif %}>Article</option>
+            <option value="WebPage" {% if info_type == 'WebPage' %}selected{% endif %}>WebPage</option>
+            <option value="AboutPage" {% if info_type == 'AboutPage' %}selected{% endif %}>AboutPage</option>
+            <option value="FAQPage" {% if info_type == 'FAQPage' %}selected{% endif %}>FAQPage</option>
+            <option value="ContactPage" {% if info_type == 'ContactPage' %}selected{% endif %}>ContactPage</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_author_name }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="author_name" value="{{ author_name }}" class="form-control">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_author_url }}</label>
+    <div class="col-sm-9">
+        <input type="url" name="author_url" value="{{ author_url }}" class="form-control" placeholder="https://...">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_blog_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="blog_schema" value="0">
+            <input type="checkbox" name="blog_schema" value="1" {% if blog_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_blog_type }}</label>
+    <div class="col-sm-9">
+        <select name="blog_type" class="form-control">
+            <option value="BlogPosting" {% if blog_type == 'BlogPosting' %}selected{% endif %}>BlogPosting</option>
+            <option value="NewsArticle" {% if blog_type == 'NewsArticle' %}selected{% endif %}>NewsArticle</option>
+            <option value="TechArticle" {% if blog_type == 'TechArticle' %}selected{% endif %}>TechArticle</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_word_count }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="word_count" value="0">
+            <input type="checkbox" name="word_count" value="1" {% if word_count %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_faq_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="faq_schema" value="0">
+            <input type="checkbox" name="faq_schema" value="1" {% if faq_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_reviews_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="reviews_schema" value="0">
+            <input type="checkbox" name="reviews_schema" value="1" {% if reviews_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_calculator_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="calculator_schema" value="0">
+            <input type="checkbox" name="calculator_schema" value="1" {% if calculator_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_calculator_howto }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="calculator_howto" value="0">
+            <input type="checkbox" name="calculator_howto" value="1" {% if calculator_howto %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_contact_schema }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="contact_schema" value="0">
+            <input type="checkbox" name="contact_schema" value="1" {% if contact_schema %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

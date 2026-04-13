@@ -1,0 +1,216 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_store_type }}</label>
+    <div class="col-sm-9">
+        <select name="store_type" class="form-control">
+            {% set store_types = ['Store', 'OnlineStore', 'LiquorStore', 'GroceryStore', 'AutoPartsStore', 'BikeStore', 'BookStore', 'ClothingStore', 'ComputerStore', 'ConvenienceStore', 'DepartmentStore', 'ElectronicsStore', 'Florist', 'FurnitureStore', 'GardenStore', 'HardwareStore', 'HobbyShop', 'HomeGoodsStore', 'JewelryStore', 'MensClothingStore', 'MobilePhoneStore', 'MovieRentalStore', 'MusicStore', 'OfficeEquipmentStore', 'OutletStore', 'PawnShop', 'PetStore', 'ShoeStore', 'SportingGoodsStore', 'TireShop', 'ToyStore', 'WholesaleStore'] %}
+            {% for type in store_types %}
+            <option value="{{ type }}" {% if store_type == type %}selected{% endif %}>{{ type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_legal_name }}</label>
+    <div class="col-sm-9">
+        {% for language in languages %}
+        <div class="input-group input-group-sm" style="margin-bottom:3px;">
+            <span class="input-group-addon" style="padding:3px 6px;">
+                <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}">
+            </span>
+            <input type="text" name="legal_name[{{ language.language_id }}]"
+                   value="{{ legal_name[language.language_id] ?? '' }}"
+                   class="form-control" placeholder="{{ entry_legal_name }}">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_email }}</label>
+    <div class="col-sm-9">
+        <input type="email" name="email" value="{{ email }}" class="form-control">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_phones }}</label>
+    <div class="col-sm-9">
+        <div id="phone-repeater">
+            {% for key, phone in phones %}
+            <div class="input-group input-group-sm phone-row" style="margin-bottom:3px;">
+                <input type="text" name="phones[{{ key }}][number]" value="{{ phone.number ?? '' }}" class="form-control" placeholder="+380971064609">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-danger btn-sm btn-remove-phone"><i class="fa fa-trash"></i></button>
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary btn-xs" id="btn-add-phone"><i class="fa fa-plus"></i> {{ button_add }}</button>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_social }}</label>
+    <div class="col-sm-9">
+        <div id="social-repeater">
+            {% for key, url in social %}
+            <div class="input-group input-group-sm social-row" style="margin-bottom:3px;">
+                <input type="url" name="social[{{ key }}]" value="{{ url }}" class="form-control" placeholder="https://...">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-danger btn-sm btn-remove-social"><i class="fa fa-trash"></i></button>
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary btn-xs" id="btn-add-social"><i class="fa fa-plus"></i> {{ button_add }}</button>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_address }}</label>
+    <div class="col-sm-9">
+        {% for language in languages %}
+        <div class="well well-sm" style="margin-bottom:5px;">
+            <p><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"> <strong>{{ language.name }}</strong></p>
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="text" name="address[{{ language.language_id }}][street]" value="{{ address[language.language_id].street ?? '' }}" class="form-control input-sm" placeholder="{{ entry_street }}" style="margin-bottom:3px;">
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" name="address[{{ language.language_id }}][city]" value="{{ address[language.language_id].city ?? '' }}" class="form-control input-sm" placeholder="{{ entry_city }}" style="margin-bottom:3px;">
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="address[{{ language.language_id }}][region]" value="{{ address[language.language_id].region ?? '' }}" class="form-control input-sm" placeholder="{{ entry_region }}" style="margin-bottom:3px;">
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="address[{{ language.language_id }}][country]" value="{{ address[language.language_id].country ?? '' }}" class="form-control input-sm" placeholder="{{ entry_country }}" style="margin-bottom:3px;">
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="address[{{ language.language_id }}][zip]" value="{{ address[language.language_id].zip ?? '' }}" class="form-control input-sm" placeholder="{{ entry_zip }}" style="margin-bottom:3px;">
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_geo }}</label>
+    <div class="col-sm-9">
+        <div class="row">
+            <div class="col-sm-6">
+                <input type="text" name="geo[lat]" value="{{ geo.lat ?? '' }}" class="form-control input-sm" placeholder="Latitude">
+            </div>
+            <div class="col-sm-6">
+                <input type="text" name="geo[lon]" value="{{ geo.lon ?? '' }}" class="form-control input-sm" placeholder="Longitude">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_logo }}</label>
+    <div class="col-sm-9">
+        <div class="input-group">
+            <input type="text" name="logo" value="{{ logo }}" id="input-logo" class="form-control" readonly>
+            <span class="input-group-btn">
+                <button type="button" id="button-logo" class="btn btn-primary"><i class="fa fa-picture-o"></i></button>
+            </span>
+        </div>
+        <div id="preview-logo" style="margin-top:5px;">
+            <img src="{{ logo_thumb }}" class="img-thumbnail" style="max-height:80px;">
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_schedule }}</label>
+    <div class="col-sm-9">
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>{{ text_day }}</th>
+                    <th>{{ text_open }}</th>
+                    <th>{{ text_close }}</th>
+                    <th>{{ text_closed }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set day_names = [text_monday, text_tuesday, text_wednesday, text_thursday, text_friday, text_saturday, text_sunday] %}
+                {% set day_codes = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] %}
+                {% for i in 0..6 %}
+                <tr>
+                    <td>{{ day_names[i] }}
+                        <input type="hidden" name="schedule[{{ i }}][day]" value="{{ day_codes[i] }}">
+                    </td>
+                    <td>
+                        <div class="input-group time-picker" style="width:120px;">
+                            <input type="text" name="schedule[{{ i }}][open]" value="{{ schedule[i].open ?? '09:00' }}" class="form-control input-sm" readonly>
+                            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group time-picker" style="width:120px;">
+                            <input type="text" name="schedule[{{ i }}][close]" value="{{ schedule[i].close ?? '20:00' }}" class="form-control input-sm" readonly>
+                            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <label class="checkbox-switch">
+                            <input type="hidden" name="schedule[{{ i }}][closed]" value="0">
+                            <input type="checkbox" name="schedule[{{ i }}][closed]" value="1" {% if schedule[i].closed %}checked{% endif %}>
+                            <span class="checkbox-switch-slider"></span>
+                        </label>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_currency }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="currency" value="{{ currency }}" class="form-control" placeholder="UAH" maxlength="3">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_price_range_value }}</label>
+    <div class="col-sm-9">
+        <select name="price_range_value" class="form-control">
+            <option value="$" {% if price_range_value == '$' %}selected{% endif %}>$</option>
+            <option value="$$" {% if price_range_value == '$$' %}selected{% endif %}>$$</option>
+            <option value="$$$" {% if price_range_value == '$$$' %}selected{% endif %}>$$$</option>
+            <option value="$$$$" {% if price_range_value == '$$$$' %}selected{% endif %}>$$$$</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_payment_methods }}</label>
+    <div class="col-sm-9">
+        {% set payment_options = ['Cash', 'CreditCard', 'DebitCard', 'GooglePay', 'ApplePay'] %}
+        {% for method in payment_options %}
+        <label class="checkbox-inline">
+            <input type="checkbox" name="payment_methods[]" value="{{ method }}" {% if method in payment_methods %}checked{% endif %}> {{ method }}
+        </label>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_delivery_areas }}</label>
+    <div class="col-sm-9">
+        {% for language in languages %}
+        <div class="input-group" style="margin-bottom:3px;">
+            <span class="input-group-addon" style="padding:3px 6px;">
+                <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}">
+            </span>
+            <textarea name="delivery_areas[{{ language.language_id }}]" class="form-control" rows="2" placeholder="{{ entry_delivery_areas }}">{{ delivery_areas[language.language_id] ?? '' }}</textarea>
+        </div>
+        {% endfor %}
+    </div>
+</div>

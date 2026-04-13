@@ -1,0 +1,89 @@
+<div class="alert alert-warning"><i class="fa fa-exclamation-triangle"></i> {{ text_advanced_warning }}</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_global_rating }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="global_rating" value="0">
+            <input type="checkbox" name="global_rating" value="1" {% if global_rating %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_global_rating }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_fake_count }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="fake_count" value="{{ fake_count }}" class="form-control" min="0">
+        <p class="help-block">{{ help_fake_count }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_fake_boost }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="fake_boost" value="{{ fake_boost }}" class="form-control" min="0" max="5" step="0.1">
+        <p class="help-block">{{ help_fake_boost }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_force_instock }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="force_instock" value="0">
+            <input type="checkbox" name="force_instock" value="1" {% if force_instock %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_force_instock }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_competitor_sameas }}</label>
+    <div class="col-sm-9">
+        <div id="sameas-repeater">
+            {% for key, url in competitor_sameas %}
+            <div class="input-group input-group-sm sameas-row" style="margin-bottom:3px;">
+                <input type="url" name="competitor_sameas[{{ key }}]" value="{{ url }}" class="form-control" placeholder="https://competitor.com">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-danger btn-sm btn-remove-sameas"><i class="fa fa-trash"></i></button>
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary btn-xs" id="btn-add-sameas"><i class="fa fa-plus"></i> {{ button_add }}</button>
+        <p class="help-block">{{ help_competitor_sameas }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_custom_jsonld }}</label>
+    <div class="col-sm-9">
+        <textarea name="custom_jsonld" class="form-control" rows="8" placeholder='{ "@context": "https://schema.org", ... }'>{{ custom_jsonld }}</textarea>
+        <p class="help-block">{{ help_custom_jsonld }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_speakable }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="speakable" value="0">
+            <input type="checkbox" name="speakable" value="1" {% if speakable %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_video_object }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="video_object" value="0">
+            <input type="checkbox" name="video_object" value="1" {% if video_object %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

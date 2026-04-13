@@ -1,0 +1,67 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_enabled" value="0">
+            <input type="checkbox" name="og_enabled" value="1" {% if og_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_type }}</label>
+    <div class="col-sm-9">
+        <select name="og_type" class="form-control">
+            <option value="website" {% if og_type == 'website' %}selected{% endif %}>website</option>
+            <option value="article" {% if og_type == 'article' %}selected{% endif %}>article</option>
+            <option value="product" {% if og_type == 'product' %}selected{% endif %}>product</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_fb_app_id }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="fb_app_id" value="{{ fb_app_id }}" class="form-control" placeholder="123456789012345">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_fb_pages }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="fb_pages" value="{{ fb_pages }}" class="form-control" placeholder="Facebook Pages ID">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_twitter_card }}</label>
+    <div class="col-sm-9">
+        <select name="twitter_card" class="form-control">
+            <option value="summary" {% if twitter_card == 'summary' %}selected{% endif %}>summary</option>
+            <option value="summary_large_image" {% if twitter_card == 'summary_large_image' %}selected{% endif %}>summary_large_image</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_twitter_username }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="twitter_username" value="{{ twitter_username }}" class="form-control" placeholder="@username">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_image }}</label>
+    <div class="col-sm-9">
+        <div class="input-group">
+            <input type="text" name="og_image" value="{{ og_image }}" id="input-og-image" class="form-control" readonly>
+            <span class="input-group-btn">
+                <button type="button" id="button-og-image" class="btn btn-primary"><i class="fa fa-picture-o"></i></button>
+            </span>
+        </div>
+        <div id="preview-og-image" style="margin-top:5px;">
+            <img src="{{ og_image_thumb }}" class="img-thumbnail" style="max-height:80px;">
+        </div>
+    </div>
+</div>

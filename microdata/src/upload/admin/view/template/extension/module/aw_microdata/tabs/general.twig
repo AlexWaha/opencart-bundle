@@ -1,0 +1,75 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_status }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="status" value="0">
+            <input type="checkbox" name="status" value="1" {% if status %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_syntax }}</label>
+    <div class="col-sm-9">
+        <select name="syntax" class="form-control">
+            <option value="ld" {% if syntax == 'ld' %}selected{% endif %}>JSON-LD</option>
+            <option value="md" {% if syntax == 'md' %}selected{% endif %}>Microdata</option>
+            <option value="both" {% if syntax == 'both' %}selected{% endif %}>{{ text_both }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_website_name }}</label>
+    <div class="col-sm-9">
+        {% for language in languages %}
+        <div class="input-group input-group-sm" style="margin-bottom:3px;">
+            <span class="input-group-addon" style="padding:3px 6px;">
+                <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}">
+            </span>
+            <input type="text" name="website_name[{{ language.language_id }}]"
+                   value="{{ website_name[language.language_id] ?? '' }}"
+                   class="form-control" placeholder="{{ entry_website_name }}">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_website_alt_name }}</label>
+    <div class="col-sm-9">
+        {% for language in languages %}
+        <div class="input-group input-group-sm" style="margin-bottom:3px;">
+            <span class="input-group-addon" style="padding:3px 6px;">
+                <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}">
+            </span>
+            <input type="text" name="website_alt_name[{{ language.language_id }}]"
+                   value="{{ website_alt_name[language.language_id] ?? '' }}"
+                   class="form-control" placeholder="{{ entry_website_alt_name }}">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_site_search_url }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="site_search_url" value="{{ site_search_url }}" class="form-control" placeholder="https://example.com/search?q={search_term_string}">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_default_image }}</label>
+    <div class="col-sm-9">
+        <div class="input-group">
+            <input type="text" name="default_image" value="{{ default_image }}" id="input-default-image" class="form-control" readonly>
+            <span class="input-group-btn">
+                <button type="button" id="button-default-image" class="btn btn-primary"><i class="fa fa-picture-o"></i></button>
+            </span>
+        </div>
+        <div id="preview-default-image" style="margin-top:5px;">
+            <img src="{{ default_image_thumb }}" class="img-thumbnail" style="max-height:80px;">
+        </div>
+    </div>
+</div>
