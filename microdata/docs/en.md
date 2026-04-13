@@ -100,7 +100,7 @@ Structured data helps search engines better understand your website content, whi
 
    **alexwaha.com - Microdata**
 
-   > **Important:** When enabled, the module will automatically register 9 event handlers and set up access permissions. No database tables are created - all configuration is stored in the shared `aw_module_config` table managed by AwCore.
+   > **Important:** When enabled, the module will automatically register 12 event handlers and set up access permissions. No database tables are created - all configuration is stored in the shared `aw_module_config` table managed by AwCore.
 
 ### Step 3: Post-Installation Self-Check
 
@@ -108,7 +108,7 @@ Verify correct installation:
 
 - Module is present in the extensions list
 - Module settings page opens without errors
-- Diagnostics tab shows all 9 events with status "OK"
+- Diagnostics tab shows all 12 events with status "OK"
 - No duplicate Schema.org markup warnings
 
 ---
@@ -137,15 +137,18 @@ The Diagnostics tab provides a comprehensive health check for the module. It run
 
 #### Events Status
 
-Checks whether all 9 event handlers are correctly registered in the OpenCart event system. Each event is listed individually with its status:
+Checks whether all 12 event handlers are correctly registered in the OpenCart event system. Each event is listed individually with its status:
 
 | Event Trigger | Purpose | Expected Status |
 |---|---|---|
 | `catalog/view/common/header/after` | OpenGraph meta tags injection into `<head>` | OK |
 | `catalog/view/common/footer/after` | Organization JSON-LD injection before `</body>` | OK |
-| `catalog/view/common/home/after` | WebSite schema on the homepage | OK |
+| `catalog/view/common/home/after` | WebSite + CollectionPage schema on the homepage | OK |
 | `catalog/view/product/product/after` | Product + BreadcrumbList schema | OK |
-| `catalog/view/product/category/after` | Category + BreadcrumbList schema | OK |
+| `catalog/view/product/category/after` | CollectionPage + BreadcrumbList schema | OK |
+| `catalog/view/product/search/after` | SearchResultsPage + BreadcrumbList schema | OK |
+| `catalog/view/product/manufacturer_info/after` | CollectionPage + Brand + BreadcrumbList schema | OK |
+| `catalog/view/product/special/after` | CollectionPage + BreadcrumbList schema | OK |
 | `catalog/view/information/information/after` | Article schema for information pages | OK |
 | `catalog/view/information/contact/after` | ContactPage schema | OK |
 | `catalog/view/blog/article/after` | BlogPosting schema for blog articles | OK |
@@ -473,9 +476,11 @@ When enabled, extracts `<img>` tags from product descriptions and generates `Ima
 
 ---
 
-### Categories & Lists
+### Listing Pages (Categories & Lists)
 
-The Categories & Lists tab configures structured data for category pages.
+The Listing Pages tab configures structured data for all pages that display product listings: categories, search results, manufacturer pages, specials/sales, landing pages, and the homepage.
+
+All listing pages share a common schema structure: `CollectionPage` (or configured type) with `AggregateOffer` (price range), optional `AggregateRating` (composite rating), optional delivery and return policy info, and optional `ItemList` carousel.
 
 #### Enable Category Schema
 
@@ -486,36 +491,64 @@ Toggle to enable/disable category page schema generation. Enabled by default.
 The Schema.org type for category pages:
 
 - `CollectionPage` (default) - A page that collects items
-- `ItemPage` - A page about a single item
-- `WebPage` - Generic web page
+- `ItemList` - A list of items
+- `OfferCatalog` - A catalog of offers
 
 > **Recommendation:** `CollectionPage` is the most semantically correct for category pages.
 
+#### Search Results Schema
+
+Toggle to enable/disable `SearchResultsPage` schema generation on search result pages. Includes `AggregateOffer` with price range for matching products. Enabled by default.
+
+#### Manufacturer Page Schema
+
+Toggle to enable/disable `CollectionPage` schema generation on manufacturer product pages. Includes `AggregateOffer` with price range and a `Brand` property with the manufacturer name. Enabled by default.
+
+#### Special / Sales Page Schema
+
+Toggle to enable/disable `CollectionPage` schema generation on special offers pages. Uses **special/discounted prices** (not regular prices) for the `AggregateOffer` price range. Enabled by default.
+
+#### Homepage Product Data
+
+When enabled, generates a `CollectionPage` schema on the homepage with an `AggregateOffer` containing the price range across all active products in the store. Disabled by default.
+
+> **Note:** This is in addition to the `WebSite` schema already generated on the homepage.
+
 #### Enable Price Range
 
-When enabled, queries the database for the lowest and highest product prices in the category and generates an `AggregateOffer` with `lowPrice`, `highPrice`, and `offerCount`.
+When enabled, queries the database for the lowest and highest product prices and generates an `AggregateOffer` with `lowPrice`, `highPrice`, and `offerCount`. Applies to all listing page types.
 
 #### Product Count
 
-When enabled, includes the total number of active products in the category.
+When enabled, includes the total number of active products in the listing.
 
-#### Rating on Categories
+#### Composite Rating on Listings
 
-When enabled, calculates an aggregate rating based on individual product ratings within the category and includes `aggregateRating` in the category schema.
+When enabled, calculates a **composite aggregate rating** combining product reviews (from `review` table) and store reviews (from `aw_review` table) and includes `aggregateRating` in the listing schema. This provides a richer rating signal even when individual pages have few reviews.
+
+> **Note:** The composite rating is used on all listing pages (categories, search, manufacturer, specials, landing pages, homepage). Fake rating boost settings from the Advanced tab also apply.
+
+#### Delivery Info on Listings
+
+When enabled, adds `shippingDetails` with `deliveryTime` to the `AggregateOffer` on all listing pages. Uses the same **Min days** and **Max days** values configured in the Products tab.
+
+#### Return Policy on Listings
+
+When enabled, adds `hasMerchantReturnPolicy` to the `AggregateOffer` on all listing pages. Uses the same **Return days** and **Return type** values configured in the Products tab.
 
 #### Product Carousel (ItemList)
 
-When enabled, generates an `ItemList` schema for products displayed in the category. Google may display this as a product carousel in search results.
+When enabled, generates an `ItemList` schema for products displayed in the listing. Google may display this as a product carousel in search results.
 
 Each product is listed as a `ListItem` with position, URL, and name.
 
-#### Landing Page LocalBusiness
+#### Landing Page Schema
 
-When enabled, generates `LocalBusiness` schema for landing pages (if AW Landing Pages module is installed). Includes organization data and price range for products on the landing page.
+When enabled, generates `CollectionPage` schema for landing pages (if AW Landing Pages module is installed). Includes price range for products on the landing page.
 
 #### Area Served
 
-When enabled, uses the landing page title as the `areaServed` value in LocalBusiness schema. Useful for location-based landing pages (e.g., "Delivery in Kyiv").
+When enabled, uses the landing page title as the `areaServed` value. Useful for location-based landing pages (e.g., "Delivery in Kyiv").
 
 ---
 
@@ -761,19 +794,20 @@ Upload a previously exported JSON file to restore settings.
 | `Organization` / subtypes | Every page (footer) | Business info, address, contacts, working hours |
 | `Product` | Product page | Name, price, images, brand, SKU, availability, reviews |
 | `Offer` | Product page | Price, currency, availability, delivery, return policy |
-| `AggregateOffer` | Category page | Price range (low/high), product count |
-| `AggregateRating` | Product / Organization | Average rating, review count |
+| `AggregateOffer` | Category, Search, Manufacturer, Special, Landing, Homepage | Price range (low/high), product count, delivery, return policy |
+| `AggregateRating` | Product / Organization / All listing pages | Average rating, review count (composite: product + store reviews) |
 | `Review` | Product / Organization | Individual reviews with author, rating, text |
 | `Brand` | Product page | Product manufacturer/brand |
 | `BreadcrumbList` | Product, Category, Information, Contact, Blog | Navigation breadcrumbs |
-| `CollectionPage` | Category page | Category schema with products |
-| `ItemList` | Category page | Product carousel/list |
+| `CollectionPage` | Category, Manufacturer, Special, Landing, Homepage | Listing page with products, price range, rating |
+| `SearchResultsPage` | Search results page | Search listing with products, price range, rating |
+| `ItemList` | All listing pages | Product carousel/list |
 | `Article` | Information page | Headline, description, author, publisher |
 | `BlogPosting` | Blog article page | Blog post with author, date, content |
 | `Blog` | Blog category page | Blog listing |
 | `FAQPage` | FAQ page | Questions and answers |
 | `ContactPage` | Contact page | Contact information with LocalBusiness |
-| `LocalBusiness` | Contact / Landing pages | Full business info with address, hours |
+| `LocalBusiness` | Contact page | Full business info with address, hours |
 | `WebApplication` | Calculator page | Application schema with offer |
 | `HowTo` | Calculator page | Step-by-step instructions |
 | `VideoObject` | Product / Blog pages | Auto-detected videos from descriptions |
@@ -785,8 +819,8 @@ Upload a previously exported JSON file to restore settings.
 | `PropertyValue` | Product page | Product attributes |
 | `QuantitativeValue` | Product page | Weight, dimensions |
 | `UnitPriceSpecification` | Product page | Unit pricing |
-| `ShippingDeliveryTime` | Product page | Delivery lead time |
-| `MerchantReturnPolicy` | Product page | Return policy details |
+| `ShippingDeliveryTime` | Product + all listing pages | Delivery lead time |
+| `MerchantReturnPolicy` | Product + all listing pages | Return policy details |
 | `Rating` | Product / Organization | Individual review rating |
 | `PeopleAudience` | Product page | Target gender |
 | `SearchAction` | Homepage | Site search box |
@@ -804,7 +838,7 @@ AW Microdata uses OpenCart's **Event system** to inject structured data, making 
 
 ### Architecture Overview
 
-The module registers 9 event handlers that listen to `view/*/after` events. When OpenCart renders a page template, the event handler fires and injects the appropriate markup into the HTML output.
+The module registers 12 event handlers that listen to `view/*/after` events. When OpenCart renders a page template, the event handler fires and injects the appropriate markup into the HTML output.
 
 **JSON-LD** is injected before `</body>` (for most schemas) or before `</head>` (for OpenGraph meta tags).
 
@@ -827,9 +861,12 @@ The module registers 9 event handlers that listen to `view/*/after` events. When
 |---|---|---|
 | `view/common/header/after` | `viewHeaderAfter` | OpenGraph + Twitter Card meta tags |
 | `view/common/footer/after` | `viewFooterAfter` | Organization |
-| `view/common/home/after` | `viewHomeAfter` | WebSite + SearchAction |
+| `view/common/home/after` | `viewHomeAfter` | WebSite + SearchAction + CollectionPage |
 | `view/product/product/after` | `viewProductAfter` | Product + BreadcrumbList |
 | `view/product/category/after` | `viewCategoryAfter` | CollectionPage + BreadcrumbList |
+| `view/product/search/after` | `viewSearchAfter` | SearchResultsPage + BreadcrumbList |
+| `view/product/manufacturer_info/after` | `viewManufacturerAfter` | CollectionPage + Brand + BreadcrumbList |
+| `view/product/special/after` | `viewSpecialAfter` | CollectionPage + BreadcrumbList |
 | `view/information/information/after` | `viewInformationAfter` | Article + BreadcrumbList |
 | `view/information/contact/after` | `viewContactAfter` | ContactPage + BreadcrumbList |
 | `view/blog/article/after` | `viewBlogArticleAfter` | BlogPosting + BreadcrumbList |
