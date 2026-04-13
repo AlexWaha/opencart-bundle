@@ -141,7 +141,6 @@ $_['entry_force_instock']       = 'Force InStock';
 $_['entry_competitor_sameas']   = 'Competitor sameAs URLs';
 $_['entry_custom_jsonld']       = 'Custom JSON-LD';
 $_['entry_speakable']           = 'Speakable';
-$_['entry_video_object']        = 'VideoObject';
 
 $_['help_global_rating']        = 'Inject AggregateRating on all pages, not just product pages.';
 $_['help_fake_count']           = 'Static number added to real review count in Schema. E.g., 5 real reviews + 10 here = Google sees 15. Set 0 to disable.';

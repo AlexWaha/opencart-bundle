@@ -141,7 +141,6 @@ $_['entry_force_instock']       = 'Всегда в наличии';
 $_['entry_competitor_sameas']   = 'Конкурентные sameAs URL';
 $_['entry_custom_jsonld']       = 'Пользовательский JSON-LD';
 $_['entry_speakable']           = 'Speakable';
-$_['entry_video_object']        = 'VideoObject';
 
 $_['help_global_rating']        = 'Добавлять AggregateRating на все страницы, не только товарные.';
 $_['help_fake_count']           = 'Статическое число, прибавляемое к реальному кол-ву отзывов в Schema. Например: 5 реальных + 10 здесь = Google видит 15. 0 — выключено.';

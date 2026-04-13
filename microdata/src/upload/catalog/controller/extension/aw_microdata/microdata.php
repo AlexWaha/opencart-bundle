@@ -143,12 +143,15 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $legalName = is_array($legalNameData) ? ($legalNameData[$langId] ?? reset($legalNameData) ?: $storeName) : ($legalNameData ?: $storeName);
         $email = $this->microdataConfig->get('email', $this->config->get('config_email'));
 
+        $description = $this->cleanText($this->config->get('config_meta_description'));
+
         $org = [
-            '@type'     => $storeType,
-            'name'      => $storeName,
-            'legalName' => (string)$legalName,
-            'url'       => $shopUrl,
-            'email'     => $email,
+            '@type'       => $storeType,
+            'name'        => $storeName,
+            'description' => $description ?: $storeName,
+            'legalName'   => (string)$legalName,
+            'url'         => $shopUrl,
+            'email'       => $email,
         ];
 
         $priceRange = $this->microdataConfig->get('price_range_value', '');
@@ -981,30 +984,6 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $schema['offers'] = $offer;
         }
 
-        if ($this->microdataConfig->get('category_rating', false)) {
-            $this->load->model('extension/aw_microdata/microdata');
-            $compositeRating = $this->model_extension_aw_microdata_microdata->getCompositeRating();
-
-            $fakeCount = (int)$this->microdataConfig->get('fake_count', 0);
-            $fakeBoost = (float)$this->microdataConfig->get('fake_boost', 0);
-            $compositeRating['count'] += $fakeCount;
-
-            if ($fakeBoost > 0 && $compositeRating['avg'] > 0) {
-                $compositeRating['avg'] = min(5, $compositeRating['avg'] + $fakeBoost);
-            } elseif ($fakeBoost > 0 && $compositeRating['avg'] == 0) {
-                $compositeRating['avg'] = min(5, $fakeBoost);
-            }
-
-            if ($compositeRating['count'] > 0) {
-                $schema['aggregateRating'] = [
-                    '@type'       => 'AggregateRating',
-                    'ratingValue' => round($compositeRating['avg'], 1),
-                    'bestRating'  => 5,
-                    'ratingCount' => $compositeRating['count'],
-                ];
-            }
-        }
-
         if ($this->microdataConfig->get('category_carousel', false) && !empty($products)) {
             $itemList = [
                 '@type'           => 'ItemList',
@@ -1244,11 +1223,12 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $this->load->model('extension/aw_microdata/microdata');
 
         $storeName = $this->cleanText($this->config->get('config_name'));
+        $description = $this->cleanText($this->config->get('config_meta_description')) ?: $storeName;
         $url = rtrim($this->getShopUrl(), '/') . '/';
 
         $priceRange = $this->model_extension_aw_microdata_microdata->getHomepagePriceRange();
 
-        $schema = $this->buildListingPageSchema($storeName, $storeName, $url, $priceRange);
+        $schema = $this->buildListingPageSchema($storeName, $description, $url, $priceRange);
 
         return $this->buildJsonLd($schema);
     }
