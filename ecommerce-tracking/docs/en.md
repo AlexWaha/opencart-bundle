@@ -11,9 +11,11 @@
 3. [Module Settings](#module-settings)
 4. [GTM Integration](#gtm-integration)
 5. [GA4 Events Reference](#ga4-events-reference)
-6. [For Developers](#for-developers)
-7. [Troubleshooting](#troubleshooting)
-8. [License and Contacts](#license-and-contacts)
+6. [Diagnostics](#diagnostics)
+7. [Import / Export](#import--export)
+8. [For Developers](#for-developers)
+9. [Troubleshooting](#troubleshooting)
+10. [License and Contacts](#license-and-contacts)
 
 ---
 
@@ -24,12 +26,16 @@
 ### Key Features:
 
 - **Full GA4 E-commerce Support** - All recommended Google Analytics 4 events
+- **Event-Based Integration** - Uses OpenCart event system, no OCMOD template modifications
+- **Universal Compatibility** - Works with any theme, any checkout (standard, AW Easy Checkout)
 - **Flexible Configuration** - Enable/disable each event individually
 - **Page Tracking** - Categories, search, manufacturers, specials, products
 - **Module Tracking** - Featured, latest, bestsellers, specials
-- **Purchase Funnel** - From product view to purchase completion
+- **Purchase Funnel** - From product view to purchase completion with F5 protection
+- **Search Event** - GA4 `search` event with `search_term` parameter
+- **Diagnostics** - Built-in validator checks all events are registered correctly
+- **Import / Export** - Backup and restore module settings as JSON
 - **Debug Mode** - Output events to browser console
-- **Compatibility** - Standard checkout, Simple Checkout, AW Easy Checkout
 
 ### Technical Specifications:
 
@@ -38,6 +44,7 @@
 - **License:** GPLv3
 - **Compatibility:** OpenCart 2.3.x - 3.x
 - **Module Code:** `aw_ecommerce_tracking`
+- **Integration:** OpenCart Event System (17 events registered at install)
 
 ---
 
@@ -51,11 +58,19 @@
 
 ### Installation
 
-1. Install **aw_ecommerce_tracking_oc2.3-3x.ocmod.zip** via **Extensions → Installer**
+1. Upload **aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip** via **Extensions → Installer**
 
-2. Refresh modifications cache: **Extensions → Modifications → Refresh**
+2. Enable module: **Extensions → Modules → alexwaha.com - E-commerce Tracking (GA4) → Install**
 
-3. Enable module: **Extensions → Modules → alexwaha.com - E-commerce Tracking (GA4)**
+3. Open module settings and configure GTM/gtag.js code
+
+4. Verify installation via **Diagnostics** tab — all 17 events should show "OK"
+
+### Important Notes
+
+- **No OCMOD refresh needed** — the module uses OpenCart events, not OCMOD modifications
+- **No template edits needed** — works with any theme out of the box
+- If upgrading from OCMOD-based version: remove the old `aw_ecommerce_tracking` entry from Extensions → Modifications, then refresh modifications cache
 
 ---
 
@@ -77,7 +92,7 @@ Tracking `view_item_list` and `view_item`:
 | Setting | Event | Description |
 |---------|-------|-------------|
 | Category Pages | `view_item_list` | Product lists in categories |
-| Search Results | `view_item_list` | Search page |
+| Search Results | `view_item_list` + `search` | Search page with search term |
 | Manufacturer Pages | `view_item_list` | Brand pages |
 | Special Pages | `view_item_list` | Special offers |
 | Product Pages | `view_item` | Product card |
@@ -99,11 +114,11 @@ Tracking `view_item_list` for modules:
 |---------|-------|-------------|
 | Add to Cart | `add_to_cart` | Adding product |
 | Remove from Cart | `remove_from_cart` | Removing product |
-| View Cart | `view_cart` | Cart page |
-| Begin Checkout | `begin_checkout` | Checkout page |
+| View Cart | `view_cart` | Cart page / Easy Checkout |
+| Begin Checkout | `begin_checkout` | Checkout page / Easy Checkout |
 | Shipping Info | `add_shipping_info` | Shipping selection |
 | Payment Info | `add_payment_info` | Payment selection |
-| Purchase | `purchase` | Successful order |
+| Purchase | `purchase` | Successful order (F5-protected) |
 
 **Additional:**
 - Include tax in prices
@@ -141,7 +156,7 @@ Tracking `view_item_list` for modules:
 
 2. **Trigger:**
    - Triggers → New → Custom Event
-   - Event name: `view_item_list|view_item|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|add_shipping_info|add_payment_info|purchase`
+   - Event name: `view_item_list|view_item|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|add_shipping_info|add_payment_info|purchase|search`
    - Use regex matching: ✓
 
 3. **GA4 Event Tag:**
@@ -163,6 +178,7 @@ Tracking `view_item_list` for modules:
 |-------|----------------|------|
 | `view_item_list` | Product list view | PHP |
 | `view_item` | Product card view | PHP |
+| `search` | Search page (with search_term) | PHP |
 | `select_item` | Click on product in list | JS |
 | `add_to_cart` | Add to cart | JS |
 | `remove_from_cart` | Remove from cart | JS |
@@ -176,11 +192,85 @@ Tracking `view_item_list` for modules:
 | `add_to_wishlist` | Add to wishlist | JS |
 | `add_coupon` | Apply coupon | JS |
 
-**Type:** PHP = on page load, JS = on user action
+**Type:** PHP = on page load via event system, JS = on user action via client-side hooks
+
+---
+
+## Diagnostics
+
+The **Diagnostics** tab (first tab in module settings) provides real-time validation:
+
+### Event Registration Check
+- Validates all 17 OpenCart events are registered in `oc_event` table
+- Shows each event trigger with OK/MISSING status
+- If events are missing: reinstall the module (Extensions → Modules → Uninstall → Install)
+
+### Configuration Check
+- Verifies GTM/gtag.js code is configured
+- Verifies module status is enabled
+- Clickable links to navigate to relevant settings tab
+
+### Badge Indicator
+- Green "OK" badge on Diagnostics tab = no issues
+- Red badge with number = count of problems found
+
+---
+
+## Import / Export
+
+The **Import / Export** tab allows backup and restore of module settings:
+
+### Export
+- Downloads current configuration as a JSON file
+- Filename format: `aw_ecommerce_tracking_settings_YYYY-MM-DD_HH-MM-SS.json`
+
+### Import
+- Upload a previously exported JSON file
+- Overwrites all current settings (confirmation required)
+- Page auto-reloads after successful import
 
 ---
 
 ## For Developers
+
+### How It Works
+
+The module uses OpenCart's native event system instead of OCMOD modifications. During installation, 17 events are registered in the `oc_event` database table:
+
+**Global events (every page):**
+- `catalog/view/common/header/after` — injects GTM code + JS config into `<head>`
+- `catalog/view/common/footer/after` — injects GTM body code + deferred login/signup events
+
+**Page-specific events:**
+- `catalog/view/product/category/after` — category page `view_item_list`
+- `catalog/view/product/search/after` — search page `view_item_list` + `search`
+- `catalog/view/product/manufacturer_info/after` — manufacturer page
+- `catalog/view/product/special/after` — specials page
+- `catalog/view/product/product/after` — product page `view_item`
+
+**Checkout events:**
+- `catalog/view/checkout/cart/after` — standard cart `view_cart`
+- `catalog/view/checkout/checkout/after` — standard checkout `begin_checkout`
+- `catalog/controller/extension/aw_easy_checkout/main/after` — AW Easy Checkout `view_cart` + `begin_checkout`
+- `catalog/view/common/success/after` — order success `purchase`
+
+**Account events:**
+- `catalog/controller/account/login/after` — sets login session flag
+- `catalog/controller/account/register/after` — sets signup session flag
+
+**Module events:**
+- `catalog/view/extension/module/featured/after`
+- `catalog/view/extension/module/latest/after`
+- `catalog/view/extension/module/bestseller/after`
+- `catalog/view/extension/module/special/after`
+
+### Event Handler
+
+All events are handled by `catalog/controller/extension/aw_ecommerce_tracking/event.php`. The handler:
+1. Extracts `product_id` values from template `$data['products']`
+2. Re-queries raw product data via model (numeric prices, tax_class_id, manufacturer)
+3. Delegates to the business logic controller (`extension/module/aw_ecommerce_tracking`)
+4. Injects the returned tracking HTML into `$output`
 
 ### JavaScript API
 
@@ -219,30 +309,16 @@ if ($tracking->isEnabled()) {
 }
 ```
 
-### Custom Module Integration
-
-```php
-// Controller
-$data['awTracking'] = $this->load->controller(
-    'extension/module/aw_ecommerce_tracking/viewItemList',
-    [$products, 'Custom List', 'custom_list', 'track_module_custom']
-);
-```
-
-```twig
-{# Template #}
-{{ awTracking|default('')|raw }}
-```
-
 ---
 
 ## Troubleshooting
 
 ### Events not sending
 
-1. Check that module is enabled
-2. Check GTM code in settings
-3. Refresh modifications cache
+1. Open **Diagnostics** tab — check all events are registered (17/17 OK)
+2. Check that module status is enabled
+3. Check GTM code is in General settings
+4. If events are missing: reinstall the module
 
 ### Error "awCore is not defined"
 
@@ -250,13 +326,24 @@ Install **aw_core_oc2.3-3.x.ocmod.zip** module
 
 ### Events duplicating
 
-Check that GTM code is only in module settings (not manually in template)
+1. Check Extensions → Modifications for old `aw_ecommerce_tracking` OCMOD entry — delete it and refresh cache
+2. Check that GTM code is only in module settings (not manually in template)
 
 ### add_to_cart not firing
 
 1. Check console for errors
 2. Ensure `cart.add()` exists on page
-3. Use JS API for sending
+3. Use JS API for custom themes
+
+### Purchase event fires on F5
+
+The module has built-in protection — `purchase` event fires only once per order using a session flag. If you still see duplicates, check for old OCMOD modifications.
+
+### AW Easy Checkout — no events
+
+The module registers a dedicated controller event for Easy Checkout. If events are missing:
+1. Check `aw_et_ec_main` in Diagnostics
+2. Reinstall the module to register the event
 
 ---
 

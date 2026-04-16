@@ -38,16 +38,18 @@
                     <div class="row">
                         <div class="col-sm-3">
                             {% set tabs = [
+                                { id: 'diagnostics', label: tab_diagnostics, icon: 'fa-stethoscope' },
                                 { id: 'general', label: tab_general },
                                 { id: 'pages', label: tab_pages },
                                 { id: 'modules', label: tab_modules },
                                 { id: 'checkout', label: tab_checkout },
                                 { id: 'events', label: tab_events },
                                 { id: 'advanced', label: tab_advanced },
+                                { id: 'import_export', label: tab_import_export },
                                 { id: 'ga4_reference', label: tab_ga4_reference },
                                 { id: 'support', label: tab_support }
                             ] %}
-                            {% set active_tab = 'general' %}
+                            {% set active_tab = 'diagnostics' %}
 
                             {% include 'extension/module/aw_ecommerce_tracking/v-tabs-nav.twig' with {
                                 tabs: tabs,
@@ -70,4 +72,135 @@
         </div>
     </div>
 </div>
+<script>
+(function() {
+    // Diagnostics
+    var diagLang = {
+        eventsOk: "{{ text_diag_events_ok|e('js') }}",
+        eventsMissing: "{{ text_diag_events_missing|e('js') }}",
+        eventsCount: "{{ text_diag_events_count|e('js') }}",
+        configOk: "{{ text_diag_config_ok|e('js') }}",
+        configMissing: "{{ text_diag_config_missing|e('js') }}",
+        missingFields: "{{ text_diag_missing_fields|e('js') }}",
+        diagFailed: "{{ text_diag_failed|e('js') }}",
+        eventOk: "{{ text_diag_event_ok|e('js') }}",
+        eventMissing: "{{ text_diag_event_missing|e('js') }}",
+        goToTab: "{{ text_diag_go_to_tab|e('js') }}"
+    };
+
+    $.getJSON('index.php?route=extension/module/{{ module_name }}/diagnostics&{{ token_param }}', function(data) {
+        var html = '';
+        var issues = 0;
+
+        // Events check
+        var evtOk = data.events.status === 'ok';
+        var evtBoxClass = evtOk ? 'alert-box alert-box-success' : 'alert-box alert-box-danger';
+        var evtIcon = evtOk ? 'check-circle' : 'times-circle';
+        var evtTitle = evtOk ? diagLang.eventsOk : diagLang.eventsMissing;
+        var evtCount = diagLang.eventsCount.replace('%s', data.events.registered).replace('%s', data.events.total);
+        if (!evtOk) issues++;
+
+        html += '<div class="' + evtBoxClass + '">';
+        html += '<div style="margin-bottom:8px;"><i class="fa fa-' + evtIcon + '"></i> <strong>' + evtTitle + '</strong> <span style="opacity:0.7;">(' + evtCount + ')</span></div>';
+        if (data.events.details && data.events.details.length) {
+            data.events.details.forEach(function(d) {
+                var ok = d.exists && d.enabled;
+                html += '<div class="list-item" style="margin-bottom:4px;">';
+                html += '<span class="badge-code" style="margin-right:8px;">' + d.trigger + '</span>';
+                html += ok ? '<span class="badge-success" style="color:#fff;">' + diagLang.eventOk + '</span>' : '<span class="badge-danger" style="color:#fff;">' + diagLang.eventMissing + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        // Config check
+        if (data.config.missing && data.config.missing.length) {
+            issues++;
+            html += '<div class="alert-box alert-box-warning">';
+            html += '<div style="margin-bottom:8px;"><i class="fa fa-exclamation-triangle"></i> <strong>' + diagLang.missingFields + '</strong></div>';
+            data.config.missing.forEach(function(f) {
+                var label = typeof f === 'object' ? f.label : f;
+                var tab = typeof f === 'object' ? f.tab : '';
+                var tabLink = '';
+                if (tab) {
+                    tabLink = ' - <a href="#" onclick="event.preventDefault(); $(\'a[href=&quot;#v-tab_' + tab + '&quot;]\').tab(\'show\');">' + diagLang.goToTab + '</a>';
+                }
+                html += '<div class="list-item" style="margin-bottom:4px;"><span class="badge-code">' + label + '</span>' + tabLink + '</div>';
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="alert-box alert-box-success"><i class="fa fa-check-circle"></i> <strong>' + diagLang.configOk + '</strong></div>';
+        }
+
+        $('#diagnostics-container').html(html);
+
+        if (issues > 0) {
+            $('#diag-badge').text(issues).css({'background-color': '#d9534f', 'color': '#fff'}).show();
+        } else {
+            $('#diag-badge').text('OK').css({'background-color': '#5cb85c', 'color': '#fff'}).show();
+        }
+    }).fail(function() {
+        $('#diagnostics-container').html('<div class="alert-box alert-box-danger"><i class="fa fa-times-circle"></i> <strong>' + diagLang.diagFailed + '</strong></div>');
+    });
+
+    // Export
+    $('#btn-export-config').on('click', function() {
+        var btn = $(this);
+        btn.button('loading');
+        window.location.href = 'index.php?route=extension/module/{{ module_name }}/exportConfig&{{ token_param }}';
+        setTimeout(function() { btn.button('reset'); }, 2000);
+    });
+
+    // Import
+    $('#btn-import-config').on('click', function() {
+        $('#import-file').trigger('click');
+    });
+
+    $('#import-file').on('change', function() {
+        var fileInput = $(this);
+        var importBtn = $('#btn-import-config');
+
+        if (!fileInput.val()) return;
+
+        if (confirm("{{ text_import_warning|replace({'<strong>': '', '</strong>': ''})|striptags|e('js') }}")) {
+            var formData = new FormData();
+            formData.append('import_file', fileInput[0].files[0]);
+            var $vTab = $('#v-tab_import_export');
+            importBtn.button('loading');
+
+            $.ajax({
+                url: 'index.php?route=extension/module/{{ module_name }}/importConfig&{{ token_param }}',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function() { importBtn.prop('disabled', true); },
+                complete: function() { importBtn.prop('disabled', false); },
+                success: function(json) {
+                    $vTab.find('.alert-dismissable').remove();
+                    importBtn.button('reset');
+
+                    if (json.error) {
+                        $vTab.prepend('<div class="alert alert-danger alert-dismissable"><i class="fa fa-exclamation-circle"></i> ' + json.error + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                    }
+
+                    if (json.success) {
+                        $vTab.prepend("<div class='alert alert-success'><i class='fa fa-check-circle'></i> {{ text_import_success|e('js') }}<button type='button' class='close' data-dismiss='alert'>&times;</button></div>");
+                        setTimeout(function() { location.reload(); }, 1500);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    importBtn.button('reset');
+                    $vTab.find('.alert-dismissable').remove();
+                    $vTab.prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + thrownError + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                }
+            });
+        } else {
+            fileInput.val('');
+        }
+    });
+})();
+</script>
 {{ footer }}

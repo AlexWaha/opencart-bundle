@@ -11,25 +11,31 @@
 3. [Настройки модуля](#настройки-модуля)
 4. [Интеграция с GTM](#интеграция-с-gtm)
 5. [Справочник событий GA4](#справочник-событий-ga4)
-6. [Для разработчиков](#для-разработчиков)
-7. [Возможные ошибки](#возможные-ошибки)
-8. [Лицензия и контакты](#лицензия-и-контакты)
+6. [Диагностика](#диагностика)
+7. [Импорт / Экспорт](#импорт--экспорт)
+8. [Для разработчиков](#для-разработчиков)
+9. [Решение проблем](#решение-проблем)
+10. [Лицензия и контакты](#лицензия-и-контакты)
 
 ---
 
 ## Информация о модуле
 
-**E-commerce Tracking (GA4)** - модуль для OpenCart, реализующий полное отслеживание электронной коммерции по стандарту Google Analytics 4. Автоматически отправляет все e-commerce события в dataLayer для Google Tag Manager или gtag.js.
+**E-commerce Tracking (GA4)** — модуль OpenCart, реализующий полное отслеживание e-commerce по стандарту Google Analytics 4. Автоматически отправляет все события в dataLayer для Google Tag Manager или gtag.js.
 
 ### Основные возможности:
 
-- **Полная поддержка GA4 E-commerce** - Все рекомендованные события Google Analytics 4
-- **Гибкая настройка** - Включение/отключение каждого события отдельно
-- **Отслеживание страниц** - Категории, поиск, производители, акции, товары
-- **Отслеживание модулей** - Рекомендуемые, новинки, хиты продаж, акции
-- **Воронка покупки** - От просмотра товара до завершения покупки
-- **Режим отладки** - Вывод событий в консоль браузера
-- **Совместимость** - Стандартный checkout, Simple Checkout, AW Easy Checkout
+- **Полная поддержка GA4 E-commerce** — все рекомендованные события Google Analytics 4
+- **Интеграция через события** — использует систему событий OpenCart, без OCMOD модификаций шаблонов
+- **Универсальная совместимость** — работает с любой темой и любым чекаутом (стандартный, AW Easy Checkout)
+- **Гибкая настройка** — включение/выключение каждого события отдельно
+- **Отслеживание страниц** — категории, поиск, производители, акции, товары
+- **Отслеживание модулей** — рекомендуемые, новинки, хиты продаж, акционные
+- **Воронка покупки** — от просмотра товара до завершения покупки с защитой от F5
+- **Событие поиска** — GA4 `search` event с параметром `search_term`
+- **Диагностика** — встроенный валидатор проверяет регистрацию всех событий
+- **Импорт / Экспорт** — резервное копирование и восстановление настроек в JSON
+- **Режим отладки** — вывод событий в консоль браузера
 
 ### Технические характеристики:
 
@@ -38,89 +44,98 @@
 - **Лицензия:** GPLv3
 - **Совместимость:** OpenCart 2.3.x - 3.x
 - **Код модуля:** `aw_ecommerce_tracking`
+- **Интеграция:** система событий OpenCart (17 событий при установке)
 
 ---
 
 ## Инструкция по установке
 
-### Предварительные требования
+### Требования
 
-1. Установите модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+1. Установите **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
-2. Для Opencart 2.3.x: модуль отключения FTP-загрузки или корректные настройки FTP
+2. Для Opencart 2.3.x: отключите FTP модуль или настройте FTP
 
 ### Установка
 
-1. Установите архив **aw_ecommerce_tracking_oc2.3-3x.ocmod.zip** через **Расширения → Установщик**
+1. Загрузите **aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip** через **Расширения → Установка расширений**
 
-2. Обновите кеш модификаций: **Расширения → Модификаторы → Обновить**
+2. Включите модуль: **Расширения → Модули → alexwaha.com - E-commerce Tracking (GA4) → Установить**
 
-3. Включите модуль: **Расширения → Модули → alexwaha.com - E-commerce Tracking (GA4)**
+3. Откройте настройки модуля и укажите код GTM/gtag.js
+
+4. Проверьте через вкладку **Диагностика** — все 17 событий должны показывать "OK"
+
+### Важно
+
+- **Обновление кэша OCMOD не требуется** — модуль использует события OpenCart, а не OCMOD
+- **Редактирование шаблонов не требуется** — работает с любой темой
+- При обновлении с OCMOD-версии: удалите старую запись `aw_ecommerce_tracking` из Расширения → Модификаторы, затем обновите кэш
 
 ---
 
 ## Настройки модуля
 
-### Вкладка "Общие"
+### Вкладка «Общие»
 
 | Настройка | Описание |
 |-----------|----------|
-| **Статус** | Включение/отключение модуля |
-| **Код GTM/gtag.js (Head)** | Код Google Tag Manager или gtag.js для секции `<head>` |
-| **Код GTM (Body)** | Noscript код GTM для `<body>` |
+| **Статус** | Включить/выключить модуль |
+| **Код GTM/gtag.js (Head)** | Код Google Tag Manager или gtag.js для `<head>` |
+| **Код GTM (Body)** | Noscript-код GTM для `<body>` |
 | **Режим отладки** | Вывод событий в консоль браузера |
 
-### Вкладка "Страницы"
+### Вкладка «Страницы»
 
 Отслеживание `view_item_list` и `view_item`:
 
 | Настройка | Событие | Описание |
 |-----------|---------|----------|
 | Страницы категорий | `view_item_list` | Списки товаров в категориях |
-| Результаты поиска | `view_item_list` | Страница поиска |
+| Результаты поиска | `view_item_list` + `search` | Страница поиска с поисковым запросом |
 | Страницы производителей | `view_item_list` | Страницы брендов |
 | Страницы акций | `view_item_list` | Специальные предложения |
 | Страницы товаров | `view_item` | Карточка товара |
 | Страница сравнения | `view_item_list` | Сравнение товаров |
 
-### Вкладка "Модули"
+### Вкладка «Модули»
 
 Отслеживание `view_item_list` для модулей:
 
-- Модуль новинок (Latest)
-- Модуль рекомендуемых (Featured)
-- Модуль хитов продаж (Bestseller)
-- Модуль акций (Special)
-- Модуль просмотренных (AW Viewed)
+- Модуль новинок
+- Модуль рекомендуемых
+- Модуль хитов продаж
+- Модуль акций
+- Модуль просмотренных (AW)
 
-### Вкладка "Оформление заказа"
+### Вкладка «Оформление заказа»
 
 | Настройка | Событие | Описание |
 |-----------|---------|----------|
 | Добавление в корзину | `add_to_cart` | Добавление товара |
 | Удаление из корзины | `remove_from_cart` | Удаление товара |
-| Просмотр корзины | `view_cart` | Страница корзины |
-| Начало оформления | `begin_checkout` | Страница checkout |
-| Информация о доставке | `add_shipping_info` | Выбор доставки |
-| Информация об оплате | `add_payment_info` | Выбор оплаты |
-| Покупка | `purchase` | Успешный заказ |
+| Просмотр корзины | `view_cart` | Страница корзины / Easy Checkout |
+| Начало оформления | `begin_checkout` | Страница чекаута / Easy Checkout |
+| Информация о доставке | `add_shipping_info` | Выбор способа доставки |
+| Информация об оплате | `add_payment_info` | Выбор способа оплаты |
+| Покупка | `purchase` | Успешный заказ (защита от F5) |
 
 **Дополнительно:**
 - Включать налог в цены
 - Отслеживать стоимость доставки
 - Отслеживать купоны/скидки
 
-### Вкладка "События"
+### Вкладка «События»
 
 | Настройка | Событие | Описание |
 |-----------|---------|----------|
 | Вход пользователя | `login` | Авторизация |
 | Регистрация | `sign_up` | Новый пользователь |
-| Добавление в избранное | `add_to_wishlist` | Wishlist |
-| Выбор товара | `select_item` | Клик на товар в списке |
-| Применение купона | `add_coupon` / `add_voucher` | Скидочные коды |
+| Добавление в избранное | `add_to_wishlist` | Список желаний |
+| Выбор товара | `select_item` | Клик по товару в списке |
+| Применение купона | `add_coupon` / `add_voucher` | Коды скидок |
 
-### Вкладка "Расширенные"
+### Вкладка «Расширенные»
 
 | Настройка | Описание |
 |-----------|----------|
@@ -135,24 +150,24 @@
 
 ### Настройка Google Tag Manager
 
-1. **Переменная dataLayer:**
-   - Variables → New → Data Layer Variable
-   - Имя: `ecommerce`, Version 2
+1. **Переменная DataLayer:**
+   - Переменные → Создать → Переменная уровня данных
+   - Имя: `ecommerce`, Версия 2
 
 2. **Триггер:**
-   - Triggers → New → Custom Event
-   - Event name: `view_item_list|view_item|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|add_shipping_info|add_payment_info|purchase`
-   - Use regex matching: ✓
+   - Триггеры → Создать → Специальное событие
+   - Имя события: `view_item_list|view_item|select_item|add_to_cart|remove_from_cart|view_cart|begin_checkout|add_shipping_info|add_payment_info|purchase|search`
+   - Использовать регулярные выражения: ✓
 
-3. **Тег GA4 Event:**
-   - Tags → New → Google Analytics: GA4 Event
-   - Event Name: `{{Event}}`
-   - Event Parameters: `ecommerce` → `{{ecommerce}}`
+3. **Тег GA4:**
+   - Теги → Создать → Google Analytics: событие GA4
+   - Имя события: `{{Event}}`
+   - Параметры события: `ecommerce` → `{{ecommerce}}`
 
 ### Проверка
 
 1. Включите режим отладки в модуле
-2. Откройте Preview в GTM
+2. Откройте GTM Preview
 3. Проверьте события в консоли и GTM Preview
 
 ---
@@ -163,11 +178,12 @@
 |---------|-------------------|-----|
 | `view_item_list` | Просмотр списка товаров | PHP |
 | `view_item` | Просмотр карточки товара | PHP |
-| `select_item` | Клик на товар в списке | JS |
+| `search` | Страница поиска (с search_term) | PHP |
+| `select_item` | Клик по товару в списке | JS |
 | `add_to_cart` | Добавление в корзину | JS |
 | `remove_from_cart` | Удаление из корзины | JS |
 | `view_cart` | Просмотр корзины | PHP |
-| `begin_checkout` | Начало оформления заказа | PHP |
+| `begin_checkout` | Начало оформления | PHP |
 | `add_shipping_info` | Выбор доставки | JS |
 | `add_payment_info` | Выбор оплаты | JS |
 | `purchase` | Успешный заказ | PHP |
@@ -176,87 +192,131 @@
 | `add_to_wishlist` | Добавление в избранное | JS |
 | `add_coupon` | Применение купона | JS |
 
-**Тип:** PHP = при загрузке страницы, JS = при действии пользователя
+**Тип:** PHP = при загрузке страницы через систему событий, JS = при действии пользователя через клиентские хуки
+
+---
+
+## Диагностика
+
+Вкладка **Диагностика** (первая вкладка в настройках модуля) — автоматическая проверка:
+
+### Проверка регистрации событий
+- Проверяет что все 17 событий зарегистрированы в таблице `oc_event`
+- Каждое событие показывается со статусом OK / ОТСУТСТВУЕТ
+- Если события не найдены: переустановите модуль (Расширения → Модули → Удалить → Установить)
+
+### Проверка конфигурации
+- GTM/gtag.js код заполнен
+- Модуль включён
+- Ссылки для быстрого перехода к нужным настройкам
+
+### Индикатор на вкладке
+- Зелёный «OK» = нет проблем
+- Красный с числом = количество найденных проблем
+
+---
+
+## Импорт / Экспорт
+
+Вкладка **Импорт / Экспорт** — резервное копирование настроек:
+
+### Экспорт
+- Скачивает текущую конфигурацию в JSON-файл
+- Формат имени: `aw_ecommerce_tracking_settings_ГГГГ-ММ-ДД_ЧЧ-ММ-СС.json`
+
+### Импорт
+- Загрузка ранее экспортированного JSON-файла
+- Перезаписывает все текущие настройки (требуется подтверждение)
+- Страница автоматически перезагружается после импорта
 
 ---
 
 ## Для разработчиков
 
+### Как это работает
+
+Модуль использует нативную систему событий OpenCart. При установке регистрируются 17 событий в таблице `oc_event`:
+
+**Глобальные (на каждой странице):**
+- `catalog/view/common/header/after` — GTM код + JS конфиг в `<head>`
+- `catalog/view/common/footer/after` — GTM body код + отложенные события login/signup
+
+**Страничные события:**
+- `catalog/view/product/category/after` — категории
+- `catalog/view/product/search/after` — поиск + `search` event
+- `catalog/view/product/manufacturer_info/after` — производители
+- `catalog/view/product/special/after` — акции
+- `catalog/view/product/product/after` — товар
+
+**Чекаут:**
+- `catalog/view/checkout/cart/after` — стандартная корзина
+- `catalog/view/checkout/checkout/after` — стандартный чекаут
+- `catalog/controller/extension/aw_easy_checkout/main/after` — AW Easy Checkout
+- `catalog/view/common/success/after` — успешный заказ
+
+**Аккаунт:**
+- `catalog/controller/account/login/after` — флаг логина
+- `catalog/controller/account/register/after` — флаг регистрации
+
+**Модули:**
+- `catalog/view/extension/module/featured/after`
+- `catalog/view/extension/module/latest/after`
+- `catalog/view/extension/module/bestseller/after`
+- `catalog/view/extension/module/special/after`
+
+### Event Handler
+
+Обработчик: `catalog/controller/extension/aw_ecommerce_tracking/event.php`:
+1. Извлекает `product_id` из `$data['products']`
+2. Запрашивает сырые данные через модель (числовые цены, tax_class_id, manufacturer)
+3. Делегирует в контроллер бизнес-логики (`extension/module/aw_ecommerce_tracking`)
+4. Инжектит tracking HTML в `$output`
+
 ### JavaScript API
 
 ```javascript
-// Добавление в корзину
-window.awEcommerceTracking.trackAddToCart({
-    id: '42',
-    name: 'iPhone 15',
-    price: 49999.00,
-    brand: 'Apple',
-    category: 'Смартфоны'
-}, 1);
-
-// Удаление из корзины
+window.awEcommerceTracking.trackAddToCart(product, quantity);
 window.awEcommerceTracking.trackRemoveFromCart(product, quantity);
-
-// Выбор товара
 window.awEcommerceTracking.trackSelectItem(product, listName, listId, index);
-
-// Применение купона
 window.awEcommerceTracking.trackCoupon('SALE10', 'coupon');
-
-// Произвольное событие
 window.awEcommerceTracking.push({ event: 'custom', data: 'value' });
-```
-
-### PHP API
-
-```php
-// В контроллере
-$tracking = $this->load->controller('extension/module/aw_ecommerce_tracking');
-
-if ($tracking->isEnabled()) {
-    $eventData = $tracking->prepareViewItemList($products, 'My List', 'my_list');
-    $html = $tracking->renderDataLayer($eventData);
-}
-```
-
-### Интеграция с пользовательским модулем
-
-```php
-// Контроллер
-$data['awTracking'] = $this->load->controller(
-    'extension/module/aw_ecommerce_tracking/viewItemList',
-    [$products, 'Custom List', 'custom_list', 'track_module_custom']
-);
-```
-
-```twig
-{# Шаблон #}
-{{ awTracking|default('')|raw }}
 ```
 
 ---
 
-## Возможные ошибки
+## Решение проблем
 
 ### События не отправляются
 
-1. Проверьте, что модуль включен
-2. Проверьте код GTM в настройках
-3. Обновите кеш модификаций
+1. Откройте вкладку **Диагностика** — проверьте что все 17 событий зарегистрированы
+2. Убедитесь что модуль включён
+3. Проверьте GTM код в настройках
+4. Если события отсутствуют — переустановите модуль
 
-### Ошибка "awCore is not defined"
+### Ошибка «awCore is not defined»
 
 Установите модуль **aw_core_oc2.3-3.x.ocmod.zip**
 
-### События дублируются
+### Дублирование событий
 
-Проверьте, что код GTM добавлен только в настройках модуля (не в шаблоне вручную)
+1. Проверьте Расширения → Модификаторы на наличие старой записи `aw_ecommerce_tracking` — удалите и обновите кэш
+2. Убедитесь что GTM код только в настройках модуля, а не вручную в шаблоне
 
 ### add_to_cart не срабатывает
 
 1. Проверьте консоль на ошибки
-2. Убедитесь в наличии `cart.add()` на странице
-3. Используйте JS API для отправки
+2. Убедитесь что `cart.add()` существует на странице
+3. Используйте JS API для кастомных тем
+
+### Purchase срабатывает при F5
+
+Модуль имеет встроенную защиту — событие `purchase` отправляется только один раз для каждого заказа через session flag.
+
+### AW Easy Checkout — нет событий
+
+Модуль регистрирует специальный controller event для Easy Checkout. Если событий нет:
+1. Проверьте `aw_et_ec_main` в Диагностике
+2. Переустановите модуль
 
 ---
 
@@ -266,16 +326,16 @@ $data['awTracking'] = $this->load->controller(
 
 [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE)
 
-**Автор:** Александр Ваховский (Oleksandr Vakhovskyi) / Alexwaha
+**Автор:** Alexander Vakhovski (Oleksandr Vakhovskyi) / Alexwaha
 
 ### Контакты
 
 - **Telegram:** [@alexwaha_dev](https://t.me/alexwaha_dev)
 - **Email:** [support@alexwaha.com](mailto:support@alexwaha.com)
 - **GitHub:** [https://github.com/AlexWaha/opencart-bundle](https://github.com/AlexWaha/opencart-bundle)
-- **Contact Form:** [https://alexwaha.com/contact](https://alexwaha.com/contact)
+- **Связаться:** [https://alexwaha.com/contact](https://alexwaha.com/contact)
 
-> Техническая поддержка доступна на платной основе. Pull Request приветствуются.
+> Техподдержка предоставляется на платной основе. Pull Requests приветствуются.
 
 ---
 

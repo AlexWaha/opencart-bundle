@@ -35,6 +35,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $this->params['token_param'] = $this->tokenData['param'];
 
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
+        $this->params['module_name'] = $this->moduleName;
     }
 
     public function index(): void
@@ -140,6 +141,144 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $this->index();
     }
 
+    public function diagnostics(): void
+    {
+        $json = [];
+
+        $this->load->model('extension/module/' . $this->moduleName);
+
+        $expectedTriggers = [
+            'catalog/view/common/header/after',
+            'catalog/view/common/footer/after',
+            'catalog/view/product/category/after',
+            'catalog/view/product/search/after',
+            'catalog/view/product/manufacturer_info/after',
+            'catalog/view/product/special/after',
+            'catalog/view/product/product/after',
+            'catalog/view/checkout/cart/after',
+            'catalog/view/checkout/checkout/after',
+            'catalog/controller/extension/aw_easy_checkout/main/after',
+            'catalog/view/common/success/after',
+            'catalog/controller/account/login/after',
+            'catalog/controller/account/register/after',
+            'catalog/view/extension/module/featured/after',
+            'catalog/view/extension/module/latest/after',
+            'catalog/view/extension/module/bestseller/after',
+            'catalog/view/extension/module/special/after',
+        ];
+
+        $eventRows = $this->{'model_extension_module_' . $this->moduleName}->getRegisteredEvents('aw_et_');
+
+        $registeredTriggers = [];
+        foreach ($eventRows as $row) {
+            $registeredTriggers[$row['trigger']] = (int) ($row['status'] ?? 1);
+        }
+
+        $eventDetails = [];
+        $registeredCount = 0;
+
+        foreach ($expectedTriggers as $trigger) {
+            $exists = isset($registeredTriggers[$trigger]);
+            $enabled = $exists && $registeredTriggers[$trigger] === 1;
+
+            if ($exists && $enabled) {
+                $registeredCount++;
+            }
+
+            $eventDetails[] = [
+                'trigger' => $trigger,
+                'exists'  => $exists,
+                'enabled' => $enabled,
+            ];
+        }
+
+        $json['events'] = [
+            'status'     => $registeredCount === count($expectedTriggers) ? 'ok' : 'error',
+            'total'      => count($expectedTriggers),
+            'registered' => $registeredCount,
+            'details'    => $eventDetails,
+        ];
+
+        $json['config'] = $this->checkConfig();
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    private function checkConfig(): array
+    {
+        $missing = [];
+
+        $trackingCode = $this->moduleConfig->get('tracking_code', '');
+        if (empty($trackingCode)) {
+            $missing[] = ['field' => 'tracking_code', 'label' => $this->language->get('entry_tracking_code'), 'tab' => 'general'];
+        }
+
+        $status = $this->moduleConfig->get('status', false);
+        if (!$status) {
+            $missing[] = ['field' => 'status', 'label' => $this->language->get('entry_status'), 'tab' => 'general'];
+        }
+
+        return [
+            'status'  => empty($missing) ? 'ok' : 'warning',
+            'missing' => $missing,
+        ];
+    }
+
+    public function exportConfig(): void
+    {
+        if (!$this->validate()) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode([
+                'error' => $this->language->get('error_permission'),
+            ]));
+            return;
+        }
+
+        try {
+            $jsonData = $this->awCore->exportConfig($this->moduleName);
+            $filename = $this->moduleName . '_settings_' . date('Y-m-d_H-i-s') . '.json';
+
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->addHeader('Content-Disposition: attachment; filename="' . $filename . '"');
+            $this->response->setOutput($jsonData);
+        } catch (Exception $e) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode([
+                'error' => sprintf($this->language->get('error_import_failed'), $e->getMessage()),
+            ]));
+        }
+    }
+
+    public function importConfig(): void
+    {
+        $json = [];
+
+        if (!$this->validate()) {
+            $json['error'] = $this->language->get('error_permission');
+        } else {
+            if (isset($this->request->files['import_file']) && is_uploaded_file($this->request->files['import_file']['tmp_name'])) {
+                try {
+                    $fileContent = file_get_contents($this->request->files['import_file']['tmp_name']);
+
+                    if ($fileContent === false) {
+                        throw new Exception($this->language->get('error_import_read_file'));
+                    }
+
+                    $this->awCore->importConfig($this->moduleName, $fileContent);
+                    $json['success'] = $this->language->get('text_import_success');
+                } catch (Exception $e) {
+                    $json['error'] = sprintf($this->language->get('error_import_failed'), $e->getMessage());
+                }
+            } else {
+                $json['error'] = $this->language->get('error_import_file');
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
     protected function validate(): bool
     {
         $this->load->language('extension/module/' . $this->moduleName);
@@ -164,14 +303,86 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         );
 
         $this->installPermissions();
+        $this->installEvents();
     }
 
     public function uninstall(): void
     {
+        $this->uninstallEvents();
+
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
 
         $this->awCore->removeConfig($this->moduleName);
+    }
+
+    private function installEvents(): void
+    {
+        $this->load->model('setting/event');
+
+        $events = [
+            // Global — GTM/gtag code injection
+            ['aw_et_header',         'catalog/view/common/header/after',                'extension/aw_ecommerce_tracking/event/viewHeaderAfter'],
+            ['aw_et_footer',         'catalog/view/common/footer/after',                'extension/aw_ecommerce_tracking/event/viewFooterAfter'],
+
+            // Pages — view_item_list / view_item events
+            ['aw_et_category',       'catalog/view/product/category/after',             'extension/aw_ecommerce_tracking/event/viewCategoryAfter'],
+            ['aw_et_search',         'catalog/view/product/search/after',               'extension/aw_ecommerce_tracking/event/viewSearchAfter'],
+            ['aw_et_manufacturer',   'catalog/view/product/manufacturer_info/after',    'extension/aw_ecommerce_tracking/event/viewManufacturerAfter'],
+            ['aw_et_special',        'catalog/view/product/special/after',              'extension/aw_ecommerce_tracking/event/viewSpecialAfter'],
+            ['aw_et_product',        'catalog/view/product/product/after',              'extension/aw_ecommerce_tracking/event/viewProductAfter'],
+
+            // Checkout flow
+            ['aw_et_cart',           'catalog/view/checkout/cart/after',                'extension/aw_ecommerce_tracking/event/viewCartAfter'],
+            ['aw_et_checkout',       'catalog/view/checkout/checkout/after',            'extension/aw_ecommerce_tracking/event/viewCheckoutAfter'],
+            ['aw_et_ec_main',        'catalog/controller/extension/aw_easy_checkout/main/after',  'extension/aw_ecommerce_tracking/event/controllerEasyCheckoutAfter'],
+            ['aw_et_success',        'catalog/view/common/success/after',              'extension/aw_ecommerce_tracking/event/viewSuccessAfter'],
+
+            // Account — login/signup tracking via controller events
+            ['aw_et_login',          'catalog/controller/account/login/after',         'extension/aw_ecommerce_tracking/event/controllerLoginAfter'],
+            ['aw_et_register',       'catalog/controller/account/register/after',      'extension/aw_ecommerce_tracking/event/controllerRegisterAfter'],
+
+            // Product modules — view_item_list events
+            ['aw_et_mod_featured',   'catalog/view/extension/module/featured/after',   'extension/aw_ecommerce_tracking/event/viewModuleFeaturedAfter'],
+            ['aw_et_mod_latest',     'catalog/view/extension/module/latest/after',     'extension/aw_ecommerce_tracking/event/viewModuleLatestAfter'],
+            ['aw_et_mod_bestseller', 'catalog/view/extension/module/bestseller/after', 'extension/aw_ecommerce_tracking/event/viewModuleBestsellerAfter'],
+            ['aw_et_mod_special',    'catalog/view/extension/module/special/after',    'extension/aw_ecommerce_tracking/event/viewModuleSpecialAfter'],
+        ];
+
+        foreach ($events as $event) {
+            $this->model_setting_event->deleteEventByCode($event[0]);
+            $this->model_setting_event->addEvent($event[0], $event[1], $event[2]);
+        }
+    }
+
+    private function uninstallEvents(): void
+    {
+        $this->load->model('setting/event');
+
+        $codes = [
+            'aw_et_header',
+            'aw_et_footer',
+            'aw_et_category',
+            'aw_et_search',
+            'aw_et_manufacturer',
+            'aw_et_special',
+            'aw_et_product',
+            'aw_et_cart',
+            'aw_et_checkout',
+            'aw_et_ec_main',
+            'aw_et_success',
+            'aw_et_login',
+            'aw_et_register',
+            'aw_et_mod_featured',
+            'aw_et_mod_latest',
+            'aw_et_mod_bestseller',
+            'aw_et_mod_special',
+            'aw_ecommerce_tracking', // legacy cleanup
+        ];
+
+        foreach ($codes as $code) {
+            $this->model_setting_event->deleteEventByCode($code);
+        }
     }
 
     protected function installPermissions(): void

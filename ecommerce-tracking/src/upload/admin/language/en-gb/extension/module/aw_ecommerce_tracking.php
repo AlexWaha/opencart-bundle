@@ -20,6 +20,8 @@ $_['tab_events'] = 'Events';
 $_['tab_advanced'] = 'Advanced';
 $_['tab_support'] = 'Support';
 $_['tab_ga4_reference'] = 'GA4 Reference';
+$_['tab_import_export'] = 'Import / Export';
+$_['tab_diagnostics'] = 'Diagnostics';
 
 // Text
 $_['text_extension'] = 'Extensions';
@@ -143,10 +145,35 @@ $_['text_ga4_legend'] = 'Legend';
 $_['text_ga4_legend_server'] = 'Event triggered by PHP on page load';
 $_['text_ga4_legend_js'] = 'Event triggered by JavaScript on user action';
 
+// Import/Export
+$_['text_import_export_title'] = 'Import / Export Settings';
+$_['text_import_export_info']  = 'Export your current e-commerce tracking configuration as a JSON file, or import a previously exported configuration.';
+$_['text_export_description']  = 'Download the current e-commerce tracking configuration as a JSON file.';
+$_['text_import_description']  = 'Select a previously exported JSON file to restore e-commerce tracking settings.';
+$_['text_import_warning']      = '<strong>Warning!</strong> Importing will overwrite all current e-commerce tracking settings. This action cannot be undone.';
+$_['text_import_success']      = 'Settings imported successfully! Page will reload...';
+
+// Diagnostics
+$_['text_diag_events_ok']      = 'All events registered';
+$_['text_diag_events_missing'] = 'Some events missing — reinstall the module';
+$_['text_diag_events_count']   = 'Events: %s/%s registered';
+$_['text_diag_config_ok']      = 'All required fields filled';
+$_['text_diag_config_missing'] = 'Some recommended fields are empty';
+$_['text_diag_missing_fields'] = 'Missing recommended fields';
+$_['text_diag_failed']         = 'Failed to load diagnostics';
+$_['text_diag_event_ok']       = 'OK';
+$_['text_diag_event_missing']  = 'MISSING';
+$_['text_diag_go_to_tab']      = 'Go to settings →';
+
 // Buttons
 $_['button_save'] = 'Save';
 $_['button_cancel'] = 'Cancel';
+$_['button_export'] = 'Export Settings';
+$_['button_import'] = 'Import Settings';
 
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify this module!';
 $_['error_warning'] = 'Warning: Please check the form for errors!';
+$_['error_import_failed']    = 'Import failed: %s';
+$_['error_import_read_file'] = 'Unable to read uploaded file';
+$_['error_import_file']      = 'Please select a file to import';

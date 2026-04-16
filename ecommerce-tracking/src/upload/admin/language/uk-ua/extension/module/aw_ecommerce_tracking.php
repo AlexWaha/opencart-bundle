@@ -20,6 +20,8 @@ $_['tab_events'] = 'Події';
 $_['tab_advanced'] = 'Розширені';
 $_['tab_support'] = 'Підтримка';
 $_['tab_ga4_reference'] = 'Довідник GA4';
+$_['tab_import_export'] = 'Імпорт / Експорт';
+$_['tab_diagnostics'] = 'Діагностика';
 
 // Text
 $_['text_extension'] = 'Розширення';
@@ -143,10 +145,35 @@ $_['text_ga4_legend'] = 'Легенда';
 $_['text_ga4_legend_server'] = 'Подія спрацьовує на сервері (PHP) при завантаженні сторінки';
 $_['text_ga4_legend_js'] = 'Подія спрацьовує через JavaScript при дії користувача';
 
+// Import/Export
+$_['text_import_export_title'] = 'Імпорт / Експорт налаштувань';
+$_['text_import_export_info']  = 'Експортуйте поточну конфігурацію відстеження в JSON-файл або імпортуйте раніше збережену конфігурацію.';
+$_['text_export_description']  = 'Завантажити поточну конфігурацію відстеження у форматі JSON.';
+$_['text_import_description']  = 'Оберіть раніше експортований JSON-файл для відновлення налаштувань відстеження.';
+$_['text_import_warning']      = '<strong>Увага!</strong> Імпорт перезапише всі поточні налаштування відстеження. Цю дію неможливо скасувати.';
+$_['text_import_success']      = 'Налаштування успішно імпортовано! Сторінка перезавантажиться...';
+
+// Diagnostics
+$_['text_diag_events_ok']      = 'Всі події зареєстровані';
+$_['text_diag_events_missing'] = 'Деякі події відсутні — перевстановіть модуль';
+$_['text_diag_events_count']   = 'Події: %s/%s зареєстровано';
+$_['text_diag_config_ok']      = 'Всі обов\'язкові поля заповнені';
+$_['text_diag_config_missing'] = 'Деякі рекомендовані поля порожні';
+$_['text_diag_missing_fields'] = 'Відсутні рекомендовані поля';
+$_['text_diag_failed']         = 'Не вдалося завантажити діагностику';
+$_['text_diag_event_ok']       = 'OK';
+$_['text_diag_event_missing']  = 'ВІДСУТНЯ';
+$_['text_diag_go_to_tab']      = 'Перейти до налаштувань →';
+
 // Buttons
 $_['button_save'] = 'Зберегти';
 $_['button_cancel'] = 'Скасувати';
+$_['button_export'] = 'Експорт налаштувань';
+$_['button_import'] = 'Імпорт налаштувань';
 
 // Error
 $_['error_permission'] = 'Увага: У вас немає прав для керування цим модулем!';
 $_['error_warning'] = 'Увага: Будь ласка, перевірте форму на наявність помилок!';
+$_['error_import_failed']    = 'Помилка імпорту: %s';
+$_['error_import_read_file'] = 'Неможливо прочитати завантажений файл';
+$_['error_import_file']      = 'Оберіть файл для імпорту';
