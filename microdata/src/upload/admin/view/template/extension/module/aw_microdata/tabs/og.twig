@@ -35,23 +35,6 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_twitter_card }}</label>
-    <div class="col-sm-9">
-        <select name="twitter_card" class="form-control">
-            <option value="summary" {% if twitter_card == 'summary' %}selected{% endif %}>summary</option>
-            <option value="summary_large_image" {% if twitter_card == 'summary_large_image' %}selected{% endif %}>summary_large_image</option>
-        </select>
-    </div>
-</div>
-
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_twitter_username }}</label>
-    <div class="col-sm-9">
-        <input type="text" name="twitter_username" value="{{ twitter_username }}" class="form-control" placeholder="@username">
-    </div>
-</div>
-
-<div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_og_image }}</label>
     <div class="col-sm-9">
         <div class="input-group">
@@ -63,5 +46,98 @@
         <div id="preview-og-image" style="margin-top:5px;">
             <img src="{{ og_image_thumb }}" class="img-thumbnail" style="max-height:80px;">
         </div>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_product_base }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_product_base" value="0">
+            <input type="checkbox" name="og_product_base" value="1" {% if og_product_base %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_product_extended }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_product_extended" value="0">
+            <input type="checkbox" name="og_product_extended" value="1" {% if og_product_extended %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_sale_price }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_sale_price" value="0">
+            <input type="checkbox" name="og_sale_price" value="1" {% if og_sale_price %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_age_restriction }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="og_age_restriction" value="{{ og_age_restriction }}" class="form-control" placeholder="adult">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_see_also_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_see_also_enabled" value="0">
+            <input type="checkbox" name="og_see_also_enabled" value="1" {% if og_see_also_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_business_contact }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_business_contact" value="0">
+            <input type="checkbox" name="og_business_contact" value="1" {% if og_business_contact %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_place_location }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="og_place_location" value="0">
+            <input type="checkbox" name="og_place_location" value="1" {% if og_place_location %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_fb_profile_id }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="fb_profile_id" value="{{ fb_profile_id }}" class="form-control" placeholder="100001234567890">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_id_linking_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="id_linking_enabled" value="0">
+            <input type="checkbox" name="id_linking_enabled" value="1" {% if id_linking_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
     </div>
 </div>

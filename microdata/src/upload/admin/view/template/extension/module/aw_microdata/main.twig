@@ -71,6 +71,8 @@
     var phoneIndex = {{ phones|length }};
     var socialIndex = {{ social|length }};
     var sameasIndex = {{ competitor_sameas|length }};
+    var contactPointIndex = {{ contact_points|length }};
+    var speakableIndex = {{ speakable_selectors|length }};
 
     // Phone repeater
     document.addEventListener('click', function(e) {
@@ -126,6 +128,50 @@
         if (e.target.closest('.btn-remove-sameas')) {
             e.preventDefault();
             e.target.closest('.sameas-row').remove();
+        }
+    });
+
+    // ContactPoint repeater (item 14)
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('#btn-add-contactpoint')) {
+            e.preventDefault();
+            var i = contactPointIndex;
+            var row = document.createElement('div');
+            row.className = 'contactpoint-row';
+            row.style.cssText = 'border:1px solid #e0e0e0;padding:10px;margin-bottom:6px;border-radius:3px;background:#fafafa;';
+            row.innerHTML = '<div class="d-flex gap-10" style="margin-bottom:6px;">' +
+                '<input type="text" name="contact_points[' + i + '][telephone]" value="" class="form-control input-sm" placeholder="+380...">' +
+                '<input type="text" name="contact_points[' + i + '][contact_type]" value="customer service" class="form-control input-sm">' +
+                '<button type="button" class="btn btn-danger btn-sm btn-remove-contactpoint"><i class="fa fa-trash"></i></button>' +
+                '</div>' +
+                '<input type="text" name="contact_points[' + i + '][area_served][]" value="" class="form-control input-sm" placeholder="Area (one per row)" style="margin-bottom:3px;">' +
+                '<input type="text" name="contact_points[' + i + '][available_language][]" value="" class="form-control input-sm" placeholder="Language (one per row)">';
+            document.getElementById('contactpoint-repeater').appendChild(row);
+            contactPointIndex++;
+        }
+
+        if (e.target.closest('.btn-remove-contactpoint')) {
+            e.preventDefault();
+            e.target.closest('.contactpoint-row').remove();
+        }
+    });
+
+    // Speakable selectors repeater (item 30)
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('#btn-add-speakable')) {
+            e.preventDefault();
+            var row = document.createElement('div');
+            row.className = 'input-group input-group-sm speakable-row';
+            row.style.marginBottom = '3px';
+            row.innerHTML = '<input type="text" name="speakable_selectors[' + speakableIndex + ']" value="" class="form-control" placeholder=".product-name, h1">' +
+                '<span class="input-group-btn"><button type="button" class="btn btn-danger btn-sm btn-remove-speakable"><i class="fa fa-trash"></i></button></span>';
+            document.getElementById('speakable-repeater').appendChild(row);
+            speakableIndex++;
+        }
+
+        if (e.target.closest('.btn-remove-speakable')) {
+            e.preventDefault();
+            e.target.closest('.speakable-row').remove();
         }
     });
 

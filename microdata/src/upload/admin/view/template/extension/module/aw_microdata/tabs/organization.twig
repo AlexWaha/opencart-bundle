@@ -214,3 +214,48 @@
         {% endfor %}
     </div>
 </div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_contact_points }}</label>
+    <div class="col-sm-9">
+        <div id="contactpoint-repeater">
+            {% for idx, cp in contact_points %}
+            <div class="contactpoint-row" style="border:1px solid #e0e0e0;padding:10px;margin-bottom:6px;border-radius:3px;background:#fafafa;">
+                <div class="d-flex gap-10" style="margin-bottom:6px;">
+                    <input type="text" name="contact_points[{{ idx }}][telephone]" value="{{ cp.telephone|default('') }}" class="form-control input-sm" placeholder="+380...">
+                    <input type="text" name="contact_points[{{ idx }}][contact_type]" value="{{ cp.contact_type|default('customer service') }}" class="form-control input-sm">
+                    <button type="button" class="btn btn-danger btn-sm btn-remove-contactpoint"><i class="fa fa-trash"></i></button>
+                </div>
+                {% for area in cp.area_served|default([]) %}
+                <input type="text" name="contact_points[{{ idx }}][area_served][]" value="{{ area }}" class="form-control input-sm" placeholder="Area" style="margin-bottom:3px;">
+                {% endfor %}
+                <input type="text" name="contact_points[{{ idx }}][area_served][]" value="" class="form-control input-sm" placeholder="Area (optional)" style="margin-bottom:3px;">
+                {% for lg in cp.available_language|default([]) %}
+                <input type="text" name="contact_points[{{ idx }}][available_language][]" value="{{ lg }}" class="form-control input-sm" placeholder="Language" style="margin-bottom:3px;">
+                {% endfor %}
+                <input type="text" name="contact_points[{{ idx }}][available_language][]" value="" class="form-control input-sm" placeholder="Language (optional)">
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="btn-add-contactpoint" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_has_map }}</label>
+    <div class="col-sm-9">
+        <input type="url" name="has_map" value="{{ has_map }}" class="form-control" placeholder="https://maps.google.com/?q=...">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_store_return_policy_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="checkbox" name="store_return_policy_enabled" value="1" {% if store_return_policy_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

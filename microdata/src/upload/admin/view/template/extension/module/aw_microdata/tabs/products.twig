@@ -92,6 +92,45 @@
     </div>
 </div>
 
+<hr>
+<h4 class="mt-10 mb-10">{{ text_merchant_listings }}</h4>
+<p class="text-muted">{{ help_merchant_listings }}</p>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_merchant_listings_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="merchant_listings_enabled" value="0">
+            <input type="checkbox" name="merchant_listings_enabled" value="1" {% if merchant_listings_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_price_valid_until_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="price_valid_until_enabled" value="0">
+            <input type="checkbox" name="price_valid_until_enabled" value="1" {% if price_valid_until_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_price_valid_until_enabled }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_item_condition_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="item_condition_enabled" value="0">
+            <input type="checkbox" name="item_condition_enabled" value="1" {% if item_condition_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_item_condition_enabled }}</p>
+    </div>
+</div>
+
 <div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_brand_source }}</label>
     <div class="col-sm-9">
@@ -134,21 +173,57 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_delivery_lead }}</label>
+    <label class="col-sm-3 control-label">{{ entry_shipping_details }}</label>
     <div class="col-sm-9">
         <label class="checkbox-switch">
-            <input type="hidden" name="delivery_lead" value="0">
-            <input type="checkbox" name="delivery_lead" value="1" {% if delivery_lead %}checked{% endif %}>
+            <input type="hidden" name="shipping_details" value="0">
+            <input type="checkbox" name="shipping_details" value="1" {% if shipping_details %}checked{% endif %}>
             <span class="checkbox-switch-slider"></span>
         </label>
-        <div class="row" style="margin-top:5px;">
+        <p class="help-block">{{ help_shipping_details }}</p>
+        <div class="row" style="margin-top:10px;">
             <div class="col-sm-3">
-                <label>{{ text_min_days }}</label>
-                <input type="number" name="delivery_min" value="{{ delivery_min }}" class="form-control input-sm" min="0">
+                <label>{{ text_shipping_rate }}</label>
+                <input type="text" name="shipping_rate_value" value="{{ shipping_rate_value }}" class="form-control input-sm" placeholder="0">
+            </div>
+            <div class="col-sm-2">
+                <label>{{ text_currency }}</label>
+                <input type="text" name="shipping_rate_currency" value="{{ shipping_rate_currency }}" class="form-control input-sm" maxlength="3" placeholder="UAH">
             </div>
             <div class="col-sm-3">
-                <label>{{ text_max_days }}</label>
-                <input type="number" name="delivery_max" value="{{ delivery_max }}" class="form-control input-sm" min="0">
+                <label>{{ text_destination_country }}</label>
+                <select name="shipping_destination_country" class="form-control input-sm">
+                    <option value="UA" {% if shipping_destination_country == 'UA' %}selected{% endif %}>UA — Ukraine</option>
+                    <option value="PL" {% if shipping_destination_country == 'PL' %}selected{% endif %}>PL — Poland</option>
+                    <option value="DE" {% if shipping_destination_country == 'DE' %}selected{% endif %}>DE — Germany</option>
+                    <option value="CZ" {% if shipping_destination_country == 'CZ' %}selected{% endif %}>CZ — Czech Republic</option>
+                    <option value="SK" {% if shipping_destination_country == 'SK' %}selected{% endif %}>SK — Slovakia</option>
+                    <option value="RO" {% if shipping_destination_country == 'RO' %}selected{% endif %}>RO — Romania</option>
+                    <option value="HU" {% if shipping_destination_country == 'HU' %}selected{% endif %}>HU — Hungary</option>
+                    <option value="LT" {% if shipping_destination_country == 'LT' %}selected{% endif %}>LT — Lithuania</option>
+                    <option value="LV" {% if shipping_destination_country == 'LV' %}selected{% endif %}>LV — Latvia</option>
+                    <option value="EE" {% if shipping_destination_country == 'EE' %}selected{% endif %}>EE — Estonia</option>
+                    <option value="US" {% if shipping_destination_country == 'US' %}selected{% endif %}>US — United States</option>
+                    <option value="GB" {% if shipping_destination_country == 'GB' %}selected{% endif %}>GB — United Kingdom</option>
+                </select>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col-sm-3">
+                <label>{{ text_handling_min }}</label>
+                <input type="number" name="handling_min" value="{{ handling_min }}" class="form-control input-sm" min="0">
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_handling_max }}</label>
+                <input type="number" name="handling_max" value="{{ handling_max }}" class="form-control input-sm" min="0">
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_transit_min }}</label>
+                <input type="number" name="transit_min" value="{{ transit_min }}" class="form-control input-sm" min="0">
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_transit_max }}</label>
+                <input type="number" name="transit_max" value="{{ transit_max }}" class="form-control input-sm" min="0">
             </div>
         </div>
     </div>
@@ -162,10 +237,35 @@
             <input type="checkbox" name="return_policy" value="1" {% if return_policy %}checked{% endif %}>
             <span class="checkbox-switch-slider"></span>
         </label>
-        <div class="row" style="margin-top:5px;">
+        <p class="help-block">{{ help_return_policy }}</p>
+        <div class="row" style="margin-top:10px;">
             <div class="col-sm-3">
-                <label>{{ text_return_days }}</label>
-                <input type="number" name="return_days" value="{{ return_days }}" class="form-control input-sm" min="0">
+                <label>{{ text_return_country }}</label>
+                <select name="return_country" class="form-control input-sm">
+                    <option value="UA" {% if return_country == 'UA' %}selected{% endif %}>UA — Ukraine</option>
+                    <option value="PL" {% if return_country == 'PL' %}selected{% endif %}>PL — Poland</option>
+                    <option value="DE" {% if return_country == 'DE' %}selected{% endif %}>DE — Germany</option>
+                    <option value="CZ" {% if return_country == 'CZ' %}selected{% endif %}>CZ — Czech Republic</option>
+                    <option value="SK" {% if return_country == 'SK' %}selected{% endif %}>SK — Slovakia</option>
+                    <option value="RO" {% if return_country == 'RO' %}selected{% endif %}>RO — Romania</option>
+                    <option value="HU" {% if return_country == 'HU' %}selected{% endif %}>HU — Hungary</option>
+                    <option value="US" {% if return_country == 'US' %}selected{% endif %}>US — United States</option>
+                    <option value="GB" {% if return_country == 'GB' %}selected{% endif %}>GB — United Kingdom</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_return_applicable_country }}</label>
+                <select name="return_applicable_country" class="form-control input-sm">
+                    <option value="UA" {% if return_applicable_country == 'UA' %}selected{% endif %}>UA — Ukraine</option>
+                    <option value="PL" {% if return_applicable_country == 'PL' %}selected{% endif %}>PL — Poland</option>
+                    <option value="DE" {% if return_applicable_country == 'DE' %}selected{% endif %}>DE — Germany</option>
+                    <option value="CZ" {% if return_applicable_country == 'CZ' %}selected{% endif %}>CZ — Czech Republic</option>
+                    <option value="SK" {% if return_applicable_country == 'SK' %}selected{% endif %}>SK — Slovakia</option>
+                    <option value="RO" {% if return_applicable_country == 'RO' %}selected{% endif %}>RO — Romania</option>
+                    <option value="HU" {% if return_applicable_country == 'HU' %}selected{% endif %}>HU — Hungary</option>
+                    <option value="US" {% if return_applicable_country == 'US' %}selected{% endif %}>US — United States</option>
+                    <option value="GB" {% if return_applicable_country == 'GB' %}selected{% endif %}>GB — United Kingdom</option>
+                </select>
             </div>
             <div class="col-sm-3">
                 <label>{{ text_return_type }}</label>
@@ -175,19 +275,44 @@
                     <option value="MerchantReturnNotPermitted" {% if return_type == 'MerchantReturnNotPermitted' %}selected{% endif %}>NotPermitted</option>
                 </select>
             </div>
+            <div class="col-sm-3">
+                <label>{{ text_return_days }}</label>
+                <input type="number" name="return_days" value="{{ return_days }}" class="form-control input-sm" min="0">
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col-sm-3">
+                <label>{{ text_return_method }}</label>
+                <select name="return_method" class="form-control input-sm">
+                    <option value="ReturnByMail" {% if return_method == 'ReturnByMail' %}selected{% endif %}>ReturnByMail</option>
+                    <option value="ReturnInStore" {% if return_method == 'ReturnInStore' %}selected{% endif %}>ReturnInStore</option>
+                    <option value="ReturnAtKiosk" {% if return_method == 'ReturnAtKiosk' %}selected{% endif %}>ReturnAtKiosk</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_refund_type }}</label>
+                <select name="refund_type" class="form-control input-sm">
+                    <option value="FullRefund" {% if refund_type == 'FullRefund' %}selected{% endif %}>FullRefund</option>
+                    <option value="ExchangeRefund" {% if refund_type == 'ExchangeRefund' %}selected{% endif %}>ExchangeRefund</option>
+                    <option value="StoreCreditRefund" {% if refund_type == 'StoreCreditRefund' %}selected{% endif %}>StoreCreditRefund</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label>{{ text_return_fees }}</label>
+                <select name="return_fees" class="form-control input-sm">
+                    <option value="FreeReturn" {% if return_fees == 'FreeReturn' %}selected{% endif %}>FreeReturn</option>
+                    <option value="ReturnShippingFees" {% if return_fees == 'ReturnShippingFees' %}selected{% endif %}>ReturnShippingFees</option>
+                    <option value="RestockingFees" {% if return_fees == 'RestockingFees' %}selected{% endif %}>RestockingFees</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_shipping_details }}</label>
-    <div class="col-sm-9">
-        <label class="checkbox-switch">
-            <input type="hidden" name="shipping_details" value="0">
-            <input type="checkbox" name="shipping_details" value="1" {% if shipping_details %}checked{% endif %}>
-            <span class="checkbox-switch-slider"></span>
-        </label>
-    </div>
+<div class="form-group" style="display:none;">
+    <input type="hidden" name="delivery_lead" value="{{ delivery_lead ? 1 : 0 }}">
+    <input type="hidden" name="delivery_min" value="{{ delivery_min }}">
+    <input type="hidden" name="delivery_max" value="{{ delivery_max }}">
 </div>
 
 <div class="form-group">
@@ -231,5 +356,101 @@
             <input type="checkbox" name="attributes" value="1" {% if attributes %}checked{% endif %}>
             <span class="checkbox-switch-slider"></span>
         </label>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_gtin_source }}</label>
+    <div class="col-sm-9">
+        <select name="gtin_source" class="form-control">
+            {% set gtin_sources = ['ean','upc','jan','isbn','mpn','sku','location','custom'] %}
+            {% for opt in gtin_sources %}
+            <option value="{{ opt }}" {% if gtin_source == opt %}selected{% endif %}>{{ attribute(_context, 'text_gtin_source_' ~ opt) ?? opt|upper }}</option>
+            {% endfor %}
+        </select>
+        <select name="gtin_custom_attribute_id" class="form-control" style="margin-top:6px;{% if gtin_source != 'custom' %}display:none;{% endif %}" data-gtin-custom>
+            <option value="0">-- {{ text_select|default('Select') }} --</option>
+            {% for attr in attributes_list %}
+            <option value="{{ attr.attribute_id }}" {% if gtin_custom_attribute_id == attr.attribute_id %}selected{% endif %}>{{ attr.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_upc_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="upc_enabled" value="0">
+            <input type="checkbox" name="upc_enabled" value="1" {% if upc_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_ean_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="ean_enabled" value="0">
+            <input type="checkbox" name="ean_enabled" value="1" {% if ean_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_isbn_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="isbn_enabled" value="0">
+            <input type="checkbox" name="isbn_enabled" value="1" {% if isbn_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_additional_property_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="additional_property_enabled" value="0">
+            <input type="checkbox" name="additional_property_enabled" value="1" {% if additional_property_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <select name="additional_property_groups[]" class="form-control" multiple size="6" style="margin-top:6px;">
+            {% for ag in attribute_groups_list %}
+            <option value="{{ ag.attribute_group_id }}" {% if ag.attribute_group_id in additional_property_groups %}selected{% endif %}>{{ ag.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_related_products }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="related_products" value="0">
+            <input type="checkbox" name="related_products" value="1" {% if related_products %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_productgroup_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="productgroup_enabled" value="0">
+            <input type="checkbox" name="productgroup_enabled" value="1" {% if productgroup_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <select name="productgroup_categories[]" class="form-control" multiple size="8" style="margin-top:6px;">
+            {% for cat in categories_list %}
+            <option value="{{ cat.category_id }}" {% if cat.category_id in productgroup_categories %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
     </div>
 </div>

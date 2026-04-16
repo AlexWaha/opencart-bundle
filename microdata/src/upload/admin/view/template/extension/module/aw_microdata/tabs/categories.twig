@@ -146,3 +146,27 @@
         </label>
     </div>
 </div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_category_carousel }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="category_carousel" value="0">
+            <input type="checkbox" name="category_carousel" value="1" {% if category_carousel %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_category_aggregate_offer }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="category_aggregate_offer" value="0">
+            <input type="checkbox" name="category_aggregate_offer" value="1" {% if category_aggregate_offer %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

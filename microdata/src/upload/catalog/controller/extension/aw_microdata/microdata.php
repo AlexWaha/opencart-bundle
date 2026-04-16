@@ -132,6 +132,76 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         return (float)rtrim(preg_replace('/[^\d.]/', '', $formatted), '.');
     }
 
+    private function buildOfferShippingDetails(string $fallbackCurrency): array
+    {
+        $rateValue = $this->microdataConfig->get('shipping_rate_value', '0');
+        $rateCurrency = (string)$this->microdataConfig->get('shipping_rate_currency', $fallbackCurrency);
+        $country = (string)$this->microdataConfig->get('shipping_destination_country', 'UA');
+
+        $handlingMin = (int)$this->microdataConfig->get('handling_min', 0);
+        $handlingMax = (int)$this->microdataConfig->get('handling_max', 1);
+        $transitMin = (int)$this->microdataConfig->get('transit_min', 1);
+        $transitMax = (int)$this->microdataConfig->get('transit_max', 3);
+
+        return [
+            '@type'               => 'OfferShippingDetails',
+            'shippingRate'        => [
+                '@type'    => 'MonetaryAmount',
+                'value'    => (string)$rateValue,
+                'currency' => $rateCurrency ?: $fallbackCurrency,
+            ],
+            'shippingDestination' => [
+                '@type'          => 'DefinedRegion',
+                'addressCountry' => $country ?: 'UA',
+            ],
+            'deliveryTime'        => [
+                '@type'        => 'ShippingDeliveryTime',
+                'handlingTime' => [
+                    '@type'    => 'QuantitativeValue',
+                    'minValue' => $handlingMin,
+                    'maxValue' => $handlingMax,
+                    'unitCode' => 'DAY',
+                ],
+                'transitTime'  => [
+                    '@type'    => 'QuantitativeValue',
+                    'minValue' => $transitMin,
+                    'maxValue' => $transitMax,
+                    'unitCode' => 'DAY',
+                ],
+            ],
+        ];
+    }
+
+    private function buildMerchantReturnPolicy(): array
+    {
+        $country = (string)$this->microdataConfig->get('return_country', 'UA');
+        $applicableCountry = (string)$this->microdataConfig->get('return_applicable_country', $country);
+        $category = (string)$this->microdataConfig->get('return_type', 'MerchantReturnFiniteReturnWindow');
+        $returnMethod = (string)$this->microdataConfig->get('return_method', 'ReturnByMail');
+        $refundType = (string)$this->microdataConfig->get('refund_type', 'FullRefund');
+        $returnFees = (string)$this->microdataConfig->get('return_fees', 'FreeReturn');
+        $returnDays = (int)$this->microdataConfig->get('return_days', 14);
+
+        $policy = [
+            '@type'                => 'MerchantReturnPolicy',
+            'applicableCountry'    => $applicableCountry ?: 'UA',
+            'returnPolicyCountry'  => $country ?: 'UA',
+            'returnPolicyCategory' => 'https://schema.org/' . $category,
+        ];
+
+        if ($category === 'MerchantReturnFiniteReturnWindow' && $returnDays > 0) {
+            $policy['merchantReturnDays'] = $returnDays;
+        }
+
+        if ($category !== 'MerchantReturnNotPermitted') {
+            $policy['returnMethod'] = 'https://schema.org/' . $returnMethod;
+            $policy['refundType']   = 'https://schema.org/' . $refundType;
+            $policy['returnFees']   = 'https://schema.org/' . $returnFees;
+        }
+
+        return $policy;
+    }
+
     private function getOrganizationData(): array
     {
         $shopUrl = rtrim($this->getShopUrl(), '/');
@@ -145,6 +215,8 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         $description = $this->cleanText($this->config->get('config_meta_description'));
 
+        $idLinking = (bool)$this->microdataConfig->get('id_linking_enabled', true);
+
         $org = [
             '@type'       => $storeType,
             'name'        => $storeName,
@@ -153,6 +225,10 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             'url'         => $shopUrl,
             'email'       => $email,
         ];
+
+        if ($idLinking) {
+            $org['@id'] = $shopUrl . '/#organization';
+        }
 
         $priceRange = $this->microdataConfig->get('price_range_value', '');
         if ($priceRange) {
@@ -227,13 +303,63 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $org['openingHoursSpecification'] = $schedule;
         }
 
-        if (!empty($org['telephone'])) {
+        // contactPoint[] repeatable (item 14); fallback to single from phones
+        $contactPoints = $this->microdataConfig->get('contact_points', []);
+        $contactPointList = [];
+
+        if (is_array($contactPoints) && !empty($contactPoints)) {
+            foreach ($contactPoints as $cp) {
+                if (!is_array($cp) || empty($cp['telephone'])) {
+                    continue;
+                }
+                $item = [
+                    '@type'       => 'ContactPoint',
+                    'telephone'   => (string)$cp['telephone'],
+                    'contactType' => (string)($cp['contact_type'] ?? 'customer service'),
+                ];
+
+                if (!empty($cp['area_served']) && is_array($cp['area_served'])) {
+                    $areas = array_values(array_filter($cp['area_served']));
+                    if ($areas) {
+                        $item['areaServed'] = count($areas) === 1 ? $areas[0] : $areas;
+                    }
+                }
+
+                if (!empty($cp['available_language']) && is_array($cp['available_language'])) {
+                    $langs = array_values(array_filter($cp['available_language']));
+                    if ($langs) {
+                        $item['availableLanguage'] = count($langs) === 1 ? $langs[0] : $langs;
+                    }
+                }
+
+                $contactPointList[] = $item;
+            }
+        }
+
+        if ($contactPointList) {
+            $org['contactPoint'] = count($contactPointList) === 1 ? $contactPointList[0] : $contactPointList;
+        } elseif (!empty($org['telephone'])) {
             $firstPhone = is_array($org['telephone']) ? $org['telephone'][0] : $org['telephone'];
             $org['contactPoint'] = [
                 '@type'       => 'ContactPoint',
                 'telephone'   => $firstPhone,
                 'contactType' => 'customer service',
             ];
+        }
+
+        // hasMap (item 16)
+        $hasMap = (string)$this->microdataConfig->get('has_map', '');
+        if ($hasMap) {
+            $org['hasMap'] = $hasMap;
+        }
+
+        // Store-level hasMerchantReturnPolicy (item 15)
+        if ($this->microdataConfig->get('store_return_policy_enabled', false)
+            && $this->microdataConfig->get('return_policy', false)) {
+            $storeReturn = $this->buildMerchantReturnPolicy();
+            if ($storeReturn) {
+                $org['hasMerchantReturnPolicy'] = $storeReturn;
+            }
         }
 
         $currency = $this->microdataConfig->get('currency', '');
@@ -533,10 +659,153 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         $tags[] = '<meta property="og:type" content="' . $ogType . '">';
 
-        $tags[] = '<meta name="twitter:card" content="' . htmlspecialchars($this->microdataConfig->get('twitter_card', 'summary_large_image'), ENT_QUOTES, 'UTF-8') . '">';
-        $twitterSite = $this->microdataConfig->get('twitter_username', '');
-        if ($twitterSite) {
-            $tags[] = '<meta name="twitter:site" content="' . htmlspecialchars($twitterSite, ENT_QUOTES, 'UTF-8') . '">';
+        $langId = (int)$this->config->get('config_language_id');
+        $isProduct = $route === 'product/product';
+
+        // OG product:* base (#6)
+        if ($isProduct && $this->microdataConfig->get('og_product_base', false) && !empty($data['product_id'])) {
+            $this->load->model('catalog/product');
+            $productInfo = $this->model_catalog_product->getProduct((int)$data['product_id']);
+
+            $brand = $this->cleanText($data['manufacturer'] ?? $productInfo['manufacturer'] ?? '');
+            if ($brand) {
+                $tags[] = '<meta property="product:brand" content="' . htmlspecialchars($brand, ENT_QUOTES, 'UTF-8') . '">';
+            }
+
+            $category = $this->cleanText($data['category_name'] ?? '');
+            if ($category) {
+                $tags[] = '<meta property="product:category" content="' . htmlspecialchars($category, ENT_QUOTES, 'UTF-8') . '">';
+            }
+
+            $quantity = $data['quantity'] ?? 0;
+            $availability = ($this->microdataConfig->get('force_instock', false) || $quantity > 0) ? 'instock' : 'oos';
+            $tags[] = '<meta property="product:availability" content="' . $availability . '">';
+
+            $condition = strtolower((string)$this->microdataConfig->get('condition', 'NewCondition'));
+            $ogCondition = strpos($condition, 'used') !== false ? 'used' : (strpos($condition, 'refurb') !== false ? 'refurbished' : 'new');
+            $tags[] = '<meta property="product:condition" content="' . $ogCondition . '">';
+
+            $gender = (string)$this->microdataConfig->get('attr_gender', '');
+            if ($gender) {
+                $tags[] = '<meta property="product:target_gender" content="' . htmlspecialchars($gender, ENT_QUOTES, 'UTF-8') . '">';
+            }
+
+            $ageRestriction = (string)$this->microdataConfig->get('og_age_restriction', '');
+            if ($ageRestriction) {
+                $tags[] = '<meta property="og:restrictions:age" content="' . htmlspecialchars($ageRestriction, ENT_QUOTES, 'UTF-8') . '">';
+            }
+        }
+
+        // OG product:* extended (#7) — color/material/size from configured attrs
+        if ($isProduct && $this->microdataConfig->get('og_product_extended', false) && !empty($data['attribute_groups'])) {
+            $colorAttrId = (int)$this->microdataConfig->get('attr_color_id', 0);
+            $materialAttrId = (int)$this->microdataConfig->get('attr_material_id', 0);
+            $sizeAttrId = (int)$this->microdataConfig->get('attr_size_id', 0);
+
+            foreach ($data['attribute_groups'] as $group) {
+                if (empty($group['attribute'])) {
+                    continue;
+                }
+                foreach ($group['attribute'] as $attr) {
+                    $attrId = (int)($attr['attribute_id'] ?? 0);
+                    $val = $this->cleanText($attr['text'] ?? '');
+
+                    if (!$val) {
+                        continue;
+                    }
+
+                    if ($colorAttrId && $attrId === $colorAttrId) {
+                        $tags[] = '<meta property="product:color" content="' . htmlspecialchars($val, ENT_QUOTES, 'UTF-8') . '">';
+                    }
+                    if ($materialAttrId && $attrId === $materialAttrId) {
+                        $tags[] = '<meta property="product:material" content="' . htmlspecialchars($val, ENT_QUOTES, 'UTF-8') . '">';
+                    }
+                    if ($sizeAttrId && $attrId === $sizeAttrId) {
+                        $tags[] = '<meta property="product:size" content="' . htmlspecialchars($val, ENT_QUOTES, 'UTF-8') . '">';
+                    }
+                }
+            }
+        }
+
+        // OG product:sale_price (#8) — only when special active
+        if ($isProduct && $this->microdataConfig->get('og_sale_price', false) && !empty($data['special']) && !empty($data['price'])) {
+            $salePrice = $this->parsePrice($data['special']);
+            if ($salePrice > 0) {
+                $tags[] = '<meta property="product:sale_price:amount" content="' . $salePrice . '">';
+                $tags[] = '<meta property="product:sale_price:currency" content="' . $this->getCurrencyCode() . '">';
+            }
+        }
+
+        // OG og:see_also (#22) — related products
+        if ($isProduct && $this->microdataConfig->get('og_see_also_enabled', false) && !empty($data['products'])) {
+            foreach ($data['products'] as $related) {
+                if (!empty($related['href'])) {
+                    $tags[] = '<meta property="og:see_also" content="' . htmlspecialchars($related['href'], ENT_QUOTES, 'UTF-8') . '">';
+                }
+            }
+        }
+
+        // OG business:contact_data:* (#23)
+        if ($this->microdataConfig->get('og_business_contact', false)) {
+            $addressData = $this->microdataConfig->get('address', []);
+            $addr = [];
+
+            if (isset($addressData[$langId]) && is_array($addressData[$langId])) {
+                $addr = $addressData[$langId];
+            } elseif (isset($addressData['street'])) {
+                $addr = $addressData;
+            } elseif (is_array($addressData)) {
+                $first = reset($addressData);
+                $addr = is_array($first) ? $first : [];
+            }
+
+            $bcMap = [
+                'street_address' => $addr['street'] ?? '',
+                'locality'       => $addr['city'] ?? '',
+                'region'         => $addr['region'] ?? '',
+                'postal_code'    => $addr['zip'] ?? '',
+                'country_name'   => $addr['country'] ?? '',
+            ];
+
+            $bcMap['email'] = (string)$this->microdataConfig->get('email', '');
+
+            $phones = $this->microdataConfig->get('phones', []);
+
+            if (is_array($phones) && !empty($phones)) {
+                $first = reset($phones);
+                $bcMap['phone_number'] = is_array($first) ? ($first['number'] ?? '') : (string)$first;
+            }
+
+            $bcMap['website'] = rtrim($this->getShopUrl(), '/');
+
+            foreach ($bcMap as $field => $value) {
+                if ($value !== '' && $value !== null) {
+                    $tags[] = '<meta property="business:contact_data:' . $field . '" content="' . htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') . '">';
+                }
+            }
+        }
+
+        // OG place:location (#24)
+        if ($this->microdataConfig->get('og_place_location', false)) {
+            $geo = $this->microdataConfig->get('geo', []);
+            $lat = is_array($geo) ? ($geo['lat'] ?? '') : '';
+            $lng = is_array($geo) ? ($geo['lon'] ?? '') : '';
+
+            if ($lat && $lng) {
+                $tags[] = '<meta property="place:location:latitude" content="' . htmlspecialchars((string)$lat, ENT_QUOTES, 'UTF-8') . '">';
+                $tags[] = '<meta property="place:location:longitude" content="' . htmlspecialchars((string)$lng, ENT_QUOTES, 'UTF-8') . '">';
+            }
+        }
+
+        // fb:profile_id (#25)
+        $fbProfileId = (string)$this->microdataConfig->get('fb_profile_id', '');
+        if ($fbProfileId) {
+            $tags[] = '<meta property="fb:profile_id" content="' . htmlspecialchars($fbProfileId, ENT_QUOTES, 'UTF-8') . '">';
+        }
+
+        $fbAppId = (string)$this->microdataConfig->get('fb_app_id', '');
+        if ($fbAppId) {
+            $tags[] = '<meta property="fb:app_id" content="' . htmlspecialchars($fbAppId, ENT_QUOTES, 'UTF-8') . '">';
         }
 
         return implode("\n", $tags);
@@ -619,12 +888,20 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             return '';
         }
 
+        $idLinking = (bool)$this->microdataConfig->get('id_linking_enabled', true);
+        $orgId = $shopUrl . '/#organization';
+
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'Product',
             'name'        => $name,
             'description' => $description ?: $name,
         ];
+
+        if ($idLinking) {
+            $productUrl = $this->url->link('product/product', 'product_id=' . $productId);
+            $schema['@id'] = $productUrl . '#product';
+        }
 
         $images = [];
 
@@ -656,6 +933,10 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
                 '@type' => 'Brand',
                 'name'  => $brandName,
             ];
+
+            if ($idLinking) {
+                $schema['brand']['@id'] = $orgId;
+            }
         }
 
         $model = $this->cleanText($productInfo['model'] ?? '');
@@ -669,12 +950,72 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $schema['mpn'] = $mpn;
         }
 
-        if (!empty($productInfo['ean'])) {
-            $schema['gtin'] = $this->cleanText($productInfo['ean']);
-        } elseif (!empty($productInfo['upc'])) {
-            $schema['gtin'] = $this->cleanText($productInfo['upc']);
-        } elseif (!empty($productInfo['isbn'])) {
-            $schema['gtin'] = $this->cleanText($productInfo['isbn']);
+        // GTIN auto-variant by admin-chosen source (#10)
+        $gtinSource = (string)$this->microdataConfig->get('gtin_source', 'ean');
+        $gtinValue = '';
+
+        switch ($gtinSource) {
+            case 'sku':      $gtinValue = (string)($productInfo['sku'] ?? '');
+                break;
+            case 'upc':      $gtinValue = (string)($productInfo['upc'] ?? '');
+                break;
+            case 'jan':      $gtinValue = (string)($productInfo['jan'] ?? '');
+                break;
+            case 'isbn':     $gtinValue = (string)($productInfo['isbn'] ?? '');
+                break;
+            case 'mpn':      $gtinValue = (string)($productInfo['mpn'] ?? '');
+                break;
+            case 'location': $gtinValue = (string)($productInfo['location'] ?? '');
+                break;
+            case 'custom':
+                $customAttrId = (int)$this->microdataConfig->get('gtin_custom_attribute_id', 0);
+
+                if ($customAttrId && !empty($data['attribute_groups'])) {
+                    foreach ($data['attribute_groups'] as $group) {
+                        if (!empty($group['attribute'])) {
+                            foreach ($group['attribute'] as $attr) {
+                                if ((int)($attr['attribute_id'] ?? 0) === $customAttrId) {
+                                    $gtinValue = (string)($attr['text'] ?? '');
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'ean':
+            default:
+                $gtinValue = (string)($productInfo['ean'] ?? '');
+                break;
+        }
+
+        $gtinValue = preg_replace('/\D+/', '', $gtinValue);
+
+        if ($gtinValue) {
+            $len = strlen($gtinValue);
+
+            if ($len === 8) {
+                $schema['gtin8'] = $gtinValue;
+            } elseif ($len === 12) {
+                $schema['gtin12'] = $gtinValue;
+            } elseif ($len === 13) {
+                $schema['gtin13'] = $gtinValue;
+            } elseif ($len === 14) {
+                $schema['gtin14'] = $gtinValue;
+            } else {
+                $schema['gtin'] = $gtinValue;
+            }
+        }
+
+        // Extra identifiers UPC/EAN/ISBN (#26)
+        if ($this->microdataConfig->get('upc_enabled', false) && !empty($productInfo['upc'])) {
+            $schema['productID'] = 'upc:' . $this->cleanText($productInfo['upc']);
+        }
+        if ($this->microdataConfig->get('ean_enabled', false) && !empty($productInfo['ean'])) {
+            $schema['gtin13'] = $schema['gtin13'] ?? $this->cleanText($productInfo['ean']);
+        }
+        if ($this->microdataConfig->get('isbn_enabled', false) && !empty($productInfo['isbn'])) {
+            $schema['isbn'] = $this->cleanText($productInfo['isbn']);
         }
 
         $priceValue = 0;
@@ -703,17 +1044,27 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             }
 
             $offer = [
-                '@type'           => 'Offer',
-                'url'             => $productUrl,
-                'priceCurrency'   => $currency,
-                'price'           => $priceValue,
-                'availability'    => $availability,
-                'priceValidUntil' => date('Y-m-d', strtotime('+1 year')),
-                'seller'          => [
+                '@type'         => 'Offer',
+                'url'           => $productUrl,
+                'priceCurrency' => $currency,
+                'price'         => $priceValue,
+                'availability'  => $availability,
+                'seller'        => [
                     '@type' => 'Organization',
                     'name'  => $storeName,
                 ],
             ];
+
+            $merchantEnabled = (bool)$this->microdataConfig->get('merchant_listings_enabled', true);
+
+            if ($merchantEnabled && $this->microdataConfig->get('price_valid_until_enabled', true)) {
+                $offer['priceValidUntil'] = date('c', strtotime('+365 days'));
+            }
+
+            if ($merchantEnabled && $this->microdataConfig->get('item_condition_enabled', true)) {
+                $condition = (string)$this->microdataConfig->get('condition', 'NewCondition');
+                $offer['itemCondition'] = 'https://schema.org/' . $condition;
+            }
 
             if ($this->microdataConfig->get('unit_price', false)) {
                 $unitCode = $this->microdataConfig->get('unit_code', 'LTR');
@@ -729,36 +1080,41 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
                 ];
             }
 
-            if ($this->microdataConfig->get('delivery_lead', false)) {
-                $minDays = (int)$this->microdataConfig->get('delivery_min', 1);
-                $maxDays = (int)$this->microdataConfig->get('delivery_max', 2);
-                $offer['shippingDetails'] = [
-                    '@type'            => 'OfferShippingDetails',
-                    'deliveryTime'     => [
-                        '@type'            => 'ShippingDeliveryTime',
-                        'handlingTime'     => [
-                            '@type'    => 'QuantitativeValue',
-                            'minValue' => $minDays,
-                            'maxValue' => $maxDays,
-                            'unitCode' => 'd',
-                        ],
-                    ],
-                ];
+            // StrikethroughPrice on active special (#9)
+            if (!empty($data['special']) && !empty($data['price'])) {
+                $regularPrice = $this->parsePrice($data['price']);
+
+                if ($regularPrice > 0 && $regularPrice > $priceValue) {
+                    $strikethrough = [
+                        '@type'         => 'UnitPriceSpecification',
+                        'priceType'     => 'https://schema.org/StrikethroughPrice',
+                        'price'         => $regularPrice,
+                        'priceCurrency' => $currency,
+                    ];
+
+                    if (isset($offer['priceSpecification'])) {
+                        $existing = $offer['priceSpecification'];
+                        $offer['priceSpecification'] = isset($existing['@type'])
+                            ? [$existing, $strikethrough]
+                            : array_merge($existing, [$strikethrough]);
+                    } else {
+                        $offer['priceSpecification'] = $strikethrough;
+                    }
+                }
             }
 
-            $returnPolicyEnabled = $this->microdataConfig->get('return_policy', false);
+            if ($merchantEnabled && $this->microdataConfig->get('shipping_details', false)) {
+                $shippingBlock = $this->buildOfferShippingDetails($currency);
+                if ($shippingBlock) {
+                    $offer['shippingDetails'] = $shippingBlock;
+                }
+            }
 
-            if ($returnPolicyEnabled) {
-                $returnDays = (int)$this->microdataConfig->get('return_days', 14);
-                $returnType = $this->microdataConfig->get('return_type', 'MerchantReturnFiniteReturnWindow');
-                $offer['hasMerchantReturnPolicy'] = [
-                    '@type'                     => 'MerchantReturnPolicy',
-                    'applicableCountry'         => $this->microdataConfig->get('address_country', 'UA'),
-                    'returnPolicyCategory'      => 'https://schema.org/' . $returnType,
-                    'merchantReturnDays'        => $returnDays,
-                    'returnMethod'              => 'https://schema.org/ReturnByMail',
-                    'returnFees'                => 'https://schema.org/FreeReturn',
-                ];
+            if ($merchantEnabled && $this->microdataConfig->get('return_policy', false)) {
+                $returnBlock = $this->buildMerchantReturnPolicy();
+                if ($returnBlock) {
+                    $offer['hasMerchantReturnPolicy'] = $returnBlock;
+                }
             }
 
             $schema['offers'] = $offer;
@@ -823,9 +1179,20 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         }
 
         if ($this->microdataConfig->get('attributes', false) && !empty($data['attribute_groups'])) {
+            $apEnabled = (bool)$this->microdataConfig->get('additional_property_enabled', false);
+            $apGroups = $this->microdataConfig->get('additional_property_groups', []);
+            $apAllowlist = $apEnabled && is_array($apGroups) ? array_map('intval', $apGroups) : [];
+
             $schema['additionalProperty'] = [];
 
             foreach ($data['attribute_groups'] as $group) {
+                if ($apEnabled && !empty($apAllowlist)) {
+                    $groupId = (int)($group['attribute_group_id'] ?? 0);
+                    if (!in_array($groupId, $apAllowlist, true)) {
+                        continue;
+                    }
+                }
+
                 if (!empty($group['attribute'])) {
                     foreach ($group['attribute'] as $attr) {
                         $schema['additionalProperty'][] = [
@@ -835,6 +1202,10 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
                         ];
                     }
                 }
+            }
+
+            if (empty($schema['additionalProperty'])) {
+                unset($schema['additionalProperty']);
             }
         }
 
@@ -923,6 +1294,112 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             }
         }
 
+        // ImageObject full pack on primary image (#20)
+        if ($this->microdataConfig->get('image_object_enabled', false) && !empty($schema['image'])) {
+            $primaryUrl = is_array($schema['image']) ? reset($schema['image']) : $schema['image'];
+            if (is_string($primaryUrl)) {
+                $primary = [
+                    '@type'      => 'ImageObject',
+                    'contentUrl' => $primaryUrl,
+                    'url'        => $primaryUrl,
+                ];
+
+                $licenseVal = (string)$this->microdataConfig->get('image_object_license', '');
+                if ($licenseVal) {
+                    $primary['license'] = $licenseVal;
+                }
+                $acquireVal = (string)$this->microdataConfig->get('image_object_acquire_page', '');
+                if ($acquireVal) {
+                    $primary['acquireLicensePage'] = $acquireVal;
+                }
+                $creditVal = (string)$this->microdataConfig->get('image_object_credit_text', '');
+                if ($creditVal) {
+                    $primary['creditText'] = $creditVal;
+                }
+                $creatorVal = (string)$this->microdataConfig->get('image_object_creator', '');
+                if ($creatorVal) {
+                    $primary['creator'] = [
+                        '@type' => 'Organization',
+                        'name'  => $creatorVal,
+                    ];
+                }
+                $copyrightVal = (string)$this->microdataConfig->get('image_object_copyright', '');
+                if ($copyrightVal) {
+                    $primary['copyrightNotice'] = $copyrightVal;
+                }
+
+                if (is_array($schema['image'])) {
+                    $schema['image'][0] = $primary;
+                } else {
+                    $schema['image'] = $primary;
+                }
+            }
+        }
+
+        // ProductGroup + hasVariant[] (#27) — only when product belongs to allowlist categories and has options
+        if ($this->microdataConfig->get('productgroup_enabled', false) && !empty($data['options'])) {
+            $allowedCats = $this->microdataConfig->get('productgroup_categories', []);
+            $shouldEmit = false;
+
+            if (is_array($allowedCats) && !empty($allowedCats)) {
+                $this->load->model('catalog/product');
+                $productCats = $this->model_catalog_product->getCategories($productId);
+
+                foreach ($productCats as $catRow) {
+                    if (in_array((int)($catRow['category_id'] ?? 0), array_map('intval', $allowedCats), true)) {
+                        $shouldEmit = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($shouldEmit) {
+                $variants = [];
+
+                foreach ($data['options'] as $option) {
+                    if (empty($option['product_option_value'])) {
+                        continue;
+                    }
+                    foreach ($option['product_option_value'] as $pov) {
+                        $variants[] = [
+                            '@type' => 'Product',
+                            'name'  => $name . ' — ' . $this->cleanText($pov['name'] ?? ''),
+                            'sku'   => isset($pov['sku']) ? (string)$pov['sku'] : ($sku ?: ''),
+                        ];
+                    }
+                }
+
+                if ($variants) {
+                    $groupSchema = [
+                        '@type'           => 'ProductGroup',
+                        'name'            => $name,
+                        'productGroupID'  => (string)$productId,
+                        'hasVariant'      => $variants,
+                    ];
+
+                    $schema = [
+                        '@context' => 'https://schema.org',
+                        '@graph'   => [$schema, $groupSchema],
+                    ];
+                }
+            }
+        }
+
+        // speakable spec (#30)
+        $speakableSelectors = $this->microdataConfig->get('speakable_selectors', []);
+        if ($this->microdataConfig->get('speakable', false) && is_array($speakableSelectors) && !empty($speakableSelectors)) {
+            $speakableBlock = [
+                '@type'    => 'SpeakableSpecification',
+                'cssSelector' => array_values($speakableSelectors),
+            ];
+
+            if (isset($schema['@graph'])) {
+                $schema['@graph'][0]['speakable'] = $speakableBlock;
+            } else {
+                $schema['speakable'] = $speakableBlock;
+            }
+        }
+
         return $this->buildJsonLd($schema);
     }
 
@@ -942,7 +1419,13 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             'url'         => $url,
         ];
 
-        if ($priceRange['count'] > 0 && $priceRange['low'] > 0) {
+        // AggregateOffer: emit only when admin-toggled AND MIN < MAX (#29)
+        $aggregateGateOk = $this->microdataConfig->get('category_aggregate_offer', false)
+            && $priceRange['count'] > 0
+            && $priceRange['low'] > 0
+            && $priceRange['high'] > $priceRange['low'];
+
+        if ($aggregateGateOk) {
             $offer = [
                 '@type'         => 'AggregateOffer',
                 'lowPrice'      => $priceRange['low'],
@@ -951,34 +1434,14 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
                 'priceCurrency' => $this->getCurrencyCode(),
             ];
 
-            if ($this->microdataConfig->get('listing_delivery', false)) {
-                $minDays = (int)$this->microdataConfig->get('delivery_min', 1);
-                $maxDays = (int)$this->microdataConfig->get('delivery_max', 3);
-                $offer['shippingDetails'] = [
-                    '@type'        => 'OfferShippingDetails',
-                    'deliveryTime' => [
-                        '@type'        => 'ShippingDeliveryTime',
-                        'handlingTime' => [
-                            '@type'    => 'QuantitativeValue',
-                            'minValue' => $minDays,
-                            'maxValue' => $maxDays,
-                            'unitCode' => 'd',
-                        ],
-                    ],
-                ];
+            $merchantEnabled = (bool)$this->microdataConfig->get('merchant_listings_enabled', true);
+
+            if ($merchantEnabled && $this->microdataConfig->get('listing_delivery', false)) {
+                $offer['shippingDetails'] = $this->buildOfferShippingDetails($this->getCurrencyCode());
             }
 
-            if ($this->microdataConfig->get('listing_return_policy', false)) {
-                $returnDays = (int)$this->microdataConfig->get('return_days', 14);
-                $returnType = $this->microdataConfig->get('return_type', 'MerchantReturnFiniteReturnWindow');
-                $offer['hasMerchantReturnPolicy'] = [
-                    '@type'                => 'MerchantReturnPolicy',
-                    'applicableCountry'    => $this->microdataConfig->get('address_country', 'UA'),
-                    'returnPolicyCategory' => 'https://schema.org/' . $returnType,
-                    'merchantReturnDays'   => $returnDays,
-                    'returnMethod'         => 'https://schema.org/ReturnByMail',
-                    'returnFees'           => 'https://schema.org/FreeReturn',
-                ];
+            if ($merchantEnabled && $this->microdataConfig->get('listing_return_policy', false)) {
+                $offer['hasMerchantReturnPolicy'] = $this->buildMerchantReturnPolicy();
             }
 
             $schema['offers'] = $offer;
@@ -1302,6 +1765,32 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         if ($url) {
             $schema['mainEntityOfPage'] = ['@type' => 'WebPage', '@id' => $url];
+        }
+
+        // Article auto-extract <img> from description up to first </p> (#19)
+        if ($this->microdataConfig->get('article_image_extract', false) && !empty($data['description'])) {
+            $rawDesc = (string)$data['description'];
+            $cutPos = stripos($rawDesc, '</p>');
+            $chunk = $cutPos !== false ? substr($rawDesc, 0, $cutPos) : $rawDesc;
+            $imageUrls = [];
+
+            if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $chunk, $matches)) {
+                foreach ($matches[1] as $src) {
+                    $src = trim($src);
+                    if ($src) {
+                        $imageUrls[] = $src;
+                    }
+                }
+            }
+
+            if ($imageUrls) {
+                $imageUrls = array_values(array_unique($imageUrls));
+                $existing = isset($schema['image']) ? (array)$schema['image'] : [];
+                $schema['image'] = array_values(array_unique(array_merge($existing, $imageUrls)));
+                if (count($schema['image']) === 1) {
+                    $schema['image'] = $schema['image'][0];
+                }
+            }
         }
 
         return $this->buildJsonLd($schema);

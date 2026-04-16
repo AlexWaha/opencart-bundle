@@ -123,3 +123,62 @@
         </label>
     </div>
 </div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_article_image_extract }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="article_image_extract" value="0">
+            <input type="checkbox" name="article_image_extract" value="1" {% if article_image_extract %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="image_object_enabled" value="0">
+            <input type="checkbox" name="image_object_enabled" value="1" {% if image_object_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_license }}</label>
+    <div class="col-sm-9">
+        <input type="url" name="image_object_license" value="{{ image_object_license }}" class="form-control" placeholder="https://...">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_acquire_page }}</label>
+    <div class="col-sm-9">
+        <input type="url" name="image_object_acquire_page" value="{{ image_object_acquire_page }}" class="form-control" placeholder="https://...">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_credit_text }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="image_object_credit_text" value="{{ image_object_credit_text }}" class="form-control">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_creator }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="image_object_creator" value="{{ image_object_creator }}" class="form-control">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_image_object_copyright }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="image_object_copyright" value="{{ image_object_copyright }}" class="form-control">
+    </div>
+</div>

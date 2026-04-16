@@ -118,7 +118,22 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->params['return_policy'] = $this->moduleConfig->get('return_policy', false);
         $this->params['return_days'] = $this->moduleConfig->get('return_days', 14);
         $this->params['return_type'] = $this->moduleConfig->get('return_type', 'MerchantReturnFiniteReturnWindow');
+        $this->params['return_country'] = $this->moduleConfig->get('return_country', 'UA');
+        $this->params['return_applicable_country'] = $this->moduleConfig->get('return_applicable_country', 'UA');
+        $this->params['return_method'] = $this->moduleConfig->get('return_method', 'ReturnByMail');
+        $this->params['refund_type'] = $this->moduleConfig->get('refund_type', 'FullRefund');
+        $this->params['return_fees'] = $this->moduleConfig->get('return_fees', 'FreeReturn');
         $this->params['shipping_details'] = $this->moduleConfig->get('shipping_details', false);
+        $this->params['shipping_rate_value'] = $this->moduleConfig->get('shipping_rate_value', '0');
+        $this->params['shipping_rate_currency'] = $this->moduleConfig->get('shipping_rate_currency', $this->config->get('config_currency'));
+        $this->params['shipping_destination_country'] = $this->moduleConfig->get('shipping_destination_country', 'UA');
+        $this->params['handling_min'] = $this->moduleConfig->get('handling_min', 0);
+        $this->params['handling_max'] = $this->moduleConfig->get('handling_max', 1);
+        $this->params['transit_min'] = $this->moduleConfig->get('transit_min', 1);
+        $this->params['transit_max'] = $this->moduleConfig->get('transit_max', 3);
+        $this->params['merchant_listings_enabled'] = $this->moduleConfig->get('merchant_listings_enabled', true);
+        $this->params['item_condition_enabled'] = $this->moduleConfig->get('item_condition_enabled', true);
+        $this->params['price_valid_until_enabled'] = $this->moduleConfig->get('price_valid_until_enabled', true);
         $this->params['include_weight'] = $this->moduleConfig->get('include_weight', false);
         $this->params['include_dimensions'] = $this->moduleConfig->get('include_dimensions', false);
         $this->params['all_images'] = $this->moduleConfig->get('all_images', true);
@@ -158,12 +173,74 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->params['og_type'] = $this->moduleConfig->get('og_type', 'website');
         $this->params['fb_app_id'] = $this->moduleConfig->get('fb_app_id', '');
         $this->params['fb_pages'] = $this->moduleConfig->get('fb_pages', '');
-        $this->params['twitter_card'] = $this->moduleConfig->get('twitter_card', 'summary_large_image');
-        $this->params['twitter_username'] = $this->moduleConfig->get('twitter_username', '');
+        $this->params['fb_profile_id'] = $this->moduleConfig->get('fb_profile_id', '');
         $this->params['og_image'] = $this->moduleConfig->get('og_image', '');
         $this->params['og_image_thumb'] = $this->params['og_image']
             ? $this->model_tool_image->resize($this->params['og_image'], 100, 100)
             : $this->params['placeholder'];
+
+        // P1/P2/P3 additions (task-0003)
+        $this->params['og_product_base'] = $this->moduleConfig->get('og_product_base', false);
+        $this->params['og_product_extended'] = $this->moduleConfig->get('og_product_extended', false);
+        $this->params['og_sale_price'] = $this->moduleConfig->get('og_sale_price', false);
+        $this->params['og_age_restriction'] = $this->moduleConfig->get('og_age_restriction', '');
+        $this->params['og_see_also_enabled'] = $this->moduleConfig->get('og_see_also_enabled', false);
+        $this->params['og_business_contact'] = $this->moduleConfig->get('og_business_contact', false);
+        $this->params['og_place_location'] = $this->moduleConfig->get('og_place_location', false);
+
+        // Organization extensions (items 13, 14, 15, 16)
+        $this->params['contact_points'] = $this->moduleConfig->get('contact_points', []);
+        $this->params['has_map'] = $this->moduleConfig->get('has_map', '');
+        $this->params['store_return_policy_enabled'] = $this->moduleConfig->get('store_return_policy_enabled', false);
+
+        // Product extensions (items 10, 11, 26, 27, 30)
+        $this->params['gtin_source'] = $this->moduleConfig->get('gtin_source', 'ean');
+        $this->params['gtin_custom_attribute_id'] = (int)$this->moduleConfig->get('gtin_custom_attribute_id', 0);
+        $this->params['upc_enabled'] = $this->moduleConfig->get('upc_enabled', false);
+        $this->params['ean_enabled'] = $this->moduleConfig->get('ean_enabled', false);
+        $this->params['isbn_enabled'] = $this->moduleConfig->get('isbn_enabled', false);
+        $this->params['additional_property_enabled'] = $this->moduleConfig->get('additional_property_enabled', false);
+        $this->params['additional_property_groups'] = $this->moduleConfig->get('additional_property_groups', []);
+        $this->params['attr_color_id'] = (int)$this->moduleConfig->get('attr_color_id', 0);
+        $this->params['attr_material_id'] = (int)$this->moduleConfig->get('attr_material_id', 0);
+        $this->params['attr_size_id'] = (int)$this->moduleConfig->get('attr_size_id', 0);
+        $this->params['attr_gender'] = $this->moduleConfig->get('attr_gender', '');
+        $this->params['related_products'] = $this->moduleConfig->get('related_products', false);
+        $this->params['productgroup_enabled'] = $this->moduleConfig->get('productgroup_enabled', false);
+        $this->params['productgroup_categories'] = $this->moduleConfig->get('productgroup_categories', []);
+        $this->params['speakable_selectors'] = $this->moduleConfig->get('speakable_selectors', []);
+
+        // Article / ImageObject pack (items 19, 20)
+        $this->params['article_image_extract'] = $this->moduleConfig->get('article_image_extract', false);
+        $this->params['image_object_enabled'] = $this->moduleConfig->get('image_object_enabled', false);
+        $this->params['image_object_license'] = $this->moduleConfig->get('image_object_license', '');
+        $this->params['image_object_acquire_page'] = $this->moduleConfig->get('image_object_acquire_page', '');
+        $this->params['image_object_credit_text'] = $this->moduleConfig->get('image_object_credit_text', '');
+        $this->params['image_object_creator'] = $this->moduleConfig->get('image_object_creator', '');
+        $this->params['image_object_copyright'] = $this->moduleConfig->get('image_object_copyright', '');
+
+        // Category enhancements (items 28, 29)
+        $this->params['category_carousel'] = $this->moduleConfig->get('category_carousel', false);
+        $this->params['category_aggregate_offer'] = $this->moduleConfig->get('category_aggregate_offer', false);
+
+        // ID linking (item 18)
+        $this->params['id_linking_enabled'] = $this->moduleConfig->get('id_linking_enabled', true);
+
+        // Dynamic data sources (countries, currencies, attributes, categories)
+        $this->load->model('localisation/country');
+        $this->params['countries'] = $this->model_localisation_country->getCountries();
+
+        $this->load->model('localisation/currency');
+        $this->params['currencies'] = $this->model_localisation_currency->getCurrencies();
+
+        $this->load->model('catalog/attribute');
+        $this->params['attributes_list'] = $this->model_catalog_attribute->getAttributes();
+
+        $this->load->model('catalog/attribute_group');
+        $this->params['attribute_groups_list'] = $this->model_catalog_attribute_group->getAttributeGroups();
+
+        $this->load->model('catalog/category');
+        $this->params['categories_list'] = $this->model_catalog_category->getCategories();
 
         $this->params['global_rating'] = $this->moduleConfig->get('global_rating', false);
         $this->params['fake_count'] = $this->moduleConfig->get('fake_count', 0);
@@ -395,6 +472,43 @@ class ControllerExtensionModuleAwMicrodata extends Controller
                 $data['competitor_sameas'] = array_values(array_filter($data['competitor_sameas'], function ($v) {
                     return !empty(trim($v));
                 }));
+            }
+
+            // Normalize repeatable contact_points (item 14)
+            if (isset($data['contact_points']) && is_array($data['contact_points'])) {
+                $cleaned = [];
+
+                foreach ($data['contact_points'] as $cp) {
+                    if (!is_array($cp) || empty($cp['telephone'])) {
+                        continue;
+                    }
+                    $cleaned[] = [
+                        'telephone'         => (string)$cp['telephone'],
+                        'contact_type'      => (string)($cp['contact_type'] ?? 'customer service'),
+                        'area_served'       => isset($cp['area_served']) && is_array($cp['area_served'])
+                            ? array_values(array_filter(array_map('trim', $cp['area_served'])))
+                            : [],
+                        'available_language' => isset($cp['available_language']) && is_array($cp['available_language'])
+                            ? array_values(array_filter(array_map('trim', $cp['available_language'])))
+                            : [],
+                    ];
+                }
+                $data['contact_points'] = $cleaned;
+            }
+
+            // Normalize speakable selectors (item 30)
+            if (isset($data['speakable_selectors']) && is_array($data['speakable_selectors'])) {
+                $data['speakable_selectors'] = array_values(array_filter(array_map('trim', $data['speakable_selectors'])));
+            }
+
+            // Normalize productgroup_categories (item 27)
+            if (isset($data['productgroup_categories']) && is_array($data['productgroup_categories'])) {
+                $data['productgroup_categories'] = array_values(array_map('intval', $data['productgroup_categories']));
+            }
+
+            // Normalize additional_property_groups allowlist (item 11)
+            if (isset($data['additional_property_groups']) && is_array($data['additional_property_groups'])) {
+                $data['additional_property_groups'] = array_values(array_map('intval', $data['additional_property_groups']));
             }
 
             $this->awCore->setConfig($this->moduleName, $data);

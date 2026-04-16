@@ -78,6 +78,21 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_speakable_selectors }}</label>
+    <div class="col-sm-9">
+        <div id="speakable-repeater">
+            {% for idx, sel in speakable_selectors %}
+            <div class="input-group input-group-sm speakable-row" style="margin-bottom:3px;">
+                <input type="text" name="speakable_selectors[{{ idx }}]" value="{{ sel }}" class="form-control" placeholder=".product-name, h1">
+                <span class="input-group-btn"><button type="button" class="btn btn-danger btn-sm btn-remove-speakable"><i class="fa fa-trash"></i></button></span>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="btn-add-speakable" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_video_object }}</label>
     <div class="col-sm-9">
         <label class="checkbox-switch">

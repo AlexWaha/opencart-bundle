@@ -88,6 +88,27 @@ $_['entry_availability_map']    = 'Маппінг наявності';
 $_['entry_delivery_lead']       = 'Термін доставки';
 $_['entry_return_policy']       = 'Політика повернення';
 $_['entry_shipping_details']    = 'Деталі доставки';
+$_['entry_merchant_listings_enabled']  = 'Merchant Listings (майстер)';
+$_['entry_price_valid_until_enabled']  = 'priceValidUntil (авто)';
+$_['entry_item_condition_enabled']     = 'itemCondition (повний URL)';
+$_['text_merchant_listings']           = 'Merchant Listings 2026';
+$_['help_merchant_listings']           = 'Головний перемикач для Google Merchant Listings: shippingDetails, hasMerchantReturnPolicy, itemCondition, priceValidUntil.';
+$_['help_price_valid_until_enabled']   = 'Обчислюється автоматично як поточна дата + 365 днів (ISO 8601).';
+$_['help_item_condition_enabled']      = 'Виводить itemCondition повним URL schema.org (наприклад, https://schema.org/NewCondition).';
+$_['help_shipping_details']            = 'Виводить OfferShippingDetails зі ставкою доставки (0 = безкоштовно), країною призначення та часом обробки/доставки.';
+$_['help_return_policy']               = 'Виводить MerchantReturnPolicy усередині Offer. Обов’язково для Google Merchant Listings.';
+$_['text_shipping_rate']               = 'Ставка доставки (0 = безкоштовно)';
+$_['text_currency']                    = 'Валюта (ISO)';
+$_['text_destination_country']         = 'Країна призначення';
+$_['text_handling_min']                = 'Обробка мін. (днів)';
+$_['text_handling_max']                = 'Обробка макс. (днів)';
+$_['text_transit_min']                 = 'Транзит мін. (днів)';
+$_['text_transit_max']                 = 'Транзит макс. (днів)';
+$_['text_return_country']              = 'Країна політики повернення';
+$_['text_return_applicable_country']   = 'Застосовна країна';
+$_['text_return_method']               = 'Спосіб повернення';
+$_['text_refund_type']                 = 'Тип відшкодування';
+$_['text_return_fees']                 = 'Збори за повернення';
 $_['entry_include_weight']      = 'Включити вагу';
 $_['entry_include_dimensions']  = 'Включити розміри';
 $_['entry_all_images']          = 'Усі зображення';
@@ -129,8 +150,6 @@ $_['entry_og_enabled']          = 'Увімкнути OpenGraph';
 $_['entry_og_type']             = 'Тип OG за замовчуванням';
 $_['entry_fb_app_id']           = 'Facebook App ID';
 $_['entry_fb_pages']            = 'Facebook Pages';
-$_['entry_twitter_card']        = 'Тип Twitter Card';
-$_['entry_twitter_username']    = 'Twitter Username';
 $_['entry_og_image']            = 'OG зображення за замовчуванням';
 
 // Tab 7 - Advanced
@@ -198,6 +217,82 @@ $_['text_import_error']         = 'Помилка імпорту. Перевір
 $_['error_import_failed']       = 'Помилка імпорту: %s';
 $_['error_import_read_file']    = 'Не вдалося прочитати завантажений файл';
 $_['error_import_file']         = 'Оберіть файл для імпорту';
+
+// task-0003: Organization extras (items 13–16)
+$_['entry_contact_points']              = 'Контактні точки';
+$_['help_contact_points']               = 'Повторюваний contactPoint[]: телефон, тип контакту, регіони обслуговування, доступні мови.';
+$_['entry_has_map']                     = 'URL карти (hasMap)';
+$_['help_has_map']                      = 'Публічний URL Google Maps / OSM з розташуванням магазину.';
+$_['entry_store_return_policy_enabled'] = 'Політика повернення на рівні магазину';
+$_['help_store_return_policy_enabled']  = 'Виводити hasMerchantReturnPolicy на Organization/Store, а не лише в кожному Offer.';
+$_['text_contact_type']                 = 'Тип контакту';
+$_['text_telephone']                    = 'Телефон';
+$_['text_area_served']                  = 'Регіони (ISO коди через кому)';
+$_['text_available_language']           = 'Мови (коди через кому)';
+
+// task-0003: Products extras (items 5, 10, 11, 26, 27, 30)
+$_['entry_gtin_source']                 = 'Джерело GTIN';
+$_['help_gtin_source']                  = 'Поле-джерело для Product.gtin. Модуль авто-визначає gtin8/13/14 за довжиною.';
+$_['text_source_sku']                   = 'SKU';
+$_['text_source_model']                 = 'Модель';
+$_['text_source_ean']                   = 'EAN';
+$_['text_source_upc']                   = 'UPC';
+$_['text_source_jan']                   = 'JAN';
+$_['text_source_isbn']                  = 'ISBN';
+$_['text_source_mpn']                   = 'MPN';
+$_['text_source_location']              = 'Розташування';
+$_['text_source_attribute']             = 'Користувацький атрибут';
+$_['entry_gtin_custom_attribute_id']    = 'Атрибут для GTIN';
+$_['entry_upc_enabled']                 = 'Виводити UPC';
+$_['entry_ean_enabled']                 = 'Виводити EAN';
+$_['entry_isbn_enabled']                = 'Виводити ISBN';
+$_['entry_additional_property_enabled'] = 'additionalProperty[] з атрибутів';
+$_['help_additional_property_enabled']  = 'Прив\'язати атрибути товару OpenCart до PropertyValue[]. Оберіть групи атрибутів нижче.';
+$_['entry_additional_property_groups']  = 'Дозволені групи атрибутів';
+$_['entry_productgroup_enabled']        = 'ProductGroup + hasVariant[]';
+$_['help_productgroup_enabled']         = 'Виводити ProductGroup з варіантами для товарів з опціями. Вмикається по категоріях, щоб уникнути шуму.';
+$_['entry_productgroup_categories']     = 'Категорії для ProductGroup (allowlist)';
+$_['entry_speakable']                   = 'Speakable (голосовий пошук)';
+$_['entry_speakable_selectors']         = 'CSS-селектори для Speakable';
+$_['help_speakable_selectors']          = 'CSS-селектори для частин, що читаються голосовими помічниками (наприклад, .product-title, .description).';
+
+// task-0003: OpenGraph extended (items 6, 7, 8, 22, 23, 24, 25)
+$_['entry_og_product_base']             = 'OG product:* (базові)';
+$_['help_og_product_base']              = 'Виводити product:brand, category, availability, condition, age_group, price:amount, price:currency.';
+$_['entry_og_product_extended']         = 'OG product:* (розширені)';
+$_['help_og_product_extended']          = 'Виводити product:color, material, size, target_gender зі зв\'язаних атрибутів.';
+$_['entry_og_sale_price']               = 'OG product:sale_price:*';
+$_['help_og_sale_price']                = 'Виводити sale_price теги під час активної акції.';
+$_['entry_og_age_restriction']          = 'OG age_restriction (og:restrictions:age)';
+$_['help_og_age_restriction']           = 'Наприклад, 18+. Порожньо — тег не виводиться.';
+$_['entry_og_see_also_enabled']         = 'OG og:see_also (супутні товари)';
+$_['entry_og_business_contact']         = 'OG business:contact_data:*';
+$_['help_og_business_contact']          = 'Виводити street_address, locality, region, postal_code, country_name, email, phone_number, website.';
+$_['entry_og_place_location']           = 'OG place:location:*';
+$_['help_og_place_location']            = 'Виводити place:location:latitude/longitude (тільки ручні координати).';
+$_['entry_fb_profile_id']               = 'fb:profile_id';
+
+// task-0003: Article / ImageObject pack (items 19, 20)
+$_['entry_article_image_extract']       = 'Статті: image[] з опису';
+$_['help_article_image_extract']        = 'Авто-витяг <img> з опису у масив image[].';
+$_['entry_image_object_enabled']        = 'ImageObject — повний пак';
+$_['entry_image_object_license']        = 'license URL';
+$_['entry_image_object_acquire_page']   = 'acquireLicensePage URL';
+$_['entry_image_object_credit_text']    = 'creditText';
+$_['entry_image_object_creator']        = 'creator (назва організації)';
+$_['entry_image_object_copyright']      = 'copyrightNotice';
+
+// task-0003: Category enhancements (items 28, 29)
+$_['entry_category_aggregate_offer']    = 'CollectionPage + AggregateOffer';
+$_['help_category_aggregate_offer']     = 'Виводити AggregateOffer коли MIN < MAX за товарами категорії. Якщо ціни рівні — пропускаємо.';
+
+// task-0003: ID linking (item 18)
+$_['entry_id_linking_enabled']          = '@id Hub-and-Spoke зв\'язки';
+$_['help_id_linking_enabled']           = 'Пов\'язувати Product, Organization, BreadcrumbList через стабільні @id (URL-based).';
+
+// Generic UI labels
+$_['text_select']                       = '-- Обрати --';
+$_['text_remove']                       = 'Видалити';
 
 // Error
 $_['error_permission']          = 'У вас недостатньо прав!';
