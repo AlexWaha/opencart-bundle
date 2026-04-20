@@ -1,0 +1,25 @@
+{#
+    Multilingual textarea component.
+
+    Params:
+      label       — label text (string)
+      namePrefix  — input name prefix (e.g. "sms_notify_client_template")
+      value       — current values map keyed by language_id (array|null)
+      languages   — list of active languages from model_localisation_language
+      rows        — textarea rows (int, default 2)
+      help        — optional help block text
+      errors      — optional error map keyed by language_id
+      idPrefix    — optional id prefix for inputs
+#}
+{% for language in languages %}
+    <div class="input-group">
+        <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+        <textarea name="{{ namePrefix }}[{{ language.language_id }}]"{% if idPrefix is defined and idPrefix %} id="{{ idPrefix }}-{{ language.language_id }}"{% endif %} class="form-control" cols="80" rows="{{ rows|default(2) }}">{{ value ? value[language.language_id] : '' }}</textarea>
+        {% if errors is defined and errors[language.language_id] %}
+            <div class="text-danger">{{ errors[language.language_id] }}</div>
+        {% endif %}
+    </div>
+{% endfor %}
+{% if help is defined and help %}
+    <p class="help-block">{{ help }}</p>
+{% endif %}

@@ -1,0 +1,24 @@
+{#
+    Scrollable checkbox list, fixed height.
+
+    Params:
+      items     — array of items
+      name      — input[] name (e.g. "sms_notify_payment")
+      selected  — array of selected values
+      valueKey  — key on item that holds value (e.g. "code")
+      labelKey  — key on item that holds label (e.g. "name")
+#}
+<div class="scrollable-checkbox-list" style="height: 150px; overflow: auto;">
+    {% for item in items %}
+        <div class="checkbox">
+            <label>
+                {% if item[valueKey] in selected %}
+                    <input type="checkbox" name="{{ name }}[]" value="{{ item[valueKey] }}" checked="checked"/>
+                {% else %}
+                    <input type="checkbox" name="{{ name }}[]" value="{{ item[valueKey] }}"/>
+                {% endif %}
+                {{ item[labelKey] }}
+            </label>
+        </div>
+    {% endfor %}
+</div>

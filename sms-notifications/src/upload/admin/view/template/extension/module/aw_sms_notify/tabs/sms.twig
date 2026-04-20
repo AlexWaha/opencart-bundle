@@ -1,0 +1,19 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-custom-client-phone"><span data-toggle="tooltip" title="{{ help_phone }}">{{ entry_client_phone }}</span></label>
+    <div class="col-sm-10">
+        <input type="text" name="custom_client_phone" id="input-custom-client-phone" class="form-control" value="" placeholder="{{ text_phone_placeholder }}"/>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-custom-client-sms">{{ entry_client_sms }}</label>
+    <div class="col-sm-10">
+        <textarea name="custom_client_sms" id="input-custom-client-sms" class="form-control mb-10" rows="5">{{ custom_client_sms_template ? custom_client_sms_template : '' }}</textarea>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-12 d-flex justify-center">
+        <button type="button" id="button-send" data-url="{{ sendMessage }}" data-loading-text="{{ text_loading }}" class="btn btn-primary">
+            <i class="fa fa-paper-plane"></i> {{ button_send }}
+        </button>
+    </div>
+</div>

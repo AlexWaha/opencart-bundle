@@ -1,0 +1,166 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-sms-notify" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-sms-notify" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'diagnostics',       label: tab_diagnostics },
+                                { id: 'sms',               label: tab_sms },
+                                { id: 'tags',              label: tab_tags },
+                                { id: 'template',          label: tab_template },
+                                { id: 'template_customer', label: tab_template_customer },
+                                { id: 'viber',             label: tab_viber_setting },
+                                { id: 'telegram',          label: tab_telegram },
+                                { id: 'otp',               label: tab_otp },
+                                { id: 'setting',           label: tab_setting },
+                                { id: 'gate',              label: tab_gate_setting },
+                                { id: 'log',               label: tab_log },
+                                { id: 'import_export',     label: tab_import_export },
+                                { id: 'support',           label: tab_support }
+                            ] %}
+                            {% set active_tab = 'diagnostics' %}
+
+                            {% include 'extension/module/aw_sms_notify/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_sms_notify/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  $('#button-send').on('click', function () {
+    $.ajax({
+      url: $(this).data('url'),
+      type: 'post',
+      data: {
+        sms_message: $('#input-custom-client-sms').val(),
+        phone: $('#input-custom-client-phone').val()
+      },
+      dataType: 'json',
+      crossDomain: true,
+      beforeSend: function () {
+        $('#button-send').button('loading');
+      },
+      complete: function () {
+        $('#button-send').button('reset');
+      },
+      success: function (json) {
+        $('.alert').remove();
+
+        setTimeout(function () {
+          if (json.error) {
+            $('#content > .container-fluid').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' +
+              json.error + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+          }
+
+          if (json.success) {
+            $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' +
+              json.success + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+            $('#input-custom-client-sms').val('');
+            $('#input-custom-client-phone').val('');
+          }
+        }, 500);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+      },
+    });
+  });
+
+  $('#button-clear-log').on('click', function () {
+    $.ajax({
+      url: $(this).data('url'),
+      dataType: 'json',
+      crossDomain: true,
+      beforeSend: function () {
+        $('#button-clear-log').button('loading');
+      },
+      complete: function () {
+        $('#button-clear-log').button('reset');
+      },
+      success: function (json) {
+        $('.alert').remove();
+
+        setTimeout(function () {
+          if (json.error) {
+            $('#content > .container-fluid').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' +
+              json.error + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+          }
+
+          if (json.success) {
+            $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' +
+              json.success + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+
+            $('#log-file-content').html('');
+          }
+        }, 500);
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+      },
+    });
+  });
+</script>
+{% if ckeditor %}
+    <script>
+      ckeditorInit('input-sms-template', '{{ token }}');
+    </script>
+{% else %}
+    <script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>
+    <link href="view/javascript/summernote/summernote.css" rel="stylesheet"/>
+    <script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>
+    <script>
+      $('#input-sms-template').summernote({
+        height: 150,
+        lang: '{{ lang }}',
+      });
+    </script>
+{% endif %}
+{{ footer }}

@@ -1,0 +1,188 @@
+<div class="alert-box alert-box-info mb-15">
+    <div class="mb-10"><i class="fa fa-info-circle"></i> <strong>{{ text_tg_setup_title }}</strong></div>
+    {{ text_tg_setup_steps|raw }}
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-tg-enabled">{{ entry_tg_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="tg_enabled" value="0"/>
+            <input type="checkbox" name="tg_enabled" id="input-tg-enabled" value="1" {% if tg_enabled %}checked{% endif %}/>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-tg-bot-token">{{ entry_tg_bot_token }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="tg_bot_token" value="{{ tg_bot_token }}" placeholder="123456:ABC-DEF..." id="input-tg-bot-token" class="form-control" autocomplete="off"/>
+        {% if error.tg_token is defined and error.tg_token %}
+            <div class="text-danger">{{ error.tg_token }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-tg-chat-id">{{ entry_tg_chat_id }}</label>
+    <div class="col-sm-9">
+        <div class="input-group">
+            <input type="text" name="tg_chat_id" value="{{ tg_chat_id }}" placeholder="-1001234567890" id="input-tg-chat-id" class="form-control" autocomplete="off"/>
+            <span class="input-group-btn">
+                <button type="button" id="button-tg-detect-chats" class="btn btn-primary" data-url="{{ telegram_detect_url }}" data-loading-text="{{ text_tg_detecting }}">
+                    <i class="fa fa-search"></i> {{ button_tg_detect_chats }}
+                </button>
+            </span>
+        </div>
+        <div id="tg-chats-result" class="mt-10 d-none"></div>
+        {% if error.tg_chat_id is defined and error.tg_chat_id %}
+            <div class="text-danger">{{ error.tg_chat_id }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+  $('#button-tg-detect-chats').on('click', function () {
+    var $btn = $(this);
+    var $result = $('#tg-chats-result');
+    var token = ($('#input-tg-bot-token').val() || '').trim();
+
+    $result.addClass('d-none').empty();
+
+    if (!token) {
+      $result.html('<div class="alert alert-danger">{{ error_tg_token }}</div>').removeClass('d-none');
+      return;
+    }
+
+    $.ajax({
+      url: $btn.data('url'),
+      type: 'post',
+      data: { tg_bot_token: token },
+      dataType: 'json',
+      beforeSend: function () {
+        $btn.button('loading');
+      },
+      complete: function () {
+        $btn.button('reset');
+      },
+      success: function (json) {
+        if (json.error) {
+          $result.html('<div class="alert alert-danger">' + $('<div>').text(json.error).html() + '</div>').removeClass('d-none');
+          return;
+        }
+
+        if (json.empty || !json.chats || !json.chats.length) {
+          var msg = json.message || '{{ text_tg_no_chats_found }}';
+          $result.html('<div class="alert alert-warning">' + $('<div>').text(msg).html() + '</div>').removeClass('d-none');
+          return;
+        }
+
+        var $list = $('<div class="list-group"></div>');
+        $.each(json.chats, function (_, chat) {
+          var $item = $('<a href="#" class="list-group-item tg-chat-option"></a>')
+            .attr('data-chat-id', chat.id)
+            .html(
+              '<strong>' + $('<div>').text(chat.title).html() + '</strong> ' +
+              '<span class="label label-default">' + $('<div>').text(chat.type).html() + '</span> ' +
+              '<span class="text-muted pull-right">' + $('<div>').text(chat.id).html() + '</span>'
+            );
+          $list.append($item);
+        });
+
+        $result
+          .html('<div class="mb-5"><strong>{{ text_tg_chats_select }}</strong></div>')
+          .append($list)
+          .removeClass('d-none');
+      },
+      error: function (xhr) {
+        $result.html('<div class="alert alert-danger">' + $('<div>').text(xhr.statusText || 'error').html() + '</div>').removeClass('d-none');
+      }
+    });
+  });
+
+  $(document).on('click', '.tg-chat-option', function (e) {
+    e.preventDefault();
+    var chatId = $(this).data('chat-id');
+    $('#input-tg-chat-id').val(chatId);
+    $('.tg-chat-option').removeClass('active');
+    $(this).addClass('active');
+  });
+</script>
+
+<fieldset>
+    <legend>{{ tab_setting }}</legend>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-tg-alert-order">{{ entry_tg_alert_order }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="tg_alert_order" value="0"/>
+                <input type="checkbox" name="tg_alert_order" id="input-tg-alert-order" value="1" {% if tg_alert_order %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-tg-alert-register">{{ entry_tg_alert_register }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="tg_alert_register" value="0"/>
+                <input type="checkbox" name="tg_alert_register" id="input-tg-alert-register" value="1" {% if tg_alert_register %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-tg-alert-review">{{ entry_tg_alert_review }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="tg_alert_review" value="0"/>
+                <input type="checkbox" name="tg_alert_review" id="input-tg-alert-review" value="1" {% if tg_alert_review %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>{{ tab_template }}</legend>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_tg_template_order }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'tg_template_order',
+                value: tg_template_order,
+                languages: languages,
+                rows: 4,
+                idPrefix: 'input-tg-template-order',
+                help: help_tg_template
+            } %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_tg_template_register }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'tg_template_register',
+                value: tg_template_register,
+                languages: languages,
+                rows: 4,
+                idPrefix: 'input-tg-template-register',
+                help: help_tg_template
+            } %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_tg_template_review }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'tg_template_review',
+                value: tg_template_review,
+                languages: languages,
+                rows: 4,
+                idPrefix: 'input-tg-template-review',
+                help: help_tg_template
+            } %}
+        </div>
+    </div>
+</fieldset>

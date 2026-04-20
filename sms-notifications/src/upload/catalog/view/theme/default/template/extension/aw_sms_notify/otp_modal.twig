@@ -1,0 +1,49 @@
+<div class="modal fade aw-otp-modal" id="aw-otp-modal" tabindex="-1" role="dialog" aria-labelledby="aw-otp-modal-title" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="aw-otp-modal-title">{{ otp_modal_title }}</h4>
+            </div>
+            <div class="modal-body">
+                <p class="aw-otp-text">{{ otp_modal_text }}</p>
+                <div class="aw-otp-phone-row">
+                    <span class="aw-otp-phone-label">{{ entry_phone }}:</span>
+                    <strong id="aw-otp-phone-display"></strong>
+                </div>
+                <div class="aw-otp-code-row">
+                    <input type="text" id="aw-otp-code-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control aw-otp-code-input" placeholder="------"/>
+                </div>
+                <div class="aw-otp-message" id="aw-otp-message" role="alert" aria-live="polite"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="aw-otp-resend" disabled>{{ button_otp_resend }} (<span id="aw-otp-resend-timer">--</span>)</button>
+                <button type="button" class="btn btn-primary" id="aw-otp-verify">{{ button_otp_verify }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+window.AW_OTP_CONFIG = {
+    requestUrl: '{{ otp_request_url }}',
+    verifyUrl: '{{ otp_verify_url }}',
+    statusUrl: '{{ otp_status_url }}',
+    protect: {
+        register: {{ otp_protect_register ? 'true' : 'false' }},
+        checkout_std: {{ otp_protect_checkout_std ? 'true' : 'false' }},
+        checkout_easy: {{ otp_protect_checkout_easy ? 'true' : 'false' }}
+    },
+    throttle: {{ otp_resend_throttle }},
+    ttl: {{ otp_code_ttl }},
+    i18n: {
+        invalidPhone: '{{ error_otp_invalid_phone|e('js') }}',
+        invalidCode: '{{ error_otp_invalid_code|e('js') }}',
+        expired: '{{ error_otp_expired|e('js') }}',
+        throttle: '{{ error_otp_throttle|e('js') }}',
+        attemptsExceeded: '{{ error_otp_attempts_exceeded|e('js') }}',
+        gateway: '{{ error_otp_gateway|e('js') }}',
+        codeSent: '{{ text_otp_code_sent|e('js') }}',
+        required: '{{ error_otp_required|e('js') }}'
+    }
+};
+</script>

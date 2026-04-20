@@ -37,8 +37,25 @@ $_['tab_template_customer'] = 'Шаблони SMS для покупця';
 $_['tab_setting'] = 'Налаштування сповіщень';
 $_['tab_gate_setting'] = 'Налаштування шлюза';
 $_['tab_log'] = 'Логи шлюза';
+$_['tab_diagnostics'] = 'Діагностика';
 $_['tab_import_export'] = 'Імпорт/Експорт';
 $_['tab_support'] = 'Служба підтримки';
+
+// Diagnostics
+$_['text_diagnostics_loading']     = 'Виконується діагностика...';
+$_['text_diag_events_ok']          = 'Всі події зареєстровано';
+$_['text_diag_events_missing']     = 'Деякі події відсутні';
+$_['text_diag_events_count']       = '%s з %s';
+$_['text_diag_event_ok']           = 'OK';
+$_['text_diag_event_fail']         = 'Відсутня';
+$_['text_diag_config_ok']          = 'Обов\'язкові налаштування заповнено';
+$_['text_diag_config_missing']     = 'Не заповнено обов\'язкові налаштування';
+$_['text_diag_log_file']           = 'Лог-файл';
+$_['text_diag_log_enabled']        = 'увімкнено';
+$_['text_diag_log_disabled']       = 'логування вимкнено';
+$_['text_diag_log_empty']          = 'порожній - створиться при першому записі';
+$_['text_diag_go_to_tab']          = 'Перейти до вкладки';
+$_['text_diag_failed']             = 'Не вдалося завантажити діагностику';
 
 // Entry
 $_['entry_template'] = 'Шаблон повідомлення </br>';
@@ -100,7 +117,7 @@ $_['help_order_status'] = 'Надсилати SMS при зміні статус
 $_['help_customer_group'] = 'Автоматична відправка SMS для обраних груп покупців. Якщо не вибрано жодної, SMS буде надсилатися всім покупцям';
 $_['help_payment_alert'] = 'Автоматична відправка SMS для обраних способів оплати після оформлення замовлення';
 $_['help_product'] = 'Використовуйте обережно, не допускайте помилок! Приклад: {% for product in products%} Товар:{{product.name}} Ціна:{{product.price}}{% endfor %}';
-$_['help_reviews'] = 'Дозволені теги {{product.name}}, {{product.model}}, {{product.sku}}, {{product.date}}<br /> <b>Назва товару скорочується до 50 символів</b>';
+$_['help_reviews'] = 'Дозволені теги: {{product.name}}, {{product.model}}, {{product.sku}}, {{product.date}}, {{review.author}}, {{review.text}}, {{review.rating}}<br /> <b>Назва товару скорочується до 50 символів</b>';
 $_['help_register_template'] = 'Дозволені теги: <br/><b>{{register.firstname}} - Ім\'я</b>, <br/><b>{{register.lastname}} - Прізвище</b>, <br/><b>{{register.email}} - E-mail</b>, <br/><b>{{register.phone}} - Телефон</b>, <br/><b>{{register.password}} - Пароль</b><br />';
 
 // Tags
@@ -170,3 +187,82 @@ $_['error_export_failed'] = 'Помилка при експорті налашт
 $_['error_import_read_file'] = 'Не вдалося прочитати завантажений файл';
 $_['button_export'] = 'Експорт налаштувань';
 $_['button_import'] = 'Імпорт налаштувань';
+
+// Telegram
+$_['tab_telegram'] = 'Telegram';
+$_['entry_tg_enabled'] = 'Увімкнути Telegram-сповіщення';
+$_['entry_tg_bot_token'] = 'Токен бота (з @BotFather)';
+$_['entry_tg_chat_id'] = 'Chat ID (група або особистий)';
+$_['entry_tg_alert_order'] = 'Сповіщати про нове замовлення';
+$_['entry_tg_alert_register'] = 'Сповіщати про реєстрацію нового покупця';
+$_['entry_tg_alert_review'] = 'Сповіщати про новий відгук';
+$_['entry_tg_template_order'] = 'Шаблон: нове замовлення';
+$_['entry_tg_template_register'] = 'Шаблон: нова реєстрація';
+$_['entry_tg_template_review'] = 'Шаблон: новий відгук';
+$_['text_tg_setup_title'] = 'Як налаштувати Telegram-бота';
+$_['text_tg_setup_steps'] = <<<'HTML'
+<ol class="mb-0">
+    <li>Відкрийте <b>@BotFather</b> у Telegram → надішліть <code>/newbot</code> → задайте імʼя → задайте username → скопіюйте <b>TOKEN</b>.</li>
+    <li>Вставте <b>TOKEN</b> у поле вище.</li>
+    <li>Створіть групу (або використайте наявну) → додайте бота учасником.</li>
+    <li>Відкрийте <b>@RawDataBot</b> у Telegram, додайте його до тієї самої групи → бот надішле <code>chat_id</code> (відʼємне число для груп). Після цього видаліть RawDataBot з групи.</li>
+    <li>Вставте <b>chat_id</b> у поле вище.</li>
+    <li>Увімкніть головний перемикач і потрібні події.</li>
+    <li>Відкрийте вкладку <b>Діагностика</b> та перевірте «Telegram-бот доступний».</li>
+</ol>
+HTML;
+$_['error_tg_token'] = 'Токен бота не вказано';
+$_['error_tg_chat_id'] = 'Chat ID не вказано';
+$_['error_tg_detect_failed'] = 'Не вдалося отримати список чатів від Telegram';
+$_['button_tg_detect_chats'] = 'Отримати чати';
+$_['text_tg_detecting'] = 'Отримання...';
+$_['text_tg_no_chats_found'] = 'Чати не знайдено. Переконайтесь, що бот доданий до групи як адмін (або вимкніть Group Privacy через @BotFather → /mybots), відправте у групі будь-яке повідомлення і натисніть ще раз.';
+$_['text_tg_chats_select'] = 'Натисніть на чат, щоб підставити його ID:';
+$_['text_diag_tg_ok'] = 'Telegram-бот доступний';
+$_['text_diag_tg_fail'] = 'Telegram-бот недоступний';
+$_['text_diag_tg_disabled'] = 'Telegram вимкнено';
+$_['text_diag_tg_chat_ok'] = 'Chat ID налаштовано';
+$_['text_diag_tg_chat_missing'] = 'Chat ID не налаштовано';
+$_['text_diag_tg_templates_ok'] = 'Шаблони задано для увімкнених подій';
+$_['text_diag_tg_templates_missing'] = 'Не задано шаблони для увімкнених подій';
+$_['help_tg_template'] = 'Використовуйте ті самі теги, що і в SMS-шаблонах. Підтримується HTML: &lt;b&gt;, &lt;i&gt;, &lt;a href=...&gt;.';
+
+// OTP
+$_['tab_otp'] = 'OTP-підтвердження';
+$_['entry_otp_enabled'] = 'Увімкнути OTP-підтвердження через SMS';
+$_['entry_otp_protect_register'] = 'Захистити стандартну реєстрацію';
+$_['entry_otp_protect_checkout_std'] = 'Захистити стандартний гостьовий checkout';
+$_['entry_otp_protect_checkout_easy'] = 'Захистити aw_easy_checkout';
+$_['entry_otp_protect_universal'] = 'Universal mode (будь-які 3rd-party форми)';
+$_['entry_otp_ttl'] = 'Час життя коду (сек)';
+$_['entry_otp_throttle'] = 'Мінімальний інтервал між запитами коду (сек)';
+$_['entry_otp_max_attempts'] = 'Максимум спроб введення коду';
+$_['entry_otp_template'] = 'Шаблон SMS із кодом (використовуйте {{code}})';
+$_['entry_otp_modal_title'] = 'Заголовок модалки підтвердження';
+$_['entry_otp_modal_text'] = 'Текст модалки підтвердження';
+$_['text_otp_help_universal'] = '<b>Увага:</b> Universal mode блокує будь-яке створення замовлення/покупця через model-події. У гіршому випадку при 3rd-party формі без підтримки OTP користувач побачить грубу помилку замість модалки. Вмикайте лише якщо стандартні / easy_checkout-перехоплювачі недостатні.';
+$_['help_otp_ttl'] = 'Термін життя згенерованого коду в секундах. За замовчуванням 300 (5 хвилин).';
+$_['help_otp_throttle'] = 'Мінімальна затримка між двома послідовними запитами коду. За замовчуванням 30 секунд.';
+$_['help_otp_max_attempts'] = 'Скільки невірних введень дозволено до скидання коду. За замовчуванням 5.';
+$_['entry_otp_max_resends'] = 'Максимум повторних запитів коду';
+$_['help_otp_max_resends'] = 'Скільки разів користувач може запитати новий код. За замовчуванням 2. Після перевищення - блокування.';
+$_['entry_otp_lockout_duration'] = 'Тривалість блокування (сек)';
+$_['help_otp_lockout_duration'] = 'Як довго користувач заблокований для запиту кодів після перевищення ліміту. За замовчуванням 7200 (2 години).';
+$_['text_otp_template_default'] = 'Ваш код підтвердження: {{code}}';
+$_['text_otp_modal_title_default'] = 'Підтвердження телефону';
+$_['text_otp_modal_text_default'] = 'Введіть 6-значний код, надісланий на {{phone}}';
+$_['help_otp_template'] = 'Доступний тег: {{code}}';
+$_['help_otp_modal_text'] = 'Доступний тег: {{phone}}';
+$_['text_diag_otp_ok'] = 'Конфігурацію OTP валідовано';
+$_['text_diag_otp_fail'] = 'Конфігурація OTP некоректна';
+$_['text_diag_otp_disabled'] = 'OTP вимкнено';
+$_['text_diag_otp_events_ok'] = 'Усі OTP-події зареєстровано';
+$_['text_diag_otp_events_missing'] = 'Деякі OTP-події не зареєстровано';
+$_['text_diag_otp_event_ok'] = 'OK';
+$_['text_diag_otp_event_fail'] = 'Відсутня';
+$_['text_diag_otp_no_gateway'] = 'SMS-шлюз не налаштовано (необхідно для OTP)';
+$_['text_diag_otp_gateway_ok'] = 'SMS-шлюз налаштовано';
+$_['text_diag_otp_templates_ok'] = 'Усі шаблони OTP заповнено';
+$_['text_diag_otp_templates_missing'] = 'Деякі шаблони OTP не заповнено';
+$_['text_diag_otp_modal_custom'] = 'Заголовок і текст модалки налаштовано';
+$_['text_diag_otp_modal_defaults'] = 'Модалка: використано типові значення з мовного файлу';

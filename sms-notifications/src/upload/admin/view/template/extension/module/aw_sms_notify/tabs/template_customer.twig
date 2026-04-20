@@ -1,0 +1,75 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_register_template }}</label>
+    <div class="col-sm-9">
+        <div class="alert-box alert-box-info mb-10">{{ help_register_template }}</div>
+        {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+            namePrefix: 'sms_notify_register_template',
+            value: register_template,
+            languages: languages,
+            rows: 2,
+            idPrefix: 'input-register-template',
+            errors: error.register_template|default(null)
+        } %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_client_template }}</label>
+    <div class="col-sm-9">
+        {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+            namePrefix: 'sms_notify_client_template',
+            value: client_template,
+            languages: languages,
+            rows: 2,
+            idPrefix: 'input-client-template',
+            errors: error.client_template|default(null)
+        } %}
+    </div>
+</div>
+
+{% if payments %}
+    <fieldset>
+        <legend>{{ entry_payment_template }}</legend>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div class="alert-box alert-box-info">{{ help_sms_payment }}</div>
+            </div>
+        </div>
+        {% for payment in payments %}
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{{ payment.name }}</label>
+                <div class="col-sm-9">
+                    {% set paymentValue = (payment_template and payment_template[payment.code] is defined) ? payment_template[payment.code] : null %}
+                    {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                        namePrefix: 'sms_notify_payment_template[' ~ payment.code ~ ']',
+                        value: paymentValue,
+                        languages: languages,
+                        rows: 2,
+                        idPrefix: 'input-payment-template-' ~ payment.code
+                    } %}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+{% endif %}
+
+{% if order_statuses %}
+    <fieldset>
+        <legend>{{ entry_order_status_template }}</legend>
+        {% for order_status in order_statuses %}
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{{ order_status.name }}</label>
+                <div class="col-sm-9">
+                    {% set statusValue = (order_status_template and order_status_template[order_status.order_status_id] is defined) ? order_status_template[order_status.order_status_id] : null %}
+                    {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                        namePrefix: 'sms_notify_status_template[' ~ order_status.order_status_id ~ ']',
+                        value: statusValue,
+                        languages: languages,
+                        rows: 2,
+                        idPrefix: 'input-order-status-template-' ~ order_status.order_status_id
+                    } %}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+{% endif %}

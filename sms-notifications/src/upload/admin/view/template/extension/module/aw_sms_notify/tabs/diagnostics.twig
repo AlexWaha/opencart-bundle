@@ -1,0 +1,199 @@
+<div id="diagnostics-container" class="d-flex flex-column gap-15">
+    <div class="alert-box alert-box-info">
+        <i class="fa fa-spinner fa-spin"></i> {{ text_diagnostics_loading }}
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    var diagLang = {
+        eventsOk:          '{{ text_diag_events_ok }}',
+        eventsMissing:     '{{ text_diag_events_missing }}',
+        eventsCount:       '{{ text_diag_events_count }}',
+        eventOk:           '{{ text_diag_event_ok }}',
+        eventFail:         '{{ text_diag_event_fail }}',
+        configOk:          '{{ text_diag_config_ok }}',
+        configMissing:     '{{ text_diag_config_missing }}',
+        logFileTitle:      '{{ text_diag_log_file }}',
+        logFileEnabled:    '{{ text_diag_log_enabled }}',
+        logFileDisabled:   '{{ text_diag_log_disabled }}',
+        logFileEmpty:      '{{ text_diag_log_empty }}',
+        goToTab:           '{{ text_diag_go_to_tab }}',
+        failed:            '{{ text_diag_failed }}',
+        otpEventOk:        '{{ text_diag_otp_event_ok }}',
+        otpEventFail:      '{{ text_diag_otp_event_fail }}'
+    };
+
+    function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+            return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+        });
+    }
+
+    function tabLink(tab) {
+        if (!tab) return '';
+        return ' <a href="#" class="diag-go-to-tab" data-tab="' + esc(tab) + '">' + diagLang.goToTab + '</a>';
+    }
+
+    function renderEvents(section) {
+        var ok = section.ok;
+        var box = ok ? 'alert-box-success' : 'alert-box-danger';
+        var icon = ok ? 'check-circle' : 'times-circle';
+        var title = ok ? diagLang.eventsOk : diagLang.eventsMissing;
+        var count = diagLang.eventsCount.replace('%s', section.registered).replace('%s', section.total);
+
+        var html = '<div class="alert-box ' + box + '">';
+        html += '<div class="mb-10"><i class="fa fa-' + icon + '"></i> <strong>' + title + '</strong> <small>(' + count + ')</small></div>';
+        if (section.details && section.details.length) {
+            section.details.forEach(function(d) {
+                var good = d.exists && d.enabled;
+                html += '<div class="list-item">';
+                html += '<span class="badge-code mr-10">' + esc(d.trigger) + '</span>';
+                html += good ? '<span class="badge-success">' + diagLang.eventOk + '</span>' : '<span class="badge-danger">' + diagLang.eventFail + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function renderConfig(section) {
+        var missing = section.missing || [];
+        var ok = missing.length === 0;
+        var box = ok ? 'alert-box-success' : 'alert-box-warning';
+        var icon = ok ? 'check-circle' : 'exclamation-triangle';
+        var title = ok ? diagLang.configOk : diagLang.configMissing;
+
+        var html = '<div class="alert-box ' + box + '">';
+        html += '<div class="mb-10"><i class="fa fa-' + icon + '"></i> <strong>' + title + '</strong></div>';
+        missing.forEach(function(m) {
+            var field = typeof m === 'object' ? m.field : m;
+            var tab = typeof m === 'object' ? m.tab : '';
+            html += '<div class="list-item"><span class="badge-code mr-10">' + esc(field) + '</span>' + tabLink(tab) + '</div>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function renderTelegram(section) {
+        var ok = !!section.ok;
+        var box = ok ? 'alert-box-success' : 'alert-box-danger';
+        var icon = ok ? 'check-circle' : 'times-circle';
+        var title = 'Telegram';
+
+        var html = '<div class="alert-box ' + box + '">';
+        html += '<div class="mb-10"><i class="fa fa-' + icon + '"></i> <strong>' + title + '</strong></div>';
+        if (section.details && section.details.length) {
+            section.details.forEach(function(d) {
+                var good = !!d.ok;
+                html += '<div class="list-item">';
+                html += '<span class="badge-code mr-10">' + esc(d.key) + '</span>';
+                html += good ? '<span class="badge-success">' + esc(d.status) + '</span>' : '<span class="badge-danger">' + esc(d.status) + '</span>';
+                if (d.details) {
+                    html += ' <span class="item-text">' + esc(d.details) + '</span>';
+                }
+                html += tabLink('telegram');
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function renderOtp(section) {
+        var ok = !!section.ok;
+        var box = ok ? 'alert-box-success' : 'alert-box-danger';
+        var icon = ok ? 'check-circle' : 'times-circle';
+        var title = 'OTP';
+
+        var html = '<div class="alert-box ' + box + '">';
+        html += '<div class="mb-10"><i class="fa fa-' + icon + '"></i> <strong>' + title + '</strong></div>';
+        if (section.details && section.details.length) {
+            section.details.forEach(function(d) {
+                var good = !!d.ok;
+                html += '<div class="list-item">';
+                html += '<span class="badge-code mr-10">' + esc(d.key) + '</span>';
+                html += good ? '<span class="badge-success">' + esc(d.status) + '</span>' : '<span class="badge-danger">' + esc(d.status) + '</span>';
+                html += tabLink('otp');
+                html += '</div>';
+
+                // Nested events sub-list for OTP events
+                if (d.key === 'events' && d.events && d.events.length) {
+                    d.events.forEach(function(ev) {
+                        var evGood = ev.exists && ev.enabled;
+                        html += '<div class="list-item ml-20">';
+                        html += '<span class="badge-code mr-10">' + esc(ev.trigger) + '</span>';
+                        html += evGood
+                            ? '<span class="badge-success">' + diagLang.otpEventOk + '</span>'
+                            : '<span class="badge-danger">' + diagLang.otpEventFail + '</span>';
+                        html += '</div>';
+                    });
+                }
+            });
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function renderLog(section) {
+        var html = '<div class="alert-box alert-box-info">';
+        html += '<div class="mb-10"><i class="fa fa-info-circle"></i> <strong>' + diagLang.logFileTitle + ':</strong> ' + (section.enabled ? diagLang.logFileEnabled : diagLang.logFileDisabled) + '</div>';
+        if (section.enabled) {
+            var size = section.exists ? esc(section.size_human) : diagLang.logFileEmpty;
+            html += '<div class="list-item"><span class="badge-code mr-10">' + esc(section.filename) + '</span><span class="item-text">' + size + '</span>' + tabLink('log') + '</div>';
+        }
+        html += '</div>';
+        return html;
+    }
+
+    $.getJSON('index.php?route=extension/module/aw_sms_notify/diagnostics&{{ token_param }}', function(data) {
+        var html = '';
+        var issues = 0;
+
+        if (data.sections.events) {
+            if (!data.sections.events.ok) issues++;
+            html += renderEvents(data.sections.events);
+        }
+
+        if (data.sections.config) {
+            if (data.sections.config.missing && data.sections.config.missing.length) issues++;
+            html += renderConfig(data.sections.config);
+        }
+
+        if (data.sections.telegram) {
+            if (!data.sections.telegram.ok) issues++;
+            html += renderTelegram(data.sections.telegram);
+        }
+
+        if (data.sections.otp) {
+            if (!data.sections.otp.ok) issues++;
+            html += renderOtp(data.sections.otp);
+        }
+
+        if (data.sections.log) {
+            html += renderLog(data.sections.log);
+        }
+
+        $('#diagnostics-container').html(html);
+
+        var $badge = $('#diag-badge');
+        $badge.removeClass('d-none');
+        if (issues > 0) {
+            $badge.text(issues).css({'background-color':'#d9534f','color':'#fff'});
+        } else {
+            $badge.text('OK').css({'background-color':'#5cb85c','color':'#fff'});
+        }
+    }).fail(function() {
+        $('#diagnostics-container').html('<div class="alert-box alert-box-danger"><i class="fa fa-times-circle"></i> <strong>' + diagLang.failed + '</strong></div>');
+    });
+
+    // Jump to tab via link
+    $(document).on('click', '.diag-go-to-tab', function(e) {
+        e.preventDefault();
+        var t = $(this).data('tab');
+        $('a[href="#v-tab_' + t + '"]').tab('show');
+    });
+})();
+</script>

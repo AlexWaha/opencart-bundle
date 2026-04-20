@@ -10,7 +10,7 @@
  * @license GPLv3
  */
 
-use Alexwaha\SmsDispatcher;
+use Alexwaha\SmsNotify\SmsDispatcher;
 
 class ModelExtensionModuleAwSmsNotify extends Model
 {
@@ -144,6 +144,9 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
                 $this->sendMessage($phone, $message, $this->moduleConfig->get('sms_notify_copy'));
             }
+
+            // Telegram (admin) — parallel channel, fires for new order regardless of SMS settings
+            $this->sendTelegram('order', $this->buildOrderTelegramData($order_info));
         }
     }
 
@@ -205,7 +208,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
         }
     }
 
-    public function sendReviewsSms($product_id)
+    public function sendReviewsSms($product_id, $review_data = [])
     {
         $this->load->model('catalog/product');
 
@@ -225,6 +228,21 @@ class ModelExtensionModuleAwSmsNotify extends Model
                 'date' => date('d.m.Y H:i'),
             ];
 
+            $data['review'] = [
+                'author' => $review_data['name'] ?? '',
+                'text' => $review_data['text'] ?? '',
+                'rating' => $review_data['rating'] ?? '',
+            ];
+
+            $data['author'] = $data['review']['author'];
+            $data['firstname'] = $data['review']['author'];
+            $data['text'] = $data['review']['text'];
+            $data['rating'] = $data['review']['rating'];
+            $data['product_name'] = $data['product']['name'];
+            $data['product_model'] = $data['product']['model'];
+            $data['product_sku'] = $data['product']['sku'];
+            $data['date'] = $data['product']['date'];
+
             $text = $this->awCore->render($template, $data, true);
 
             if ($this->moduleConfig->get('sms_notify_translit')) {
@@ -241,6 +259,9 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
                 $this->sendMessage($phone, $message);
             }
+
+            // Telegram (admin) — parallel channel for new review
+            $this->sendTelegram('review', $data);
         }
     }
 
@@ -258,6 +279,12 @@ class ModelExtensionModuleAwSmsNotify extends Model
                 'phone' => $customer['telephone'],
                 'password' => $password
             ];
+
+            $data['firstname'] = $customer['firstname'];
+            $data['lastname'] = $customer['lastname'];
+            $data['email'] = $customer['email'];
+            $data['phone'] = $customer['telephone'];
+            $data['password'] = $password;
 
             if ($this->moduleConfig->get('sms_notify_register_alert')) {
                 $template = $this->moduleConfig->get('sms_notify_register_template');
@@ -281,6 +308,9 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
                 $this->sendMessage($phone, $message);
             }
+
+            // Telegram (admin) — parallel channel for new registration
+            $this->sendTelegram('register', $data);
         }
     }
 
@@ -423,7 +453,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
         $viber_image_width = $this->moduleConfig->get('sms_notify_viber_image_width');
         $viber_image_height = $this->moduleConfig->get('sms_notify_viber_image_height');
 
-        if (is_file(DIR_IMAGE . $viber_image_src)) {
+        if ($viber_image_src && is_file(DIR_IMAGE . $viber_image_src)) {
             $viber_image = $this->model_tool_image->resize($viber_image_src, $viber_image_width, $viber_image_height);
         } else {
             $viber_image = false;
@@ -455,5 +485,171 @@ class ModelExtensionModuleAwSmsNotify extends Model
             $this->moduleConfig->get('sms_notify_log_filename')
         );
         $dispatcher->send();
+    }
+
+    /**
+     * Build a Telegram payload for the order context (mirrors prepareMessage data shape).
+     *
+     * @param  array $order_info
+     * @return array
+     */
+    private function buildOrderTelegramData(array $order_info): array
+    {
+        $shipping_cost = 0;
+        $order_total_noship = $order_info['total'] ?? 0;
+
+        if ($this->config->get('total_shipping_status')) {
+            $order_shipping_query = $this->db->query('SELECT * FROM ' . DB_PREFIX . "order_total WHERE order_id = '" . (int) $order_info['order_id'] . "' AND code = 'shipping'");
+
+            if ($order_shipping_query->num_rows) {
+                $shipping_cost = $this->currency->format(
+                    $order_shipping_query->row['value'],
+                    $order_info['currency_code'],
+                    $order_info['currency_value']
+                );
+                $order_total_noship = $order_info['total']
+                    ? $order_info['total'] - $order_shipping_query->row['value']
+                    : '';
+            }
+        }
+
+        $query_order_product_total = $this->db->query('SELECT COUNT(*) AS total FROM ' . DB_PREFIX . "order_product WHERE order_id = '" . (int) $order_info['order_id'] . "'");
+        $query_order_product = $this->db->query('SELECT name, model, price, quantity FROM ' . DB_PREFIX . "order_product WHERE order_id = '" . (int) $order_info['order_id'] . "'");
+
+        $products = [];
+
+        foreach ($query_order_product->rows as $product) {
+            $products[] = [
+                'name' => strip_tags(html_entity_decode($product['name'], ENT_QUOTES, 'UTF-8')),
+                'model' => $product['model'],
+                'price' => $this->currency->format(
+                    $product['price'],
+                    $order_info['currency_code'],
+                    $order_info['currency_value']
+                ),
+                'quantity' => $product['quantity'],
+            ];
+        }
+
+        $data = [];
+        $data['order'] = [
+            'id'              => $order_info['order_id'] ?? '',
+            'total'           => strip_tags($order_info['total'] ? $this->currency->format(
+                $order_info['total'],
+                $order_info['currency_code'],
+                $order_info['currency_value']
+            ) : ''),
+            'total_noship'    => strip_tags($order_total_noship ? $this->currency->format(
+                $order_total_noship,
+                $order_info['currency_code'],
+                $order_info['currency_value']
+            ) : ''),
+            'phone'           => $order_info['telephone'] ?? '',
+            'comment'         => $order_info['comment'] ?? '',
+            'date'            => $order_info['date_added'] ?? '',
+            'payment_method'  => $order_info['payment_method'] ?? '',
+            'shipping_method' => $order_info['shipping_method'] ?? '',
+            'shipping_city'   => $order_info['shipping_city'] ?? '',
+            'shipping_address' => $order_info['shipping_address_1'] ?? '',
+            'shipping_cost'   => strip_tags((string) $shipping_cost),
+            'product_total'   => $query_order_product_total->row['total'],
+        ];
+        $data['customer'] = [
+            'firstname' => $order_info['firstname'] ?? '',
+            'lastname'  => $order_info['lastname'] ?? '',
+            'email'     => $order_info['email'] ?? '',
+            'phone'     => $order_info['telephone'] ?? '',
+        ];
+        $data['products'] = $products;
+        $data['store_name'] = $order_info['store_name'] ?? $this->config->get('config_name');
+        $data['store_url']  = $order_info['store_url'] ?? HTTP_SERVER;
+
+        // Flat aliases (parity with SMS prepareMessage data shape)
+        $data['order_id']         = $data['order']['id'];
+        $data['order_total']      = $data['order']['total'];
+        $data['order_phone']      = $data['order']['phone'];
+        $data['order_comment']    = $data['order']['comment'];
+        $data['payment_method']   = $data['order']['payment_method'];
+        $data['shipping_method']  = $data['order']['shipping_method'];
+        $data['shipping_city']    = $data['order']['shipping_city'];
+        $data['shipping_address'] = $data['order']['shipping_address'];
+        $data['shipping_cost']    = $data['order']['shipping_cost'];
+        $data['product_total']    = $data['order']['product_total'];
+        $data['firstname']        = $data['customer']['firstname'];
+        $data['lastname']         = $data['customer']['lastname'];
+
+        return $data;
+    }
+
+    /**
+     * Dispatch a Telegram message for the given event if enabled.
+     *
+     * @param  string $eventKey one of: order, register, review
+     * @param  array  $data     template render context
+     * @return void
+     */
+    private function sendTelegram(string $eventKey, array $data): void
+    {
+        if (!(bool) $this->moduleConfig->get('tg_enabled', false)) {
+            return;
+        }
+
+        $token = trim((string) $this->moduleConfig->get('tg_bot_token', ''));
+        $chatId = trim((string) $this->moduleConfig->get('tg_chat_id', ''));
+
+        if ($token === '' || $chatId === '') {
+            return;
+        }
+
+        $allowed = ['order', 'register', 'review'];
+
+        if (!in_array($eventKey, $allowed, true)) {
+            return;
+        }
+
+        if (!(bool) $this->moduleConfig->get('tg_alert_' . $eventKey, false)) {
+            return;
+        }
+
+        $tplArr = (array) $this->moduleConfig->get('tg_template_' . $eventKey, []);
+        $languageId = (int) $this->config->get('config_language_id');
+        $template = (string) ($tplArr[$languageId] ?? '');
+
+        if ($template === '') {
+            return;
+        }
+
+        $template = html_entity_decode($template, ENT_QUOTES, 'UTF-8');
+
+        try {
+            $message = $this->awCore->render($template, $data, true);
+        } catch (\Throwable $e) {
+            $this->writeTelegramLog(sprintf('(Telegram) render failed event:%s err:%s', $eventKey, $e->getMessage()));
+
+            return;
+        }
+
+        $message = trim((string) $message);
+
+        if ($message === '') {
+            return;
+        }
+
+        $result = \Alexwaha\SmsNotify\Telegram::send($token, $chatId, $message);
+
+        $this->writeTelegramLog(sprintf(
+            '(Telegram) event:%s chat:%s ok:%d desc:%s',
+            $eventKey,
+            $chatId,
+            !empty($result['ok']) ? 1 : 0,
+            (string) ($result['description'] ?? ($result['error'] ?? ''))
+        ));
+    }
+
+    private function writeTelegramLog(string $message): void
+    {
+        $logFilename = (string) $this->moduleConfig->get('sms_notify_log_filename', 'aw_sms_notify');
+        $log = new \Log($logFilename . '.log');
+        $log->write($message);
     }
 }

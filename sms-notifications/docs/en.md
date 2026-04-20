@@ -10,6 +10,13 @@ This extension contains a module and SMS gateways for popular messaging services
 
 The module allows sending SMS notifications to administrators and customers about various store events: new orders, order status changes, registration, new reviews.
 
+**New in this version:**
+
+- **Telegram notifications** - Send event alerts (orders, registrations, reviews) to a Telegram group chat in parallel with SMS
+- **OTP phone confirmation** - Protect checkout and registration forms with SMS-based 6-digit code verification. Supports standard checkout, Easy Checkout, registration, and universal model-level protection
+- **Resend limits and lockout** - Configurable maximum resend attempts with a multi-hour lockout to prevent abuse
+- **Diagnostics tab** - Built-in health check for events, Telegram connectivity, OTP configuration, and gateway status
+
 > **Video instruction (old):** Before installing the extension, watch the [YouTube video in Russian](https://youtu.be/JPxS5-U6X20)
 
 ---
@@ -45,7 +52,8 @@ The module allows sending SMS notifications to administrators and customers abou
 ### Self-Check After Installation
 
 - Check for the module in the list of extensions
-- Check for the presence in **Extensions → Events** of values: `aw_sms_notify_order_alert`, `aw_sms_notify_review_alert`, `aw_sms_notify_register_alert`
+- Check for the presence in **Extensions → Events** of values: `aw_sms_notify_order_alert`, `aw_sms_notify_review_alert`, `aw_sms_notify_register_alert`, `aw_sms_notify_inject_otp`
+- If OTP is enabled, also check for: `aw_sms_notify_otp_register`, `aw_sms_notify_otp_checkout_std`, `aw_sms_notify_otp_checkout_easy`, `aw_sms_notify_otp_addorder`, `aw_sms_notify_otp_addcustomer`
 - Refresh the modification cache
 
 ---
@@ -91,7 +99,65 @@ On the **"Notification Settings"** tab, you need to enable only the necessary no
 - **SMS for statuses** - Automatic sending of notifications for selected order statuses when the order status changes
 - **SMS templates when viewing an order** - Here you can specify frequently used texts for notifications when sending notifications manually by the manager from the form when viewing an order
 
-### 4. Viber Notification Settings
+### 4. Telegram Notifications
+
+On the **"Telegram"** tab, you can configure sending event notifications to a Telegram group chat:
+
+- **Enable Telegram notifications** - Master toggle
+- **Bot Token** - Token from @BotFather
+- **Chat ID** - Numeric chat ID (negative for groups)
+- **New order alert** - Send notification when a new order is placed
+- **New registration alert** - Send notification when a new customer registers
+- **New review alert** - Send notification when a new product review is submitted
+- **Message templates** - Multi-language HTML templates using the same `{{variables}}` as SMS. Supports `<b>`, `<i>`, `<a href>` tags.
+
+**Setup instructions:**
+
+1. Open @BotFather in Telegram, send `/newbot`, follow the prompts, copy the TOKEN
+2. Paste the TOKEN into the "Bot Token" field
+3. Create a group (or use existing), add the bot as a member
+4. Add @RawDataBot to the same group to get the `chat_id` (negative number for groups), then remove it
+5. Paste the `chat_id` into the "Chat ID" field
+6. Enable master toggle and select desired events
+7. Go to **Diagnostics** tab to verify "Telegram bot reachable"
+
+> **Note:** Telegram alerts work in parallel with SMS - they do not replace SMS notifications. Order status change events are NOT sent to Telegram (only SMS).
+
+### 5. OTP Phone Confirmation
+
+On the **"OTP"** tab, you can enable SMS-based phone verification to protect against fake orders and registrations:
+
+- **Enable OTP** - Master toggle
+- **Protect registration** - Require OTP on `/account/register`
+- **Protect standard checkout** - Require OTP on standard guest checkout
+- **Protect Easy Checkout** - Require OTP on `aw_easy_checkout`
+- **Protect universal (model-level)** - Block any `addOrder`/`addCustomer` call without a valid OTP session. Use as a fallback for 3rd-party checkout modules.
+- **Code TTL (seconds)** - How long a generated code is valid. Default: 300 (5 min).
+- **Resend throttle (seconds)** - Minimum delay between consecutive code requests. Default: 30.
+- **Maximum verification attempts** - How many wrong codes allowed before the code is wiped. Default: 5.
+- **Maximum resend requests** - How many times the user can request a new code. Default: 2. After exceeding the limit, a lockout is applied.
+- **Lockout duration (seconds)** - How long the user is blocked from requesting new codes. Default: 7200 (2 hours).
+- **SMS template** - Multi-language template with `{{code}}` tag.
+- **Modal title / Modal text** - Multi-language text displayed in the confirmation modal. `{{phone}}` tag available in modal text.
+
+**How it works (user flow):**
+
+1. User fills out a form with a phone number and clicks submit
+2. JavaScript intercepts the submit and opens a Bootstrap modal
+3. An SMS with a 6-digit code is sent automatically via the configured gateway
+4. User enters the code in the modal
+5. On success, the modal closes and the original form submits with a one-time OTP token
+6. Server validates the token and allows the operation
+
+**Protection layers:**
+
+- **Client-side:** JS intercepts submit buttons on detected forms (registration, guest checkout, easy checkout)
+- **Server-side (controller):** Event handlers on `controller/account/register/before`, `controller/checkout/guest/save/before`, `controller/extension/aw_easy_checkout/validation/before`
+- **Server-side (model, universal):** Event handlers on `model/checkout/order/addOrder/before` and `model/account/customer/addCustomer/before` - throws an exception if universal protection is enabled and no valid OTP session exists
+
+> **Warning:** Universal mode blocks ANY order/registration through model events. 3rd-party forms without OTP JS support will show a raw error instead of the modal. Enable only if standard/easy_checkout interceptors are not enough.
+
+### 6. Viber Notification Settings
 
 On the **"Viber Settings - Notification Settings"** tab, if necessary, you can configure sending notifications to Viber:
 
@@ -101,7 +167,7 @@ On the **"Viber Settings - Notification Settings"** tab, if necessary, you can c
 - **Image in Viber message** - The image that will be displayed in each Viber message (you can specify the store logo. The default image height and width is 400*400px, the image must be square)
 - **Button text in Viber message and Button link** - Parameters that need to be specified if you want to show a button with a link in the Viber message
 
-### 5. Notification Templates
+### 7. Notification Templates
 
 On the **"SMS template to customer"** and **"SMS template to administrator"** tabs, you set up SMS notification texts using text and variables from the **"Variables"** tab.
 
@@ -231,6 +297,19 @@ To load previously saved settings:
 - Transfer settings between test and production store
 - Backup module configuration
 - Quick module setup on a new store
+
+---
+
+## Diagnostics
+
+The **"Diagnostics"** tab provides a health check for the module configuration:
+
+- **Events:** Lists all registered OpenCart events and their status (green = present, red = missing)
+- **Telegram:** Checks if the bot token is valid by calling `getMe` API, verifies chat_id is configured
+- **OTP:** Verifies SMS gateway is configured, OTP templates exist for all languages, registered events are present
+- **Gateway:** Shows current gateway connection status
+
+Use this tab after installation or configuration changes to verify everything is wired up correctly.
 
 ---
 

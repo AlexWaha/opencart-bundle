@@ -1,0 +1,146 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-admin-alert">{{ entry_admin_alert }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_admin_alert" id="input-admin-alert" class="form-control">
+            {% if admin_alert %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-client-alert">{{ entry_client_alert }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_client_alert" id="input-client-alert" class="form-control">
+            {% if client_alert %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-register-alert">{{ entry_register_alert }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_register_alert" id="input-register-alert" class="form-control">
+            {% if register_alert %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-order-alert">{{ entry_order_alert }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_order_alert" id="input-order-alert" class="form-control">
+            {% if order_alert %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-reviews-alert">{{ entry_reviews }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_reviews" id="input-reviews-alert" class="form-control">
+            {% if reviews %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-force"><span data-toggle="tooltip" title="{{ help_force }}">{{ entry_force }}</span></label>
+    <div class="col-sm-10">
+        <select name="sms_notify_force" id="input-force" class="form-control">
+            {% if force %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-translit"><span data-toggle="tooltip" title="{{ help_translit }}">{{ entry_translit }}</span></label>
+    <div class="col-sm-10">
+        <select name="sms_notify_translit" id="input-translit" class="form-control">
+            {% if translit %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+            {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+            {% endif %}
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-payment"><span data-toggle="tooltip" title="{{ help_customer_group }}">{{ entry_customer_group }}</span></label>
+    <div class="col-sm-10">
+        {% include 'extension/module/aw_sms_notify/components/scrollable-checkbox-list.twig' with {
+            items: customer_groups,
+            name: 'sms_notify_customer_group',
+            selected: sms_customer_group,
+            valueKey: 'customer_group_id',
+            labelKey: 'name'
+        } %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-payment"><span data-toggle="tooltip" title="{{ help_payment_alert }}">{{ entry_payment_alert }}</span></label>
+    <div class="col-sm-10">
+        {% include 'extension/module/aw_sms_notify/components/scrollable-checkbox-list.twig' with {
+            items: payments,
+            name: 'sms_notify_payment',
+            selected: sms_payment,
+            valueKey: 'code',
+            labelKey: 'name'
+        } %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-order-status"><span data-toggle="tooltip" title="{{ help_order_status }}">{{ entry_order_status }}</span></label>
+    <div class="col-sm-10">
+        {% include 'extension/module/aw_sms_notify/components/scrollable-checkbox-list.twig' with {
+            items: order_statuses,
+            name: 'sms_notify_order_status',
+            selected: sms_order_status,
+            valueKey: 'order_status_id',
+            labelKey: 'name'
+        } %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-template">{{ entry_sms_template }}</label>
+    <div class="col-sm-10">
+        <textarea name="sms_notify_sms_template" id="input-sms-template" class="form-control" cols="80" rows="5">{{ sms_template ? sms_template : '' }}</textarea>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-custom-client-sms-template">{{ entry_custom_client_sms_template }}</label>
+    <div class="col-sm-10">
+        <textarea name="sms_notify_custom_client_sms_template" id="input-custom-client-sms-template" class="form-control" cols="80" rows="3">{{ custom_client_sms_template ? custom_client_sms_template : '' }}</textarea>
+    </div>
+</div>

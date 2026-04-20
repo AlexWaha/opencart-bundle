@@ -1,0 +1,19 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-admin-template">{{ entry_admin_template }}</label>
+    <div class="col-sm-9">
+        <textarea name="sms_notify_admin_template" id="input-admin-template" class="form-control" rows="3">{{ admin_template ? admin_template : '' }}</textarea>
+        {% if error.admin_template %}
+            <div class="text-danger">{{ error.admin_template }}</div>
+        {% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-reviews-template">{{ entry_reviews_template }}</label>
+    <div class="col-sm-9">
+        <div class="alert-box alert-box-info mb-10">{{ help_reviews }}</div>
+        <textarea name="sms_notify_reviews_template" id="input-reviews-template" class="form-control" rows="3">{{ reviews_template ? reviews_template : '' }}</textarea>
+        {% if error.reviews_template %}
+            <div class="text-danger">{{ error.reviews_template }}</div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,132 @@
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a href="#tab-viber-config" data-toggle="tab">{{ tab_setting }}</a>
+    </li>
+    <li>
+        <a href="#tab-viber-template" data-toggle="tab">{{ tab_viber_template }}</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="tab-viber-config">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-alert">{{ entry_viber_alert }}</label>
+            <div class="col-sm-10">
+                <select name="sms_notify_viber_alert" id="input-viber-alert" class="form-control">
+                    {% if viber_alert %}
+                        <option value="1" selected="selected">{{ text_enabled }}</option>
+                        <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                        <option value="1">{{ text_enabled }}</option>
+                        <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-sender">{{ entry_viber_sender }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_sender" value="{{ viber_sender }}" placeholder="{{ entry_viber_sender }}" id="input-viber-sender" class="form-control"/>
+                {% if error.viber_sender %}
+                    <div class="text-danger">{{ error.viber_sender }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-ttl">{{ entry_viber_ttl }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_ttl" value="{{ viber_ttl }}" placeholder="{{ entry_viber_ttl }}" id="input-viber-ttl" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-caption">{{ entry_viber_caption }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_caption" value="{{ viber_caption }}" placeholder="{{ entry_viber_caption }}" id="input-viber-caption" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-width">{{ entry_width }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_image_width" value="{{ width }}" placeholder="{{ entry_width }}" id="input-viber-width" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-height">{{ entry_height }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_image_height" value="{{ height }}" placeholder="{{ entry_height }}" id="input-viber-height" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{ entry_viber_image }}</label>
+            <div class="col-sm-10">
+                <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail">
+                    <img src="{{ viber_thumb }}" alt="" title="" data-placeholder="{{ placeholder }}"/></a>
+                <input type="hidden" name="sms_notify_viber_image" value="{{ viber_image }}" id="input-viber-image"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-viber-url">{{ entry_viber_url }}</label>
+            <div class="col-sm-10">
+                <input type="text" name="sms_notify_viber_url" value="{{ viber_url }}" placeholder="{{ entry_viber_url }}" id="input-viber-url" class="form-control"/>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="tab-viber-template">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{ entry_client_template }}</label>
+            <div class="col-sm-9">
+                {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                    namePrefix: 'sms_notify_client_viber_template',
+                    value: client_viber_template,
+                    languages: languages,
+                    rows: 2,
+                    errors: error.client_viber_template|default(null)
+                } %}
+            </div>
+        </div>
+
+        {% if payments %}
+            <fieldset>
+                <legend>{{ entry_payment_template }}</legend>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="alert-box alert-box-info">{{ help_sms_payment }}</div>
+                    </div>
+                </div>
+                {% for payment in payments %}
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{ payment.name }}</label>
+                        <div class="col-sm-9">
+                            {% set paymentViberValue = (payment_viber_template and payment_viber_template[payment.code] is defined) ? payment_viber_template[payment.code] : null %}
+                            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                                namePrefix: 'sms_notify_payment_viber_template[' ~ payment.code ~ ']',
+                                value: paymentViberValue,
+                                languages: languages,
+                                rows: 2
+                            } %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </fieldset>
+        {% endif %}
+
+        {% if order_statuses %}
+            <fieldset>
+                <legend>{{ entry_order_status_template }}</legend>
+                {% for order_status in order_statuses %}
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{ order_status.name }}</label>
+                        <div class="col-sm-9">
+                            {% set orderViberValue = (order_viber_template and order_viber_template[order_status.order_status_id] is defined) ? order_viber_template[order_status.order_status_id] : null %}
+                            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                                namePrefix: 'sms_notify_viber_template[' ~ order_status.order_status_id ~ ']',
+                                value: orderViberValue,
+                                languages: languages,
+                                rows: 2
+                            } %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </fieldset>
+        {% endif %}
+    </div>
+</div>

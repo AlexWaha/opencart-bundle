@@ -10,7 +10,7 @@
  * @license GPLv3
  */
 
-use Alexwaha\SmsDispatcher;
+use Alexwaha\SmsNotify\SmsDispatcher;
 
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
@@ -72,13 +72,9 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->params['clearLog'] = $this->url->link('extension/module/' . $this->moduleName . '/clearLog', $this->tokenData['param'], true);
 
-        $this->params['sms_gatenames'] = [];
+        $this->params['telegram_detect_url'] = $this->url->link('extension/module/' . $this->moduleName . '/getTelegramChats', $this->tokenData['param'], true);
 
-        $files = glob(DIR_SYSTEM . 'library/Alexwaha/Gateway/*.php');
-
-        foreach ($files as $file) {
-            $this->params['sms_gatenames'][] = basename($file, '.php');
-        }
+        $this->params['sms_gatenames'] = \Alexwaha\SmsNotify\SmsDispatcher::availableGateways();
 
         $this->params['sms_notify_gatename'] = $this->moduleConfig->get('sms_notify_gatename', '');
         $this->params['sms_notify_to'] = $this->moduleConfig->get('sms_notify_to', '');
@@ -120,6 +116,32 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params['sms_order_status'] = $this->moduleConfig->get('sms_notify_order_status', []);
         $this->params['sms_notify_log'] = $this->moduleConfig->get('sms_notify_log', true);
         $this->params['sms_notify_log_filename'] = $this->moduleConfig->get('sms_notify_log_filename', $this->moduleName);
+
+        // Telegram channel
+        $this->params['tg_enabled'] = (bool) $this->moduleConfig->get('tg_enabled', false);
+        $this->params['tg_bot_token'] = (string) $this->moduleConfig->get('tg_bot_token', '');
+        $this->params['tg_chat_id'] = (string) $this->moduleConfig->get('tg_chat_id', '');
+        $this->params['tg_alert_order'] = (bool) $this->moduleConfig->get('tg_alert_order', false);
+        $this->params['tg_alert_register'] = (bool) $this->moduleConfig->get('tg_alert_register', false);
+        $this->params['tg_alert_review'] = (bool) $this->moduleConfig->get('tg_alert_review', false);
+        $this->params['tg_template_order'] = $this->moduleConfig->get('tg_template_order', []);
+        $this->params['tg_template_register'] = $this->moduleConfig->get('tg_template_register', []);
+        $this->params['tg_template_review'] = $this->moduleConfig->get('tg_template_review', []);
+
+        // OTP confirmation
+        $this->params['otp_enabled'] = (bool) $this->moduleConfig->get('otp_enabled', false);
+        $this->params['otp_protect_register'] = (bool) $this->moduleConfig->get('otp_protect_register', false);
+        $this->params['otp_protect_checkout_std'] = (bool) $this->moduleConfig->get('otp_protect_checkout_std', false);
+        $this->params['otp_protect_checkout_easy'] = (bool) $this->moduleConfig->get('otp_protect_checkout_easy', false);
+        $this->params['otp_protect_universal'] = (bool) $this->moduleConfig->get('otp_protect_universal', false);
+        $this->params['otp_code_ttl'] = (int) $this->moduleConfig->get('otp_code_ttl', 300);
+        $this->params['otp_resend_throttle'] = (int) $this->moduleConfig->get('otp_resend_throttle', 30);
+        $this->params['otp_max_attempts'] = (int) $this->moduleConfig->get('otp_max_attempts', 5);
+        $this->params['otp_max_resends'] = (int) $this->moduleConfig->get('otp_max_resends', 2);
+        $this->params['otp_lockout_duration'] = (int) $this->moduleConfig->get('otp_lockout_duration', 7200);
+        $this->params['otp_template'] = $this->moduleConfig->get('otp_template', []);
+        $this->params['otp_modal_title'] = $this->moduleConfig->get('otp_modal_title', []);
+        $this->params['otp_modal_text'] = $this->moduleConfig->get('otp_modal_text', []);
 
         $this->params['payments'] = [];
 
@@ -205,7 +227,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params['column_left'] = $this->load->controller('common/column_left');
         $this->params['footer'] = $this->load->controller('common/footer');
 
-        $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName, $this->params));
+        $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName . '/main', $this->params));
     }
 
     public function store()
@@ -248,7 +270,44 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
         $this->params['force'] = $this->moduleConfig->get('sms_notify_force', false);
 
-        return $this->awCore->render('extension/module/' . $this->moduleName . '_info', $this->params);
+        return $this->awCore->render('extension/module/' . $this->moduleName . '/order_info', $this->params);
+    }
+
+    /**
+     * Event handler: inject SMS form into admin/view/sale/order_info output.
+     *
+     * Registered on `admin/view/sale/order_info/after`. Replaces the OCMOD patch
+     * that previously inserted the form and extended the AJAX querystring.
+     *
+     * @param string $route
+     * @param array  $data
+     * @param string $output
+     *
+     * @return void
+     */
+    public function injectOrderInfoForm(&$route, &$data, &$output)
+    {
+        $html = $this->load->controller('extension/module/' . $this->moduleName . '/orderInfoForm');
+
+        if (! $html) {
+            return;
+        }
+
+        $marker = '<div class="tab-pane" id="tab-additional">';
+
+        if (strpos($output, $marker) !== false) {
+            $output = str_replace($marker, $html . "\n" . $marker, $output);
+        }
+
+        $ajaxNeedle = "\$('input[name=\\'notify\\']').prop('checked') ? 1 : 0)";
+        $ajaxReplace = "\$('input[name=\\'notify\\']').prop('checked') ? 1 : 0) + '&sendsms=' + (\$('input[name=\\'sendsms\\']').prop('checked') ? 1 : 0) + '&admin_order=' + \$('input[name=\\'admin_order\\']').val()";
+        // NOTE: added .val() relative to legacy OCMOD — original appended a jQuery object to the URL, which stringified to
+        // "[object Object]" and worked only because PHP !empty() on that string still evaluated truthy. Using .val() here
+        // keeps the POST value correct ("1") while preserving catalog/controller logic that only cares about truthiness.
+
+        if (strpos($output, $ajaxNeedle) !== false) {
+            $output = str_replace($ajaxNeedle, $ajaxReplace, $output);
+        }
     }
 
     /**
@@ -292,7 +351,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $viber_image_width = $this->moduleConfig->get('sms_notify_viber_image_width');
             $viber_image_height = $this->moduleConfig->get('sms_notify_viber_image_height');
 
-            if (is_file(DIR_IMAGE . $viber_image_src)) {
+            if ($viber_image_src && is_file(DIR_IMAGE . $viber_image_src)) {
                 $viber_image = $this->model_tool_image->resize(
                     $viber_image_src,
                     $viber_image_width,
@@ -342,6 +401,377 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
+    public function diagnostics(): void
+    {
+        $json = ['ok' => true, 'issues' => [], 'info' => [], 'sections' => []];
+
+        if (! $this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode([
+                'ok'       => false,
+                'sections' => [],
+                'error'    => $this->language->get('error_permission'),
+            ]));
+
+            return;
+        }
+
+        // Events
+        $expectedEvents = [
+            'aw_sms_notify_order_alert'      => 'catalog/model/checkout/order/addOrderHistory/before',
+            'aw_sms_notify_review_alert'     => 'catalog/model/catalog/review/addReview/before',
+            'aw_sms_notify_register_alert'   => 'catalog/model/account/customer/addCustomer/after',
+            'aw_sms_notify_order_info_view'  => 'admin/view/sale/order_info/after',
+        ];
+
+        $rows = $this->db->query(
+            "SELECT `code`, `trigger`, `status` FROM `" . DB_PREFIX . "event` WHERE `code` LIKE 'aw_sms_notify_%'"
+        )->rows;
+
+        $registered = [];
+
+        foreach ($rows as $row) {
+            $registered[$row['code']] = [
+                'trigger' => $row['trigger'],
+                'status'  => (int) ($row['status'] ?? 1),
+            ];
+        }
+
+        $eventDetails = [];
+        $registeredCount = 0;
+
+        foreach ($expectedEvents as $code => $trigger) {
+            $exists = isset($registered[$code]);
+            $enabled = $exists && $registered[$code]['status'] === 1 && $registered[$code]['trigger'] === $trigger;
+
+            if ($exists && $enabled) {
+                $registeredCount++;
+            }
+
+            $eventDetails[] = [
+                'code'    => $code,
+                'trigger' => $trigger,
+                'exists'  => $exists,
+                'enabled' => $enabled,
+            ];
+        }
+
+        $json['sections']['events'] = [
+            'ok'         => $registeredCount === count($expectedEvents),
+            'total'      => count($expectedEvents),
+            'registered' => $registeredCount,
+            'details'    => $eventDetails,
+        ];
+
+        // Required config
+        $missing = [];
+
+        if (empty($this->moduleConfig->get('sms_notify_to', ''))) {
+            $missing[] = ['field' => 'sms_notify_to', 'tab' => 'gate'];
+        }
+
+        if (empty($this->moduleConfig->get('sms_notify_gatename', ''))) {
+            $missing[] = ['field' => 'sms_notify_gatename', 'tab' => 'gate'];
+        }
+
+        if (empty($this->moduleConfig->get('sms_notify_gate_username', ''))) {
+            $missing[] = ['field' => 'sms_notify_gate_username', 'tab' => 'gate'];
+        }
+
+        if (empty($this->moduleConfig->get('sms_notify_from', ''))) {
+            $missing[] = ['field' => 'sms_notify_from', 'tab' => 'gate'];
+        }
+
+        if ((int) $this->moduleConfig->get('sms_notify_admin_alert', 0) === 1
+            && empty(trim((string) $this->moduleConfig->get('sms_notify_admin_template', '')))) {
+            $missing[] = ['field' => 'sms_notify_admin_template', 'tab' => 'template'];
+        }
+
+        if ((int) $this->moduleConfig->get('sms_notify_reviews', 0) === 1
+            && empty(trim((string) $this->moduleConfig->get('sms_notify_reviews_template', '')))) {
+            $missing[] = ['field' => 'sms_notify_reviews_template', 'tab' => 'template'];
+        }
+
+        $json['sections']['config'] = [
+            'ok'      => empty($missing),
+            'missing' => $missing,
+        ];
+
+        // Telegram
+        $tgEnabled = (bool) $this->moduleConfig->get('tg_enabled', false);
+        $tgToken = trim((string) $this->moduleConfig->get('tg_bot_token', ''));
+        $tgChatId = trim((string) $this->moduleConfig->get('tg_chat_id', ''));
+
+        $tgChecks = [];
+
+        if (!$tgEnabled) {
+            $tgChecks[] = [
+                'key'    => 'enabled',
+                'ok'     => true,
+                'status' => $this->language->get('text_diag_tg_disabled'),
+            ];
+
+            $json['sections']['telegram'] = [
+                'ok'      => true,
+                'enabled' => false,
+                'details' => $tgChecks,
+            ];
+        } else {
+            // Bot reachable
+            if ($tgToken === '') {
+                $tgChecks[] = [
+                    'key'    => 'bot_reachable',
+                    'ok'     => false,
+                    'status' => $this->language->get('text_diag_tg_fail'),
+                    'details' => $this->language->get('error_tg_token'),
+                ];
+            } else {
+                $response = \Alexwaha\SmsNotify\Telegram::getMe($tgToken);
+                $reachable = !empty($response['ok']);
+                $username = $response['result']['username'] ?? '';
+
+                $tgChecks[] = [
+                    'key'    => 'bot_reachable',
+                    'ok'     => $reachable,
+                    'status' => $reachable
+                        ? $this->language->get('text_diag_tg_ok')
+                        : $this->language->get('text_diag_tg_fail'),
+                    'details' => $reachable
+                        ? '@' . $username
+                        : (string) ($response['description'] ?? ($response['error'] ?? '')),
+                ];
+            }
+
+            // Chat configured
+            $tgChecks[] = [
+                'key'    => 'chat_configured',
+                'ok'     => $tgChatId !== '',
+                'status' => $tgChatId !== ''
+                    ? $this->language->get('text_diag_tg_chat_ok')
+                    : $this->language->get('text_diag_tg_chat_missing'),
+                'details' => $tgChatId,
+            ];
+
+            // Templates present for enabled events (default language only)
+            $defaultLanguageId = (int) $this->config->get('config_language_id');
+            $alertMap = [
+                'order'    => 'tg_template_order',
+                'register' => 'tg_template_register',
+                'review'   => 'tg_template_review',
+            ];
+
+            $templatesOk = true;
+            $templatesAtLeastOne = false;
+
+            foreach ($alertMap as $eventKey => $tplKey) {
+                if (!(bool) $this->moduleConfig->get('tg_alert_' . $eventKey, false)) {
+                    continue;
+                }
+
+                $templatesAtLeastOne = true;
+                $tplArr = (array) $this->moduleConfig->get($tplKey, []);
+                $tplValue = trim((string) ($tplArr[$defaultLanguageId] ?? ''));
+
+                if ($tplValue === '') {
+                    $templatesOk = false;
+                    break;
+                }
+            }
+
+            $tgChecks[] = [
+                'key'    => 'templates_present',
+                'ok'     => !$templatesAtLeastOne || $templatesOk,
+                'status' => (!$templatesAtLeastOne || $templatesOk)
+                    ? $this->language->get('text_diag_tg_templates_ok')
+                    : $this->language->get('text_diag_tg_templates_missing'),
+            ];
+
+            $sectionOk = true;
+
+            foreach ($tgChecks as $check) {
+                if (empty($check['ok'])) {
+                    $sectionOk = false;
+                    break;
+                }
+            }
+
+            $json['sections']['telegram'] = [
+                'ok'      => $sectionOk,
+                'enabled' => true,
+                'details' => $tgChecks,
+            ];
+        }
+
+        // OTP
+        $otpEnabled = (bool) $this->moduleConfig->get('otp_enabled', false);
+
+        if (!$otpEnabled) {
+            $json['sections']['otp'] = [
+                'ok'      => true,
+                'enabled' => false,
+                'details' => [
+                    [
+                        'key'    => 'disabled',
+                        'ok'     => true,
+                        'status' => $this->language->get('text_diag_otp_disabled'),
+                    ],
+                ],
+            ];
+        } else {
+            $otpChecks = [];
+
+            // OTP events registered
+            $otpExpectedEvents = [
+                'aw_sms_notify_otp_register'       => 'catalog/controller/account/register/before',
+                'aw_sms_notify_otp_checkout_std'   => 'catalog/controller/checkout/guest/save/before',
+                'aw_sms_notify_otp_checkout_easy'  => 'catalog/controller/extension/aw_easy_checkout/validation/before',
+                'aw_sms_notify_otp_addorder'       => 'catalog/model/checkout/order/addOrder/before',
+                'aw_sms_notify_otp_addcustomer'    => 'catalog/model/account/customer/addCustomer/before',
+                'aw_sms_notify_otp_assets'         => 'catalog/view/*/footer/after',
+            ];
+
+            $otpEventDetails = [];
+            $otpRegisteredCount = 0;
+
+            foreach ($otpExpectedEvents as $code => $trigger) {
+                $exists = isset($registered[$code]);
+                $enabled = $exists && $registered[$code]['status'] === 1 && $registered[$code]['trigger'] === $trigger;
+
+                if ($enabled) {
+                    $otpRegisteredCount++;
+                }
+
+                $otpEventDetails[] = [
+                    'code'    => $code,
+                    'trigger' => $trigger,
+                    'exists'  => $exists,
+                    'enabled' => $enabled,
+                ];
+            }
+
+            $otpEventsAllOk = $otpRegisteredCount === count($otpExpectedEvents);
+
+            $otpChecks[] = [
+                'key'     => 'events',
+                'ok'      => $otpEventsAllOk,
+                'status'  => $otpEventsAllOk
+                    ? $this->language->get('text_diag_otp_events_ok')
+                    : $this->language->get('text_diag_otp_events_missing'),
+                'events'  => $otpEventDetails,
+            ];
+
+            // SMS gateway available
+            $gateName = trim((string) $this->moduleConfig->get('sms_notify_gatename', ''));
+            $gateUser = trim((string) $this->moduleConfig->get('sms_notify_gate_username', ''));
+            $gatewayOk = $gateName !== '' && $gateUser !== '';
+
+            $otpChecks[] = [
+                'key'    => 'sms_gateway',
+                'ok'     => $gatewayOk,
+                'status' => $gatewayOk
+                    ? $this->language->get('text_diag_otp_gateway_ok')
+                    : $this->language->get('text_diag_otp_no_gateway'),
+            ];
+
+            // Templates completeness for enabled scopes
+            $defaultLanguageId = (int) $this->config->get('config_language_id');
+            $scopeToggles = [
+                'otp_protect_register',
+                'otp_protect_checkout_std',
+                'otp_protect_checkout_easy',
+                'otp_protect_universal',
+            ];
+
+            $anyScopeActive = false;
+
+            foreach ($scopeToggles as $toggle) {
+                if ((bool) $this->moduleConfig->get($toggle, false)) {
+                    $anyScopeActive = true;
+                    break;
+                }
+            }
+
+            $otpTemplate = (array) $this->moduleConfig->get('otp_template', []);
+            $otpTemplateValue = trim((string) ($otpTemplate[$defaultLanguageId] ?? ''));
+            $templatesOk = !$anyScopeActive || $otpTemplateValue !== '';
+
+            $otpChecks[] = [
+                'key'    => 'templates',
+                'ok'     => $templatesOk,
+                'status' => $templatesOk
+                    ? $this->language->get('text_diag_otp_templates_ok')
+                    : $this->language->get('text_diag_otp_templates_missing'),
+            ];
+
+            // Modal i18n — ok=true with info if falling back to defaults
+            $otpModalTitle = (array) $this->moduleConfig->get('otp_modal_title', []);
+            $otpModalText = (array) $this->moduleConfig->get('otp_modal_text', []);
+            $titleValue = trim((string) ($otpModalTitle[$defaultLanguageId] ?? ''));
+            $textValue = trim((string) ($otpModalText[$defaultLanguageId] ?? ''));
+            $modalCustomized = $titleValue !== '' && $textValue !== '';
+
+            $otpChecks[] = [
+                'key'     => 'modal_i18n',
+                'ok'      => true,
+                'status'  => $modalCustomized
+                    ? $this->language->get('text_diag_otp_modal_custom')
+                    : $this->language->get('text_diag_otp_modal_defaults'),
+            ];
+
+            $sectionOk = true;
+
+            foreach ($otpChecks as $check) {
+                if (empty($check['ok'])) {
+                    $sectionOk = false;
+                    break;
+                }
+            }
+
+            $json['sections']['otp'] = [
+                'ok'      => $sectionOk,
+                'enabled' => true,
+                'details' => $otpChecks,
+            ];
+        }
+
+        // Log file
+        $logFilename = (string) $this->moduleConfig->get('sms_notify_log_filename', $this->moduleName);
+        $logEnabled = (bool) $this->moduleConfig->get('sms_notify_log', true);
+        $logPath = DIR_LOGS . $logFilename . '.log';
+        $logExists = is_file($logPath);
+        $logSize = $logExists ? (int) @filesize($logPath) : 0;
+
+        $json['sections']['log'] = [
+            'enabled'    => $logEnabled,
+            'filename'   => $logFilename . '.log',
+            'exists'     => $logExists,
+            'size'       => $logSize,
+            'size_human' => $this->humanFileSize($logSize),
+        ];
+
+        // Top-level ok flag
+        $json['ok'] = $json['sections']['events']['ok']
+            && $json['sections']['config']['ok']
+            && (!isset($json['sections']['telegram']) || $json['sections']['telegram']['ok'])
+            && (!isset($json['sections']['otp']) || $json['sections']['otp']['ok']);
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    private function humanFileSize(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $i = (int) floor(log($bytes, 1024));
+        $i = min($i, count($units) - 1);
+
+        return round($bytes / (1024 ** $i), 2) . ' ' . $units[$i];
+    }
+
     public function clearLog()
     {
         $json = [];
@@ -359,6 +789,55 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         } else {
             file_put_contents($logFile, '');
             $json['success'] = $this->language->get('text_success_log');
+        }
+
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function getTelegramChats(): void
+    {
+        $this->response->addHeader('Content-Type: application/json');
+
+        $json = ['chats' => []];
+
+        if (! $this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $json['error'] = $this->language->get('error_permission');
+            $this->response->setOutput(json_encode($json));
+
+            return;
+        }
+
+        $this->load->language('extension/module/' . $this->moduleName);
+
+        $token = trim((string) ($this->request->post['tg_bot_token'] ?? ''));
+
+        if ($token === '') {
+            $json['error'] = $this->language->get('error_tg_token');
+            $this->response->setOutput(json_encode($json));
+
+            return;
+        }
+
+        $response = \Alexwaha\SmsNotify\Telegram::getUpdates($token);
+
+        if (empty($response['ok'])) {
+            $json['error'] = (string) (
+                $response['description']
+                ?? $response['error']
+                ?? $this->language->get('error_tg_detect_failed')
+            );
+            $this->response->setOutput(json_encode($json));
+
+            return;
+        }
+
+        $chats = \Alexwaha\SmsNotify\Telegram::extractChats($response);
+
+        if (empty($chats)) {
+            $json['empty'] = true;
+            $json['message'] = $this->language->get('text_tg_no_chats_found');
+        } else {
+            $json['chats'] = $chats;
         }
 
         $this->response->setOutput(json_encode($json));
@@ -491,6 +970,56 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             'extension/module/aw_sms_notify/register',
             1
         );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_order_info_view',
+            'admin/view/sale/order_info/after',
+            'extension/module/aw_sms_notify/injectOrderInfoForm',
+            1
+        );
+
+        // OTP gate events (defense in depth)
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_register',
+            'catalog/controller/account/register/before',
+            'extension/module/aw_sms_notify/enforceOtpRegister',
+            1
+        );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_checkout_std',
+            'catalog/controller/checkout/guest/save/before',
+            'extension/module/aw_sms_notify/enforceOtpCheckoutStd',
+            1
+        );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_checkout_easy',
+            'catalog/controller/extension/aw_easy_checkout/validation/before',
+            'extension/module/aw_sms_notify/enforceOtpCheckoutEasy',
+            1
+        );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_addorder',
+            'catalog/model/checkout/order/addOrder/before',
+            'extension/module/aw_sms_notify/enforceOtpAddOrder',
+            1
+        );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_addcustomer',
+            'catalog/model/account/customer/addCustomer/before',
+            'extension/module/aw_sms_notify/enforceOtpAddCustomer',
+            1
+        );
+
+        $this->{$model}->addEvent(
+            'aw_sms_notify_otp_assets',
+            'catalog/view/*/footer/after',
+            'extension/module/aw_sms_notify/injectOtpAssets',
+            1
+        );
     }
 
     /**
@@ -527,12 +1056,26 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
             $this->model_extension_event->deleteEvent('aw_sms_notify_order_alert');
             $this->model_extension_event->deleteEvent('aw_sms_notify_review_alert');
             $this->model_extension_event->deleteEvent('aw_sms_notify_register_alert');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_order_info_view');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_register');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_checkout_std');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_checkout_easy');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_addorder');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_addcustomer');
+            $this->model_extension_event->deleteEvent('aw_sms_notify_otp_assets');
         } else {
             $this->load->model('setting/event');
 
             $this->model_setting_event->deleteEventByCode('aw_sms_notify_order_alert');
             $this->model_setting_event->deleteEventByCode('aw_sms_notify_review_alert');
             $this->model_setting_event->deleteEventByCode('aw_sms_notify_register_alert');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_order_info_view');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_register');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_checkout_std');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_checkout_easy');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_addorder');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_addcustomer');
+            $this->model_setting_event->deleteEventByCode('aw_sms_notify_otp_assets');
         }
     }
 

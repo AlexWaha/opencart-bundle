@@ -1,0 +1,53 @@
+<div class="form-group required">
+    <label class="col-sm-2 control-label" for="input-template">{{ entry_sms_gatename }}</label>
+    <div class="col-sm-10">
+        <select name="sms_notify_gatename" id="input-template" class="form-control">
+            {% for sms_gatename in sms_gatenames %}
+                {% if (sms_notify_gatename == sms_gatename) %}
+                    <option value="{{ sms_gatename }}" selected="selected">{{ sms_gatename }}</option>
+                {% else %}
+                    <option value="{{ sms_gatename }}">{{ sms_gatename }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        {% if error.gatename %}
+            <div class="text-danger">{{ error.gatename }}</div>
+        {% endif %}
+    </div>
+</div>
+<div class="form-group required">
+    <label class="col-sm-2 control-label" for="input-sms-notify-from"><span data-toggle="tooltip" title="{{ help_sms_from }}">{{ entry_sms_from }}</span></label>
+    <div class="col-sm-10">
+        <input type="text" name="sms_notify_from" value="{{ sms_notify_from }}" placeholder="{{ entry_sms_from }}" id="input-sms-notify-from" class="form-control"/>
+        {% if error.from %}
+            <div class="text-danger">{{ error.from }}</div>
+        {% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-to"><span data-toggle="tooltip" title="{{ help_phone }}">{{ entry_sms_to }}</span></label>
+    <div class="col-sm-10">
+        <input type="text" name="sms_notify_to" value="{{ sms_notify_to }}" placeholder="{{ entry_sms_to }}" id="input-sms-notify-to" class="form-control"/>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-copy"><span data-toggle="tooltip" title="{{ help_sms_copy }}">{{ entry_sms_copy }}</span></label>
+    <div class="col-sm-10">
+        <textarea name="sms_notify_copy" rows="5" placeholder="{{ entry_sms_copy }}" id="input-sms-notify-copy" class="form-control">{{ sms_notify_copy }}</textarea>
+    </div>
+</div>
+<div class="form-group required">
+    <label class="col-sm-2 control-label" for="input-sms-gate-username">{{ entry_sms_gate_username }}</label>
+    <div class="col-sm-10">
+        <input type="text" name="sms_notify_gate_username" value="{{ sms_notify_gate_username }}" placeholder="{{ entry_sms_gate_username }}" id="input-sms-gate-username" class="form-control"/>
+        {% if error.username %}
+            <div class="text-danger">{{ error.username }}</div>
+        {% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-sms-notify-gate-password">{{ entry_sms_gate_password }}</label>
+    <div class="col-sm-10">
+        <input type="text" name="sms_notify_gate_password" value="{{ sms_notify_gate_password }}" placeholder="{{ entry_sms_gate_password }}" id="input-sms-notify-gate-password" class="form-control"/>
+    </div>
+</div>

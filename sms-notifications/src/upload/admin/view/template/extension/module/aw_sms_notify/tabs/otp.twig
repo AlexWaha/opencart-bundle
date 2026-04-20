@@ -1,0 +1,140 @@
+<div class="alert-box alert-box-info mb-15">
+    <div class="mb-10"><i class="fa fa-info-circle"></i> <strong>{{ entry_otp_enabled }}</strong></div>
+    <div class="mb-10">{{ text_otp_help_universal|raw }}</div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-otp-enabled">{{ entry_otp_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="otp_enabled" value="0"/>
+            <input type="checkbox" name="otp_enabled" id="input-otp-enabled" value="1" {% if otp_enabled %}checked{% endif %}/>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<fieldset>
+    <legend>{{ entry_otp_protect_register }}</legend>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-protect-register">{{ entry_otp_protect_register }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="otp_protect_register" value="0"/>
+                <input type="checkbox" name="otp_protect_register" id="input-otp-protect-register" value="1" {% if otp_protect_register %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-protect-checkout-std">{{ entry_otp_protect_checkout_std }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="otp_protect_checkout_std" value="0"/>
+                <input type="checkbox" name="otp_protect_checkout_std" id="input-otp-protect-checkout-std" value="1" {% if otp_protect_checkout_std %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-protect-checkout-easy">{{ entry_otp_protect_checkout_easy }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="otp_protect_checkout_easy" value="0"/>
+                <input type="checkbox" name="otp_protect_checkout_easy" id="input-otp-protect-checkout-easy" value="1" {% if otp_protect_checkout_easy %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-protect-universal">{{ entry_otp_protect_universal }}</label>
+        <div class="col-sm-9">
+            <label class="checkbox-switch">
+                <input type="hidden" name="otp_protect_universal" value="0"/>
+                <input type="checkbox" name="otp_protect_universal" id="input-otp-protect-universal" value="1" {% if otp_protect_universal %}checked{% endif %}/>
+                <span class="checkbox-switch-slider"></span>
+            </label>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>{{ tab_setting }}</legend>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-code-ttl">{{ entry_otp_ttl }}</label>
+        <div class="col-sm-9">
+            <input type="number" name="otp_code_ttl" value="{{ otp_code_ttl }}" id="input-otp-code-ttl" class="form-control" min="30" max="3600"/>
+            <p class="help-block">{{ help_otp_ttl }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-resend-throttle">{{ entry_otp_throttle }}</label>
+        <div class="col-sm-9">
+            <input type="number" name="otp_resend_throttle" value="{{ otp_resend_throttle }}" id="input-otp-resend-throttle" class="form-control" min="0" max="600"/>
+            <p class="help-block">{{ help_otp_throttle }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-max-attempts">{{ entry_otp_max_attempts }}</label>
+        <div class="col-sm-9">
+            <input type="number" name="otp_max_attempts" value="{{ otp_max_attempts }}" id="input-otp-max-attempts" class="form-control" min="1" max="20"/>
+            <p class="help-block">{{ help_otp_max_attempts }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-max-resends">{{ entry_otp_max_resends }}</label>
+        <div class="col-sm-9">
+            <input type="number" name="otp_max_resends" value="{{ otp_max_resends }}" id="input-otp-max-resends" class="form-control" min="0" max="10"/>
+            <p class="help-block">{{ help_otp_max_resends }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="input-otp-lockout-duration">{{ entry_otp_lockout_duration }}</label>
+        <div class="col-sm-9">
+            <input type="number" name="otp_lockout_duration" value="{{ otp_lockout_duration }}" id="input-otp-lockout-duration" class="form-control" min="60" max="86400"/>
+            <p class="help-block">{{ help_otp_lockout_duration }}</p>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>{{ tab_template }}</legend>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_otp_template }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'otp_template',
+                value: otp_template,
+                languages: languages,
+                rows: 3,
+                idPrefix: 'input-otp-template',
+                help: help_otp_template
+            } %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_otp_modal_title }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'otp_modal_title',
+                value: otp_modal_title,
+                languages: languages,
+                rows: 2,
+                idPrefix: 'input-otp-modal-title'
+            } %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_otp_modal_text }}</label>
+        <div class="col-sm-9">
+            {% include 'extension/module/aw_sms_notify/components/textarea-multilang.twig' with {
+                namePrefix: 'otp_modal_text',
+                value: otp_modal_text,
+                languages: languages,
+                rows: 3,
+                idPrefix: 'input-otp-modal-text',
+                help: help_otp_modal_text
+            } %}
+        </div>
+    </div>
+</fieldset>
