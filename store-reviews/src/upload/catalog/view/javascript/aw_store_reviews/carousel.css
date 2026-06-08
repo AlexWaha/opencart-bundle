@@ -1,0 +1,67 @@
+.aw-rc-swiper {
+    padding: 0 50px 20px;
+    position: relative;
+}
+
+.aw-rc-swiper .swiper-slide {
+    text-align: center;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.aw-rc-swiper .swiper-button-prev,
+.aw-rc-swiper .swiper-button-next {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #555;
+    color: #fff;
+}
+
+.aw-rc-swiper .swiper-button-prev::after,
+.aw-rc-swiper .swiper-button-next::after {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.aw-rc-swiper .swiper-button-prev:hover,
+.aw-rc-swiper .swiper-button-next:hover {
+    background: #333;
+}
+
+.aw-rc-swiper .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    opacity: 1;
+}
+
+.aw-rc-swiper .swiper-pagination-bullet-active {
+    background: #333;
+}
+
+.aw-rc-footer {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.aw-rc-footer a {
+    color: #117dc2;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.aw-rc-footer a:hover {
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .aw-rc-swiper {
+        padding: 0 0 50px;
+    }
+
+    .aw-rc-swiper .swiper-button-prev,
+    .aw-rc-swiper .swiper-button-next {
+        display: none;
+    }
+}

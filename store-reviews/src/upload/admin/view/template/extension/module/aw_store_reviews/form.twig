@@ -1,0 +1,112 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-review" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ button_save }}
+                </button>
+                <a href="{{ cancel }}" class="btn btn-default"><i class="fa fa-reply"></i> {{ button_cancel }}</a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-pencil"></i>
+                    {% if review_id %}{{ text_edit }}{% else %}{{ text_add }}{% endif %}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-review" class="form-horizontal">
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label">{{ entry_author }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="author" value="{{ author }}" class="form-control" maxlength="64" />
+                            {% if error.author %}
+                                <div class="text-danger">{{ error.author }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_city }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="city" value="{{ city }}" class="form-control" maxlength="64" />
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label">{{ entry_rating }}</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" name="rating" id="input-rating" value="{{ rating ?? 5 }}">
+                            <div id="star-rating" style="font-size:24px; cursor:pointer;">
+                                {% for i in 1..5 %}
+                                <i class="fa fa-star{% if i > (rating ?? 5) %}-o{% endif %} star-pick" data-value="{{ i }}" style="color:#f90; margin-right:4px;"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label">{{ entry_text }}</label>
+                        <div class="col-sm-10">
+                            <textarea name="text" rows="6" class="form-control">{{ text }}</textarea>
+                            {% if error.text %}
+                                <div class="text-danger">{{ error.text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control">
+                                <option value="1" {% if status == 1 %}selected{% endif %}>{{ text_enabled }}</option>
+                                <option value="0" {% if status == 0 %}selected{% endif %}>{{ text_disabled }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$('#star-rating').on('click', '.star-pick', function() {
+    var val = $(this).data('value');
+    $('#input-rating').val(val);
+    $('#star-rating .star-pick').each(function() {
+        var v = $(this).data('value');
+        $(this).removeClass('fa-star fa-star-o').addClass(v <= val ? 'fa-star' : 'fa-star-o');
+    });
+}).on('mouseenter', '.star-pick', function() {
+    var val = $(this).data('value');
+    $('#star-rating .star-pick').each(function() {
+        var v = $(this).data('value');
+        $(this).removeClass('fa-star fa-star-o').addClass(v <= val ? 'fa-star' : 'fa-star-o');
+    });
+}).on('mouseleave', function() {
+    var val = parseInt($('#input-rating').val());
+    $('#star-rating .star-pick').each(function() {
+        var v = $(this).data('value');
+        $(this).removeClass('fa-star fa-star-o').addClass(v <= val ? 'fa-star' : 'fa-star-o');
+    });
+});
+</script>
+{{ footer }}

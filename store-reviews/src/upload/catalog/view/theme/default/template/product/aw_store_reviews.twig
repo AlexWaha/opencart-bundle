@@ -1,0 +1,101 @@
+{{ header }}
+<div id="product-category" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>{{ heading_title }}</h1>
+
+      <form class="form-horizontal" id="form-review">
+
+        {% if reviews %}
+          {% for review in reviews %}
+          <div style="border-bottom:1px solid #eee; padding:15px 0;">
+            <div style="margin-bottom:5px;">
+              <strong>{{ review.author }}</strong>{% if review.city %}, {{ review.city }}{% endif %}
+              <span class="pull-right text-muted" style="font-size:13px;">{{ review.date_added }}</span>
+            </div>
+            <div style="margin-bottom:8px; color:#f90;">
+              {% for i in 1..5 %}{% if i <= review.rating %}<i class="fa fa-star"></i>{% else %}<i class="fa fa-star-o"></i>{% endif %}{% endfor %}
+            </div>
+            <div>{{ review.text }}</div>
+          </div>
+          {% endfor %}
+
+          <div class="text-center" style="margin:20px 0;">{{ pagination }}</div>
+        {% else %}
+          <p class="text-muted" style="padding:20px 0;">{{ text_empty }}</p>
+        {% endif %}
+
+        <h2>{{ text_write_review }}</h2>
+        <div class="form-group required">
+          <div class="col-sm-12">
+            <label for="input-name">{{ entry_author }}</label>
+            <input type="text" name="name" value="" id="input-name" class="form-control" />
+          </div>
+        </div>
+        <div class="form-group required">
+          <div class="col-sm-12">
+            <label for="input-review">{{ entry_text }}</label>
+            <textarea name="text" rows="5" id="input-review" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="form-group required">
+          <div class="col-sm-12">
+            <label>{{ entry_rating }}</label>
+            &nbsp;&nbsp;&nbsp; {{ text_bad }}&nbsp;
+            <input type="radio" name="rating" value="1" />
+            &nbsp;
+            <input type="radio" name="rating" value="2" />
+            &nbsp;
+            <input type="radio" name="rating" value="3" />
+            &nbsp;
+            <input type="radio" name="rating" value="4" />
+            &nbsp;
+            <input type="radio" name="rating" value="5" />
+            &nbsp;{{ text_good }}
+          </div>
+        </div>
+        <div class="buttons clearfix">
+          <div class="pull-right">
+            <button type="button" id="button-review" data-loading-text="{{ text_loading }}" class="btn btn-primary">{{ button_submit }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+$('#button-review').on('click', function () {
+    $.ajax({
+        url: '{{ write_url }}',
+        type: 'post',
+        dataType: 'json',
+        data: $("#form-review").serialize(),
+        beforeSend: function () {
+            $('#button-review').button('loading');
+        },
+        complete: function () {
+            $('#button-review').button('reset');
+        },
+        success: function (json) {
+            $('.alert-success, .alert-danger').remove();
+            if (json['error']) {
+                $('#form-review h2').before('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+            }
+            if (json['success']) {
+                $('#form-review h2').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
+                $('input[name=\'name\']').val('');
+                $('textarea[name=\'text\']').val('');
+                $('input[name=\'rating\']:checked').prop('checked', false);
+            }
+        }
+    });
+});
+//--></script>
+
+{{ footer }}

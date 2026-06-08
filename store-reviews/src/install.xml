@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>alexwaha.com - Store Reviews</name>
+	<version>1.0.2</version>
+	<author>AlexWaha</author>
+	<code>aw_store_reviews_menu</code>
+	<description>Adds Reviews link to Catalog menu in admin panel</description>
+
+	<file path="admin/controller/common/column_left.php">
+		<operation>
+			<search><![CDATA[if ($catalog) {]]></search>
+			<add position="before"><![CDATA[
+			if ($this->user->hasPermission('access', 'extension/module/aw_store_reviews')) {
+				$catalog[] = array(
+					'name'	   => 'Reviews',
+					'href'     => $this->url->link('extension/module/aw_store_reviews', 'user_token=' . $this->session->data['user_token'], true),
+					'children' => array()
+				);
+			}
+		]]></add>
+		</operation>
+	</file>
+</modification>

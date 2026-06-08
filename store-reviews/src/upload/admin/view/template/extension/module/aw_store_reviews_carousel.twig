@@ -1,0 +1,132 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-module" class="btn btn-primary"><i class="fa fa-save"></i> {{ button_save }}</button>
+                <a href="{{ cancel }}" class="btn btn-default"><i class="fa fa-reply"></i> {{ button_cancel }}</a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error.warning }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3></div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label">{{ entry_name }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" value="{{ name }}" class="form-control" />
+                            {% if error.name %}<div class="text-danger">{{ error.name }}</div>{% endif %}
+                        </div>
+                    </div>
+                    {% for language in languages %}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_title }} <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="title[{{ language.language_id }}]" value="{{ title[language.language_id] ?? '' }}" class="form-control" />
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_reviews }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="autocomplete_review" value="" placeholder="{{ entry_review_search }}" id="input-review" class="form-control" />
+                            <div id="review-list" class="well well-sm" style="height: 200px; overflow: auto; margin-top:5px;">
+                                {% for review in reviews %}
+                                <div id="review-list{{ review.review_id }}">
+                                    <i class="fa fa-minus-circle text-danger remove-review" style="cursor:pointer;"></i> {{ review.name }}
+                                    <i class="fa fa-hand-grab-o handle" style="cursor:grab;float:right;"></i>
+                                    <input type="hidden" name="reviews[]" value="{{ review.review_id }}" />
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <p class="help-block">{{ entry_reviews_help }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_limit }}</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="limit" value="{{ limit }}" class="form-control" min="1" max="50" style="width:120px;" />
+                            <p class="help-block">{{ entry_limit_help }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_per_view }}</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="per_view" value="{{ per_view }}" class="form-control" min="1" max="6" style="width:120px;" />
+                            <p class="help-block">{{ entry_per_view_help }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control">
+                                <option value="1" {{ status ? 'selected' : '' }}>{{ text_enabled }}</option>
+                                <option value="0" {{ not status ? 'selected' : '' }}>{{ text_disabled }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+    new Sortable(document.getElementById('review-list'), {
+        handle: '.handle',
+        animation: 150,
+        chosenClass: 'handle-active'
+    });
+});
+
+$('input[name=\'autocomplete_review\']').autocomplete({
+    source: function(request, response) {
+        $.ajax({
+            url: 'index.php?route=extension/module/aw_store_reviews_carousel/autocomplete&{{ token_param }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return {
+                        label: item['name'],
+                        value: item['review_id']
+                    }
+                }));
+            }
+        });
+    },
+    select: function(item) {
+        $('input[name=\'autocomplete_review\']').val('');
+
+        $('#review-list' + item['value']).remove();
+
+        $('#review-list').append(
+            '<div id="review-list' + item.value + '">' +
+            '<i class="fa fa-minus-circle text-danger remove-review" style="cursor:pointer;"></i> ' + item.label +
+            ' <i class="fa fa-hand-grab-o handle" style="cursor:grab;float:right;"></i>' +
+            '<input type="hidden" name="reviews[]" value="' + item.value + '" />' +
+            '</div>'
+        );
+        return false;
+    },
+});
+
+$(document).on('click', '.remove-review', function () {
+    $(this).parent().remove();
+});
+</script>
+{{ footer }}
