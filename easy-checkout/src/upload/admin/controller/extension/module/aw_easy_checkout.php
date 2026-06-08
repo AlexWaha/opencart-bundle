@@ -1031,10 +1031,10 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
                         if ($seoUrlExists) {
                             $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url_exists');
                         }
-                    }
 
-                    if ((utf8_strlen($seo_url) < 1) || (utf8_strlen($seo_url) > 255)) {
-                        $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url');
+                        if (utf8_strlen($seo_url) > 255) {
+                            $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url');
+                        }
                     }
                 }
             }
