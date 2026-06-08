@@ -3,8 +3,7 @@
     <name>alexwaha.com - Easy Checkout</name>
     <code>aw_easy_checkout</code>
     <version>1.0</version>
-    <version>1.0</version>
-    <author>alexwaha</author>
+    <author>AlexWaha</author>
     <link>https://alexwaha.com</link>
     <file path="catalog/controller/startup/startup.php">
         <operation error="skip">
