@@ -1,0 +1,429 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-aw-db-indexes" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-database"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <div id="aw-flash"></div>
+                <form action="{{ action }}" method="post" id="form-aw-db-indexes" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'general', label: tab_general },
+                                { id: 'analysis', label: tab_analysis },
+                                { id: 'applied', label: tab_applied },
+                                { id: 'support', label: tab_support }
+                            ] %}
+                            {% set active_tab = 'general' %}
+
+                            {% include 'extension/module/aw_db_indexes/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_db_indexes/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  (function () {
+    var AW = {
+      urls: {
+        analyze: 'index.php?route=extension/module/aw_db_indexes/analyze&{{ token_param }}',
+        apply: 'index.php?route=extension/module/aw_db_indexes/applyFixes&{{ token_param }}',
+        applied: 'index.php?route=extension/module/aw_db_indexes/listApplied&{{ token_param }}',
+        rollback: 'index.php?route=extension/module/aw_db_indexes/rollback&{{ token_param }}'
+      },
+      lang: {
+        recommendations: '{{ text_recommendations }}',
+        noRecommendations: '{{ text_no_recommendations }}',
+        diagnostics: '{{ text_diagnostics }}',
+        colTable: '{{ text_col_table }}',
+        colColumn: '{{ text_col_column }}',
+        colIndex: '{{ text_col_index }}',
+        colRows: '{{ text_col_rows }}',
+        colConfidence: '{{ text_col_confidence }}',
+        colCurrent: '{{ text_col_current_indexes }}',
+        colSql: '{{ text_col_sql }}',
+        colAction: '{{ text_col_action }}',
+        confCurated: '{{ text_confidence_curated }}',
+        confRecommended: '{{ text_confidence_recommended }}',
+        noPk: '{{ text_no_pk }}',
+        noPkHelp: '{{ text_no_pk_help }}',
+        myisam: '{{ text_myisam }}',
+        myisamHelp: '{{ text_myisam_help }}',
+        fragmented: '{{ text_fragmented }}',
+        fragmentedHelp: '{{ text_fragmented_help }}',
+        none: '{{ text_none }}',
+        summary: '{{ text_summary }}',
+        applySelected: '{{ button_apply_selected }}',
+        applyAll: '{{ button_apply_all }}',
+        convert: '{{ button_convert }}',
+        convertAll: '{{ button_convert_all }}',
+        optimize: '{{ button_optimize }}',
+        optimizeAll: '{{ button_optimize_all }}',
+        drop: '{{ button_drop }}',
+        noApplied: '{{ text_no_applied }}',
+        processing: '{{ text_processing }}',
+        confirmConvert: '{{ text_confirm_convert }}',
+        confirmConvertAll: '{{ text_confirm_convert_all }}',
+        confirmOptimize: '{{ text_confirm_optimize }}',
+        confirmOptimizeAll: '{{ text_confirm_optimize_all }}',
+        confirmRollback: '{{ text_confirm_rollback }}',
+        confirmDrop: '{{ text_confirm_drop }}'
+      }
+    };
+
+    function esc (value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function format (template) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      var i = 0;
+      return template.replace(/%d/g, function () { return args[i++]; });
+    }
+
+    function confidenceBadge (confidence) {
+      if (confidence === 'curated') {
+        return '<span class="badge-success">' + esc(AW.lang.confCurated) + '</span>';
+      }
+      return '<span class="badge-primary">' + esc(AW.lang.confRecommended) + '</span>';
+    }
+
+    function renderRecommendations (recs) {
+      var box = document.getElementById('aw-recommendations');
+
+      if (!recs || !recs.length) {
+        box.innerHTML = '<h4>' + esc(AW.lang.recommendations) + '</h4>' +
+          '<div class="alert alert-success">' + esc(AW.lang.noRecommendations) + '</div>';
+        return;
+      }
+
+      var html = '<h4>' + esc(AW.lang.recommendations) + '</h4>';
+      html += '<div class="mb-10">' +
+        '<button type="button" class="btn btn-success" id="aw-apply-selected"><i class="fa fa-bolt"></i> ' + esc(AW.lang.applySelected) + '</button> ' +
+        '<button type="button" class="btn btn-default" id="aw-apply-all"><i class="fa fa-bolt"></i> ' + esc(AW.lang.applyAll) + '</button>' +
+        '</div>';
+      html += '<table class="table table-bordered table-hover"><thead><tr>' +
+        '<th style="width:1px;"><input type="checkbox" id="aw-check-all"></th>' +
+        '<th>' + esc(AW.lang.colTable) + '</th>' +
+        '<th>' + esc(AW.lang.colColumn) + '</th>' +
+        '<th>' + esc(AW.lang.colIndex) + '</th>' +
+        '<th class="text-right">' + esc(AW.lang.colRows) + '</th>' +
+        '<th class="text-center">' + esc(AW.lang.colCurrent) + '</th>' +
+        '<th>' + esc(AW.lang.colConfidence) + '</th>' +
+        '<th>' + esc(AW.lang.colSql) + '</th>' +
+        '</tr></thead><tbody>';
+
+      recs.forEach(function (rec) {
+        html += '<tr>' +
+          '<td><input type="checkbox" class="aw-rec" data-table="' + esc(rec.table) + '" data-column="' + esc(rec.column) + '"></td>' +
+          '<td>' + esc(rec.table) + '</td>' +
+          '<td>' + esc(rec.column) + '</td>' +
+          '<td><span class="badge-code">' + esc(rec.index_name) + '</span></td>' +
+          '<td class="text-right">' + esc(rec.rows) + '</td>' +
+          '<td class="text-center">' + esc(rec.current_indexes) + '</td>' +
+          '<td>' + confidenceBadge(rec.confidence) + '</td>' +
+          '<td><code>' + esc(rec.sql) + '</code></td>' +
+          '</tr>';
+      });
+
+      html += '</tbody></table>';
+      box.innerHTML = html;
+    }
+
+    function renderDiagnostics (diag) {
+      var box = document.getElementById('aw-diagnostics');
+      diag = diag || {};
+
+      var html = '<h4>' + esc(AW.lang.diagnostics) + '</h4>';
+
+      // No primary key
+      html += '<div class="panel panel-default"><div class="panel-heading"><b>' + esc(AW.lang.noPk) + '</b></div><div class="panel-body">';
+      html += '<p class="form-text">' + esc(AW.lang.noPkHelp) + '</p>';
+      if (diag.no_pk && diag.no_pk.length) {
+        html += '<ul>';
+        diag.no_pk.forEach(function (t) { html += '<li><code>' + esc(t) + '</code></li>'; });
+        html += '</ul>';
+      } else {
+        html += '<span class="text-muted">' + esc(AW.lang.none) + '</span>';
+      }
+      html += '</div></div>';
+
+      // MyISAM
+      html += '<div class="panel panel-default"><div class="panel-heading"><b>' + esc(AW.lang.myisam) + '</b></div><div class="panel-body">';
+      html += '<p class="form-text">' + esc(AW.lang.myisamHelp) + '</p>';
+      if (diag.myisam && diag.myisam.length) {
+        html += '<div class="mb-10"><button type="button" class="btn btn-second" id="aw-convert-all"><i class="fa fa-bolt"></i> ' + esc(AW.lang.convertAll) + ' (' + diag.myisam.length + ')</button></div>';
+        html += '<table class="table table-bordered"><tbody>';
+        diag.myisam.forEach(function (row) {
+          html += '<tr><td><code>' + esc(row.table) + '</code></td>' +
+            '<td class="text-right"><button type="button" class="btn btn-sm btn-second aw-convert" data-table="' + esc(row.table) + '">' + esc(AW.lang.convert) + '</button></td></tr>';
+        });
+        html += '</tbody></table>';
+      } else {
+        html += '<span class="text-muted">' + esc(AW.lang.none) + '</span>';
+      }
+      html += '</div></div>';
+
+      // Fragmented
+      html += '<div class="panel panel-default"><div class="panel-heading"><b>' + esc(AW.lang.fragmented) + '</b></div><div class="panel-body">';
+      html += '<p class="form-text">' + esc(AW.lang.fragmentedHelp) + '</p>';
+      if (diag.fragmented && diag.fragmented.length) {
+        html += '<div class="mb-10"><button type="button" class="btn btn-second" id="aw-optimize-all"><i class="fa fa-bolt"></i> ' + esc(AW.lang.optimizeAll) + ' (' + diag.fragmented.length + ')</button></div>';
+        html += '<table class="table table-bordered"><tbody>';
+        diag.fragmented.forEach(function (row) {
+          html += '<tr><td><code>' + esc(row.table) + '</code></td>' +
+            '<td>' + esc(row.data_free_mb) + ' MB</td>' +
+            '<td class="text-right"><button type="button" class="btn btn-sm btn-second aw-optimize" data-table="' + esc(row.table) + '">' + esc(AW.lang.optimize) + '</button></td></tr>';
+        });
+        html += '</tbody></table>';
+      } else {
+        html += '<span class="text-muted">' + esc(AW.lang.none) + '</span>';
+      }
+      html += '</div></div>';
+
+      box.innerHTML = html;
+    }
+
+    function spinner (show) {
+      var el = document.getElementById('aw-analyze-spinner');
+      if (el) { el.className = show ? '' : 'hidden'; }
+    }
+
+    function flash (message) {
+      var box = document.getElementById('aw-flash');
+      if (!box || !message) { return; }
+      box.innerHTML = '<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + esc(message) + '</div>';
+      window.setTimeout(function () { box.innerHTML = ''; }, 4000);
+    }
+
+    function analyze () {
+      spinner(true);
+      $.ajax({
+        url: AW.urls.analyze,
+        type: 'get',
+        dataType: 'json',
+        complete: function () { spinner(false); },
+        success: function (json) {
+          if (json.error) { alert(json.error); return; }
+
+          AW.last = json;
+
+          var summary = document.getElementById('aw-analyze-summary');
+          var s = json.summary || {};
+          summary.className = 'alert alert-info';
+          summary.textContent = format(AW.lang.summary, s.tables_scanned || 0, s.recommendations || 0, s.no_pk || 0, s.myisam || 0, s.fragmented || 0);
+
+          renderRecommendations(json.recommendations);
+          renderDiagnostics(json.diagnostics);
+        }
+      });
+    }
+
+    function applyActions (actions) {
+      if (!actions.length) { return; }
+
+      $.ajax({
+        url: AW.urls.apply,
+        type: 'post',
+        data: { actions: actions },
+        dataType: 'json',
+        success: function (json) {
+          if (json.error) { alert(json.error); return; }
+          flash(json.success);
+          analyze();
+          loadApplied();
+        }
+      });
+    }
+
+    function processSequential (tables, type) {
+      if (!tables.length) { return; }
+
+      var total = tables.length;
+      var i = 0;
+      var lastMsg = '';
+
+      function step () {
+        if (i >= total) {
+          flash(lastMsg);
+          analyze();
+          loadApplied();
+          return;
+        }
+
+        flash(format(AW.lang.processing, i + 1, total));
+
+        $.ajax({
+          url: AW.urls.apply,
+          type: 'post',
+          data: { actions: [{ type: type, table: tables[i] }] },
+          dataType: 'json',
+          success: function (json) { if (json && json.success) { lastMsg = json.success; } },
+          complete: function () { i++; step(); }
+        });
+      }
+
+      step();
+    }
+
+    function collectSelected () {
+      var actions = [];
+      $('.aw-rec:checked').each(function () {
+        actions.push({ type: 'index', table: $(this).data('table'), column: $(this).data('column') });
+      });
+      return actions;
+    }
+
+    function collectAll () {
+      var actions = [];
+      $('.aw-rec').each(function () {
+        actions.push({ type: 'index', table: $(this).data('table'), column: $(this).data('column') });
+      });
+      return actions;
+    }
+
+    function loadApplied () {
+      $.ajax({
+        url: AW.urls.applied,
+        type: 'get',
+        dataType: 'json',
+        success: function (json) {
+          var box = document.getElementById('aw-applied-list');
+          if (!box) { return; }
+
+          if (json.error) { box.innerHTML = '<div class="alert alert-danger">' + esc(json.error) + '</div>'; return; }
+
+          var list = json.indexes || [];
+          if (!list.length) {
+            box.innerHTML = '<div class="alert alert-info">' + esc(AW.lang.noApplied) + '</div>';
+            return;
+          }
+
+          var html = '<table class="table table-bordered"><thead><tr>' +
+            '<th>' + esc(AW.lang.colTable) + '</th><th>' + esc(AW.lang.colIndex) + '</th><th>' + esc(AW.lang.colColumn) + '</th><th class="text-right">' + esc(AW.lang.colAction) + '</th>' +
+            '</tr></thead><tbody>';
+          list.forEach(function (row) {
+            html += '<tr><td><code>' + esc(row.table) + '</code></td>' +
+              '<td><span class="badge-code">' + esc(row.index) + '</span></td>' +
+              '<td>' + esc((row.columns || []).join(', ')) + '</td>' +
+              '<td class="text-right"><button type="button" class="btn btn-sm btn-danger aw-drop" data-table="' + esc(row.table) + '" data-index="' + esc(row.index) + '">' + esc(AW.lang.drop) + '</button></td></tr>';
+          });
+          html += '</tbody></table>';
+          box.innerHTML = html;
+        }
+      });
+    }
+
+    $(document).on('click', '#aw-analyze-btn', function () { analyze(); });
+    $(document).on('click', '#aw-apply-selected', function () { applyActions(collectSelected()); });
+    $(document).on('click', '#aw-apply-all', function () { applyActions(collectAll()); });
+    $(document).on('change', '#aw-check-all', function () { $('.aw-rec').prop('checked', this.checked); });
+
+    $(document).on('click', '.aw-convert', function () {
+      if (!confirm(AW.lang.confirmConvert)) { return; }
+      applyActions([{ type: 'engine', table: $(this).data('table') }]);
+    });
+
+    $(document).on('click', '.aw-optimize', function () {
+      if (!confirm(AW.lang.confirmOptimize)) { return; }
+      applyActions([{ type: 'optimize', table: $(this).data('table') }]);
+    });
+
+    $(document).on('click', '#aw-convert-all', function () {
+      var diag = AW.last && AW.last.diagnostics;
+      var tables = (diag && diag.myisam ? diag.myisam : []).map(function (r) { return r.table; });
+      if (!tables.length) { return; }
+      if (!confirm(format(AW.lang.confirmConvertAll, tables.length))) { return; }
+      processSequential(tables, 'engine');
+    });
+
+    $(document).on('click', '#aw-optimize-all', function () {
+      var diag = AW.last && AW.last.diagnostics;
+      var tables = (diag && diag.fragmented ? diag.fragmented : []).map(function (r) { return r.table; });
+      if (!tables.length) { return; }
+      if (!confirm(format(AW.lang.confirmOptimizeAll, tables.length))) { return; }
+      processSequential(tables, 'optimize');
+    });
+
+    $(document).on('click', '#aw-rollback-all-btn', function () {
+      if (!confirm(AW.lang.confirmRollback)) { return; }
+      $.ajax({
+        url: AW.urls.rollback,
+        type: 'post',
+        dataType: 'json',
+        success: function (json) {
+          if (json.error) { alert(json.error); return; }
+          flash(json.success);
+          loadApplied();
+        }
+      });
+    });
+
+    $(document).on('click', '.aw-drop', function () {
+      if (!confirm(AW.lang.confirmDrop)) { return; }
+      var table = $(this).data('table');
+      var index = $(this).data('index');
+      $.ajax({
+        url: AW.urls.rollback,
+        type: 'post',
+        data: { table: table, index: index },
+        dataType: 'json',
+        success: function (json) {
+          if (json.error) { alert(json.error); return; }
+          flash(json.success);
+          loadApplied();
+        }
+      });
+    });
+
+    $(document).on('click', 'a[href="#v-tab_applied"]', function () { loadApplied(); });
+  })();
+</script>
+{{ footer }}

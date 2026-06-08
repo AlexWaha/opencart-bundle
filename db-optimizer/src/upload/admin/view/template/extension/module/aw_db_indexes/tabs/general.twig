@@ -1,0 +1,32 @@
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_status }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="status">
+        <input type="hidden" name="status" value="0" id="status-off" {% if not status %}checked="checked"{% endif %} />
+        <input type="checkbox" name="status" value="1" id="status" {% if status %}checked="checked"{% endif %} />
+    </label>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="min_rows">{{ entry_min_rows }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="number" min="0" step="1" name="min_rows" id="min_rows" value="{{ min_rows }}" />
+        <div class="form-text">{{ text_min_rows_help }}</div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="max_indexes_per_table">{{ entry_max_indexes }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="number" min="1" step="1" name="max_indexes_per_table" id="max_indexes_per_table" value="{{ max_indexes_per_table }}" />
+        <div class="form-text">{{ text_max_indexes_help }}</div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="scope">{{ entry_scope }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <select name="scope" id="scope" class="form-control">
+            <option value="all" {% if scope == 'all' %}selected{% endif %}>{{ text_scope_all }}</option>
+            <option value="standard" {% if scope == 'standard' %}selected{% endif %}>{{ text_scope_standard }}</option>
+            <option value="custom" {% if scope == 'custom' %}selected{% endif %}>{{ text_scope_custom }}</option>
+        </select>
+        <div class="form-text">{{ text_scope_help }}</div>
+    </div>
+</div>
