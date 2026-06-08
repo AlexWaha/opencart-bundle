@@ -84,6 +84,6 @@ class ControllerExtensionModuleAwFaq extends Controller
         $params['header'] = $this->load->controller('common/header');
         $params['footer'] = $this->load->controller('common/footer');
 
-        $this->response->setOutput($this->awCore->render('product/' . $this->moduleName, $params));
+        $this->response->setOutput($this->awCore->render('extension/module/' . $this->moduleName, $params));
     }
 }
