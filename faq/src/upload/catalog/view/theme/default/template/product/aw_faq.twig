@@ -1,0 +1,36 @@
+{{ header }}
+<div id="aw-faq" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  {{ aw_microdata|raw }}
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>{{ heading_title }}</h1>
+
+      {% if faqs %}
+        <div class="panel-group" id="aw-faq-accordion">
+          {% for faq in faqs %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#aw-faq-accordion" href="#aw-faq-{{ faq.faq_id }}">
+                  <i class="fa fa-question-circle"></i> {{ faq.question }}
+                </a>
+              </h4>
+            </div>
+            <div id="aw-faq-{{ faq.faq_id }}" class="panel-collapse collapse{% if loop.first %} in{% endif %}">
+              <div class="panel-body">{{ faq.answer|raw }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted" style="padding:20px 0;">{{ text_empty|default('No questions yet.') }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ footer }}
