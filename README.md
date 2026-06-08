@@ -34,7 +34,7 @@ For detailed installation instructions, please refer to the ***/docs/{en,ru}.md*
 10. [Store Reviews (Carousel) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/store-reviews/dist/aw_store_reviews_oc2.3-3.x.ocmod.zip)
 11. [Buyer History for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/buyer-history/dist/aw_buyer_history_oc2.3-3.x.ocmod.zip)
 12. [Microdata for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip)
-13. [DB Optimizer (indexes, InnoDB) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/db-optimizer/dist/aw_db_indexes_oc2.3-3.x.ocmod.zip)
+13. [DB Optimizer (indexes, InnoDB) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/db-optimizer/dist/aw_db_optimize_oc2.3-3.x.ocmod.zip)
 14. More extensions will be added soon (approx 30+)
 ---
 

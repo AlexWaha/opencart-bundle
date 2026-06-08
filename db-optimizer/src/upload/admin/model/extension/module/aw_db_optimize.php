@@ -7,7 +7,7 @@
  * @license GPLv3
  */
 
-class ModelExtensionModuleAwDbIndexes extends Model
+class ModelExtensionModuleAwDbOptimize extends Model
 {
     /** Suffix appended to DB_PREFIX to mark module-created indexes (e.g. oc_idx_). */
     private const INDEX_MARK = 'idx_';

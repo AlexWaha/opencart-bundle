@@ -7,9 +7,9 @@
  * @license GPLv3
  */
 
-class ControllerExtensionModuleAwDbIndexes extends Controller
+class ControllerExtensionModuleAwDbOptimize extends Controller
 {
-    private string $moduleName = 'aw_db_indexes';
+    private string $moduleName = 'aw_db_optimize';
 
     private \Alexwaha\Config $moduleConfig;
 
@@ -109,7 +109,7 @@ class ControllerExtensionModuleAwDbIndexes extends Controller
                 'scope' => (string) $this->moduleConfig->get('scope', 'all'),
             ];
 
-            $json = $this->model_extension_module_aw_db_indexes->analyze($options);
+            $json = $this->model_extension_module_aw_db_optimize->analyze($options);
         }
 
         $this->response->addHeader('Content-Type: application/json');
@@ -147,13 +147,13 @@ class ControllerExtensionModuleAwDbIndexes extends Controller
 
             switch ($type) {
                 case 'index':
-                    $json['results'][] = $this->model_extension_module_aw_db_indexes->addRecommendedIndex($table, $column);
+                    $json['results'][] = $this->model_extension_module_aw_db_optimize->addRecommendedIndex($table, $column);
                     break;
                 case 'engine':
-                    $json['results'][] = $this->model_extension_module_aw_db_indexes->convertEngine($table);
+                    $json['results'][] = $this->model_extension_module_aw_db_optimize->convertEngine($table);
                     break;
                 case 'optimize':
-                    $json['results'][] = $this->model_extension_module_aw_db_indexes->optimizeTable($table);
+                    $json['results'][] = $this->model_extension_module_aw_db_optimize->optimizeTable($table);
                     break;
                 default:
                     $json['results'][] = [
@@ -178,7 +178,7 @@ class ControllerExtensionModuleAwDbIndexes extends Controller
             $json['error'] = $this->language->get('error_permission');
         } else {
             $this->load->model('extension/module/' . $this->moduleName);
-            $json['indexes'] = $this->model_extension_module_aw_db_indexes->listAwIndexes();
+            $json['indexes'] = $this->model_extension_module_aw_db_optimize->listAwIndexes();
         }
 
         $this->response->addHeader('Content-Type: application/json');
@@ -203,9 +203,9 @@ class ControllerExtensionModuleAwDbIndexes extends Controller
         $index = $this->request->post['index'] ?? '';
 
         if ($table !== '' && $index !== '') {
-            $json['result'] = $this->model_extension_module_aw_db_indexes->dropAwIndex($table, $index);
+            $json['result'] = $this->model_extension_module_aw_db_optimize->dropAwIndex($table, $index);
         } else {
-            $json['dropped'] = $this->model_extension_module_aw_db_indexes->dropAwIndexes();
+            $json['dropped'] = $this->model_extension_module_aw_db_optimize->dropAwIndexes();
         }
 
         $json['success'] = $this->language->get('text_rollback_done');

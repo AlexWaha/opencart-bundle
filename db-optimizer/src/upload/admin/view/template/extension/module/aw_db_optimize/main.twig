@@ -4,7 +4,7 @@
     <div class="page-header">
         <div class="container-fluid">
             <div class="pull-right">
-                <button type="submit" form="form-aw-db-indexes" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                <button type="submit" form="form-aw-db-optimize" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
                     <i class="fa fa-save"></i></button>
                 <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
             </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="panel-body">
                 <div id="aw-flash"></div>
-                <form action="{{ action }}" method="post" id="form-aw-db-indexes" class="form-horizontal">
+                <form action="{{ action }}" method="post" id="form-aw-db-optimize" class="form-horizontal">
                     <div class="row">
                         <div class="col-sm-3">
                             {% set tabs = [
@@ -46,7 +46,7 @@
                             ] %}
                             {% set active_tab = 'general' %}
 
-                            {% include 'extension/module/aw_db_indexes/v-tabs-nav.twig' with {
+                            {% include 'extension/module/aw_db_optimize/v-tabs-nav.twig' with {
                                 tabs: tabs,
                                 active_tab: active_tab
                             } %}
@@ -56,7 +56,7 @@
                                 {% for t in tabs %}
                                     {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
                                     <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
-                                        {% include 'extension/module/aw_db_indexes/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                        {% include 'extension/module/aw_db_optimize/tabs/' ~ t.id ~ '.twig' ignore missing %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -71,10 +71,10 @@
   (function () {
     var AW = {
       urls: {
-        analyze: 'index.php?route=extension/module/aw_db_indexes/analyze&{{ token_param }}',
-        apply: 'index.php?route=extension/module/aw_db_indexes/applyFixes&{{ token_param }}',
-        applied: 'index.php?route=extension/module/aw_db_indexes/listApplied&{{ token_param }}',
-        rollback: 'index.php?route=extension/module/aw_db_indexes/rollback&{{ token_param }}'
+        analyze: 'index.php?route=extension/module/aw_db_optimize/analyze&{{ token_param }}',
+        apply: 'index.php?route=extension/module/aw_db_optimize/applyFixes&{{ token_param }}',
+        applied: 'index.php?route=extension/module/aw_db_optimize/listApplied&{{ token_param }}',
+        rollback: 'index.php?route=extension/module/aw_db_optimize/rollback&{{ token_param }}'
       },
       lang: {
         recommendations: '{{ text_recommendations }}',
