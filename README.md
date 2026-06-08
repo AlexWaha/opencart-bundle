@@ -1,6 +1,6 @@
 ![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)  ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Static Badge](https://img.shields.io/badge/8%20-%20gray?label=Modules%20count&labelColor=green)
+![Static Badge](https://img.shields.io/badge/13%20-%20gray?label=Modules%20count&labelColor=green)
 
 # <center>OpenCart Extension Bundle</center>
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
@@ -20,7 +20,7 @@ These extensions compatible with **Opencart 2.3.x, 3.x**, 4.x* and provided **as
 For detailed installation instructions, please refer to the ***/docs/{en,ru}.md** file in Extension folder.
 
 ---
-## Avalaible extensions:
+## Available extensions:
 
 1. [Easy Checkout Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/easy-checkout/dist/aw_easy_checkout_oc2.3-3.x.ocmod.zip) ⭐
 2. [Sms Notifications for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip) ⭐
@@ -30,7 +30,12 @@ For detailed installation instructions, please refer to the ***/docs/{en,ru}.md*
 6. [Alcohol Dilution Calculator page for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip)
 7. [Global Layout for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/global-layout/dist/aw_global_layout_oc2.3-3x.ocmod.zip)
 8. [E-commerce Tracking (GA4) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/ecommerce-tracking/dist/aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip) ⭐
-9. More extensions will be added soon (approx 30+)
+9. [FAQ for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/faq/dist/aw_faq_oc2.3-3.x.ocmod.zip)
+10. [Store Reviews (Carousel) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/store-reviews/dist/aw_store_reviews_oc2.3-3.x.ocmod.zip)
+11. [Buyer History for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/buyer-history/dist/aw_buyer_history_oc2.3-3.x.ocmod.zip)
+12. [Microdata for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip)
+13. [Promo Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/popup-promo/dist/aw_promo_popup_oc2.3-3.x.ocmod.zip)
+14. More extensions will be added soon (approx 30+)
 ---
 
 ## Reporting Issues
@@ -88,4 +93,3 @@ Learn more about me on my [website](https://alexwaha.com) and connect with me on
 [![Blog](https://img.shields.io/badge/Blog-alexwaha.com/blog-orange)](https://alexwaha.com/blog)  
 [![Medium](https://img.shields.io/badge/Medium-@mr.alexwaha-blueviolet)](https://medium.com/@mr.alexwaha)  
 [![Telegram](https://img.shields.io/badge/Telegram-alexwaha_dev-9cf)](https://t.me/alexwaha_dev)
-
