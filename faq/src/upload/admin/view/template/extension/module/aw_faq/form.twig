@@ -1,0 +1,113 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-faq" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ button_save }}
+                </button>
+                <a href="{{ cancel }}" class="btn btn-default"><i class="fa fa-reply"></i> {{ button_cancel }}</a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-pencil"></i>
+                    {% if faq_id %}{{ text_edit }}{% else %}{{ text_add }}{% endif %}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-faq" class="form-horizontal">
+
+                    <ul class="nav nav-tabs" id="language-tabs">
+                        {% for language in languages %}
+                            <li{% if loop.first %} class="active"{% endif %}>
+                                <a href="#language-{{ language.language_id }}" data-toggle="tab">
+                                    <img src="language/{{ language.code }}/{{ language.code }}.png"
+                                         title="{{ language.name }}" />
+                                    {{ language.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="tab-content" style="padding-top:15px;">
+                        {% for language in languages %}
+                            <div class="tab-pane{% if loop.first %} active{% endif %}" id="language-{{ language.language_id }}">
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label">{{ entry_question }}</label>
+                                    <div class="col-sm-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <img src="language/{{ language.code }}/{{ language.code }}.png"
+                                                     title="{{ language.name }}" />
+                                            </span>
+                                            <input type="text"
+                                                   name="faq_description[{{ language.language_id }}][question]"
+                                                   value="{{ faq_description[language.language_id].question }}"
+                                                   class="form-control"
+                                                   maxlength="500" />
+                                        </div>
+                                        {% if error['question_' ~ language.language_id] %}
+                                            <div class="text-danger">{{ error['question_' ~ language.language_id] }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label">{{ entry_answer }}</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="faq_description[{{ language.language_id }}][answer]"
+                                                  data-toggle="summernote"
+                                                  class="form-control"
+                                                  rows="8">{{ faq_description[language.language_id].answer }}</textarea>
+                                        {% if error['answer_' ~ language.language_id] %}
+                                            <div class="text-danger">{{ error['answer_' ~ language.language_id] }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_sort_order }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="sort_order" value="{{ sort_order }}" class="form-control" style="max-width:100px;" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control" style="max-width:200px;">
+                                <option value="1" {% if status == 1 %}selected{% endif %}>{{ text_enabled }}</option>
+                                <option value="0" {% if status == 0 %}selected{% endif %}>{{ text_disabled }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}

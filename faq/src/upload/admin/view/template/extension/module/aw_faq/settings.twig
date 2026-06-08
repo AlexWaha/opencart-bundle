@@ -1,0 +1,124 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-faq-settings" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error.warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+        {% endif %}
+        {% if success %}
+        <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3></div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-faq-settings" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'settings', label: tab_settings },
+                                { id: 'import_export', label: tab_import_export },
+                                { id: 'support', label: tab_support }
+                            ] %}
+                            {% set active_tab = 'settings' %}
+
+                            {% include 'extension/module/aw_faq/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_faq/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // Export
+    $('#btn-export-config').on('click', function() {
+        var btn = $(this);
+        btn.button('loading');
+        window.location.href = 'index.php?route=extension/module/{{ module_name }}/exportConfig&{{ token_param }}';
+        setTimeout(function() { btn.button('reset'); }, 2000);
+    });
+
+    // Import
+    $('#btn-import-config').on('click', function() {
+        $('#import-file').trigger('click');
+    });
+
+    $('#import-file').on('change', function() {
+        var fileInput = $(this);
+        var importBtn = $('#btn-import-config');
+
+        if (!fileInput.val()) return;
+
+        if (confirm('{{ text_import_warning|replace({"<strong>": "", "</strong>": ""})|striptags }}')) {
+            var formData = new FormData();
+            formData.append('import_file', fileInput[0].files[0]);
+            var $vTab = $('#v-tab_import_export');
+            importBtn.button('loading');
+
+            $.ajax({
+                url: 'index.php?route=extension/module/{{ module_name }}/importConfig&{{ token_param }}',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function() { importBtn.prop('disabled', true); },
+                complete: function() { importBtn.prop('disabled', false); },
+                success: function(json) {
+                    $vTab.find('.alert-dismissable').remove();
+                    importBtn.button('reset');
+
+                    if (json.error) {
+                        $vTab.prepend('<div class="alert alert-danger alert-dismissable"><i class="fa fa-exclamation-circle"></i> ' + json.error + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                    }
+
+                    if (json.success) {
+                        $vTab.prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ text_import_success }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                        setTimeout(function() { location.reload(); }, 1500);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    importBtn.button('reset');
+                    $vTab.find('.alert-dismissable').remove();
+                    $vTab.prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + thrownError + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                }
+            });
+        } else {
+            fileInput.val('');
+        }
+    });
+})();
+</script>
+{{ footer }}
