@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Telegram (direct contact)
+    url: https://t.me/alexwaha_dev
+    about: Quick questions, setup help or paid customization.
+  - name: Developer website
+    url: https://alexwaha.com
+    about: More extensions, blog and contact form.

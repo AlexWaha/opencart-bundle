@@ -1,0 +1,71 @@
+name: Bug report
+description: Report a problem with one of the extensions
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please search existing issues first to avoid duplicates.
+  - type: dropdown
+    id: extension
+    attributes:
+      label: Extension
+      description: Which extension is affected?
+      options:
+        - Easy Checkout
+        - SMS Notifications
+        - XML Feed
+        - E-commerce Tracking (GA4)
+        - Landing Pages
+        - Age Verification
+        - Alcohol Dilution Calculator
+        - Global Layout
+        - FAQ
+        - Store Reviews
+        - Buyer History
+        - Microdata
+        - DB Optimizer
+        - AW Core
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: oc-version
+    attributes:
+      label: OpenCart version
+      placeholder: "e.g. 2.3.0.2 / 3.0.3.8"
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "e.g. 7.4 / 8.1"
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact steps so the issue can be reproduced.
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error logs / screenshots
+      description: Paste relevant logs and screenshots. Never include passwords, tokens or host details.
+    validations:
+      required: false

@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest an idea or improvement for an extension
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Please check existing issues first.
+  - type: dropdown
+    id: extension
+    attributes:
+      label: Extension
+      description: Which extension does this relate to?
+      options:
+        - Easy Checkout
+        - SMS Notifications
+        - XML Feed
+        - E-commerce Tracking (GA4)
+        - Landing Pages
+        - Age Verification
+        - Alcohol Dilution Calculator
+        - Global Layout
+        - FAQ
+        - Store Reviews
+        - Buyer History
+        - Microdata
+        - DB Optimizer
+        - AW Core
+        - New extension idea
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      description: Describe the use case or pain point.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work?
+    validations:
+      required: false
