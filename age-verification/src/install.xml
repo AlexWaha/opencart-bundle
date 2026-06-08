@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
-    <name>AW Age Verification - Footer Integration</name>
+    <name>alexwaha.com - Age Verification</name>
     <code>aw_age_verification_footer</code>
     <version>1.0.0</version>
-    <author>Alexander Vakhovski (AlexWaha)</author>
+    <author>AlexWaha</author>
     <link>https://alexwaha.com</link>
 
     <file path="catalog/controller/common/footer.php">
