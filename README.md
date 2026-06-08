@@ -1,6 +1,6 @@
 ![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)  ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Static Badge](https://img.shields.io/badge/13%20-%20gray?label=Modules%20count&labelColor=green)
+![Static Badge](https://img.shields.io/badge/12%20-%20gray?label=Modules%20count&labelColor=green)
 
 # <center>OpenCart Extension Bundle</center>
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
@@ -34,8 +34,7 @@ For detailed installation instructions, please refer to the ***/docs/{en,ru}.md*
 10. [Store Reviews (Carousel) for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/store-reviews/dist/aw_store_reviews_oc2.3-3.x.ocmod.zip)
 11. [Buyer History for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/buyer-history/dist/aw_buyer_history_oc2.3-3.x.ocmod.zip)
 12. [Microdata for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip)
-13. [Promo Popup for Opencart 2.3.x - 3.x](https://github.com/AlexWaha/opencart-bundle/blob/master/popup-promo/dist/aw_promo_popup_oc2.3-3.x.ocmod.zip)
-14. More extensions will be added soon (approx 30+)
+13. More extensions will be added soon (approx 30+)
 ---
 
 ## Reporting Issues
