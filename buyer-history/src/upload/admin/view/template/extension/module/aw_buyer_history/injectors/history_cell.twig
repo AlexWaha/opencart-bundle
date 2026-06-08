@@ -1,0 +1,28 @@
+{% if by_status|length == 0 %}
+    <span class="label aw-oh-badge" style="background:{{ bg }};color:{{ fg }};">{{ label }}</span>
+{% else %}
+    <div class="dropdown aw-oh-dropdown">
+        <button type="button" class="label aw-oh-badge aw-oh-trigger" data-toggle="dropdown" aria-expanded="false" style="background:{{ bg }};color:{{ fg }};border:0;cursor:pointer;">
+            {{ label }} <i class="fa fa-caret-down" style="margin-left:3px;"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right aw-oh-menu" role="menu">
+            <div class="aw-oh-menu-header">{{ breakdown_label }}</div>
+            <table class="table table-condensed aw-oh-table">
+                <tbody>
+                    {% for sd in by_status %}
+                        <tr>
+                            <td>{{ sd.name }}</td>
+                            <td class="text-right"><strong>{{ sd.count }}</strong></td>
+                            <td class="text-right">{{ sd.sum_fmt }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="aw-oh-total">
+                        <td><strong>{{ total_label }}</strong></td>
+                        <td class="text-right"><strong>{{ total_count }}</strong></td>
+                        <td class="text-right"><strong>{{ total_sum_fmt }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,8 @@
+{% if order.aw_history is defined %}
+    {% if order.aw_history.show_history %}
+        <td class="text-center aw-oh-cell">{{ order.aw_history.history_html|raw }}</td>
+    {% endif %}
+    {% if order.aw_history.show_duplicates %}
+        <td class="text-center aw-oh-cell">{{ order.aw_history.duplicates_html|raw }}</td>
+    {% endif %}
+{% endif %}

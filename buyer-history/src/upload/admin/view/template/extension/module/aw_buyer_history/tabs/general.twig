@@ -1,0 +1,39 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_status }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="status" value="0">
+            <input type="checkbox" name="status" value="1" {% if status %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" data-toggle="tooltip" title="{{ help_match_guests }}">{{ entry_match_guests }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="match_guests" value="0">
+            <input type="checkbox" name="match_guests" value="1" {% if match_guests %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" data-toggle="tooltip" title="{{ help_tracked_statuses }}">{{ entry_tracked_statuses }}</label>
+    <div class="col-sm-9">
+        <div class="row">
+            {% for os in order_statuses %}
+                <div class="col-sm-6">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="tracked_status_ids[]" value="{{ os.order_status_id }}" {% if os.order_status_id in tracked_status_ids %}checked{% endif %}>
+                            {{ os.name }}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

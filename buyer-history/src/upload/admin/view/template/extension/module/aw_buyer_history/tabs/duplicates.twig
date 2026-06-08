@@ -1,0 +1,97 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_duplicates_enabled }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="duplicates_enabled" value="0">
+            <input type="checkbox" name="duplicates_enabled" value="1" {% if duplicates_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" data-toggle="tooltip" title="{{ help_duplicate_window }}">{{ entry_duplicate_window }}</label>
+    <div class="col-sm-9">
+        <input type="hidden" name="duplicate_window_preset" value="{{ duplicate_window_preset }}">
+        <div class="btn-group" role="group" style="display:flex;flex-wrap:wrap;gap:4px;">
+            {% set presets = [
+                { id: '1h', label: text_preset_1h },
+                { id: '3h', label: text_preset_3h },
+                { id: '6h', label: text_preset_6h },
+                { id: '12h', label: text_preset_12h },
+                { id: '24h', label: text_preset_24h },
+                { id: '48h', label: text_preset_48h },
+                { id: '72h', label: text_preset_72h },
+                { id: '7d', label: text_preset_7d },
+                { id: 'custom', label: text_preset_custom }
+            ] %}
+            {% for p in presets %}
+                <button type="button" class="btn btn-sm aw-oh-preset-chip {{ duplicate_window_preset == p.id ? 'btn-primary' : 'btn-default' }}" data-preset="{{ p.id }}">{{ p.label }}</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="aw-oh-custom-window" class="form-group" style="{{ duplicate_window_preset == 'custom' ? '' : 'display:none;' }}">
+    <label class="col-sm-3 control-label">{{ entry_duplicate_custom_value }}</label>
+    <div class="col-sm-3">
+        <input type="number" name="duplicate_window_custom_value" value="{{ duplicate_window_custom_value }}" min="1" class="form-control">
+    </div>
+    <label class="col-sm-3 control-label">{{ entry_duplicate_custom_unit }}</label>
+    <div class="col-sm-3">
+        <select name="duplicate_window_custom_unit" class="form-control">
+            <option value="minutes" {% if duplicate_window_custom_unit == 'minutes' %}selected{% endif %}>{{ text_unit_minutes }}</option>
+            <option value="hours" {% if duplicate_window_custom_unit == 'hours' %}selected{% endif %}>{{ text_unit_hours }}</option>
+            <option value="days" {% if duplicate_window_custom_unit == 'days' %}selected{% endif %}>{{ text_unit_days }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" data-toggle="tooltip" title="{{ help_duplicate_min }}">{{ entry_duplicate_min }}</label>
+    <div class="col-sm-3">
+        <input type="number" name="duplicate_min_count" value="{{ duplicate_min_count }}" min="2" class="form-control">
+    </div>
+    <label class="col-sm-3 control-label" data-toggle="tooltip" title="{{ help_duplicate_max }}">{{ entry_duplicate_max }}</label>
+    <div class="col-sm-3">
+        <input type="number" name="duplicate_max_shown" value="{{ duplicate_max_shown }}" min="1" class="form-control">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_color_dup }}</label>
+    <div class="col-sm-3">
+        <input type="text" data-coloris name="color_dup_bg" value="{{ color_dup_bg }}" class="form-control">
+        <small class="text-muted">{{ entry_color_bg }}</small>
+    </div>
+    <div class="col-sm-3">
+        <input type="text" data-coloris name="color_dup_text" value="{{ color_dup_text }}" class="form-control">
+        <small class="text-muted">{{ entry_color_text }}</small>
+    </div>
+    <div class="col-sm-3" style="padding-top:6px;">
+        <span class="label aw-oh-preview-dup" style="background:{{ color_dup_bg }};color:{{ color_dup_text }};padding:5px 10px;font-size:12px;border-radius:4px;">#1234</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_duplicate_target }}</label>
+    <div class="col-sm-9">
+        <select name="duplicate_link_target" class="form-control" style="max-width:240px;">
+            <option value="_self" {% if duplicate_link_target == '_self' %}selected{% endif %}>{{ text_link_self }}</option>
+            <option value="_blank" {% if duplicate_link_target == '_blank' %}selected{% endif %}>{{ text_link_blank }}</option>
+        </select>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ text_preview }}</label>
+    <div class="col-sm-9" style="padding-top:6px;">
+        <span style="display:inline-flex;gap:4px;flex-wrap:wrap;">
+            <a href="#" class="label aw-oh-preview-dup" style="background:{{ color_dup_bg }};color:{{ color_dup_text }};padding:4px 8px;font-size:12px;border-radius:3px;text-decoration:none;">#1234</a>
+            <a href="#" class="label aw-oh-preview-dup" style="background:{{ color_dup_bg }};color:{{ color_dup_text }};padding:4px 8px;font-size:12px;border-radius:3px;text-decoration:none;">#1235</a>
+            <a href="#" class="label aw-oh-preview-dup" style="background:{{ color_dup_bg }};color:{{ color_dup_text }};padding:4px 8px;font-size:12px;border-radius:3px;text-decoration:none;">#1236</a>
+        </span>
+    </div>
+</div>

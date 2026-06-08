@@ -1,0 +1,18 @@
+<p class="text-muted" style="margin-bottom:18px;">{{ help_status_colors }}</p>
+
+{% for os in order_statuses %}
+    {% set color = status_colors[os.order_status_id]|default('') %}
+    <div class="form-group">
+        <div class="col-sm-3 control-label" style="text-align:right;">
+            <span class="label aw-oh-status-label"
+                  data-status-id="{{ os.order_status_id }}"
+                  data-name="{{ os.name }}"
+                  style="padding:6px 12px;font-size:13px;border-radius:4px;display:inline-block;{% if color %}background:{{ color }};color:#fff;{% else %}background:#cccccc;color:#555;{% endif %}">
+                {{ os.name }}
+            </span>
+        </div>
+        <div class="col-sm-9">
+            <input type="text" data-coloris name="status_colors[{{ os.order_status_id }}]" value="{{ color }}" class="form-control" placeholder="#hex" style="max-width:280px;">
+        </div>
+    </div>
+{% endfor %}

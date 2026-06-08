@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>alexwaha.com - Buyer History (OC 2.3 columns)</name>
+    <code>aw_buyer_history</code>
+    <version>1.0.0</version>
+    <author>AlexWaha</author>
+    <link>https://alexwaha.com</link>
+
+    <file path="admin/view/template/common/header.tpl" error="skip">
+        <operation error="skip">
+            <search><![CDATA[<title><?php echo $title; ?></title>]]></search>
+            <add position="after"><![CDATA[
+<link rel="stylesheet" href="view/stylesheet/aw_buyer_history/style.css">
+]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/sale/order_list.tpl" error="skip">
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left"><?php if ($sort == 'order_status') { ?>]]></search>
+            <add position="before"><![CDATA[
+                  <?php if (!empty($orders) && isset($orders[0]['aw_history'])): ?>
+                    <?php if ($orders[0]['aw_history']['show_history']): ?>
+                  <td class="text-center"><?php echo $orders[0]['aw_history']['label_history']; ?></td>
+                    <?php endif; ?>
+                    <?php if ($orders[0]['aw_history']['show_duplicates']): ?>
+                  <td class="text-center"><?php echo $orders[0]['aw_history']['label_duplicates']; ?></td>
+                    <?php endif; ?>
+                  <?php endif; ?>
+                  ]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left"><?php echo $order['customer']; ?></td>]]></search>
+            <add position="after"><![CDATA[
+                  <?php if (isset($order['aw_history'])): ?>
+                    <?php if ($order['aw_history']['show_history']): ?>
+                  <td class="text-center aw-oh-cell"><?php echo $order['aw_history']['history_html']; ?></td>
+                    <?php endif; ?>
+                    <?php if ($order['aw_history']['show_duplicates']): ?>
+                  <td class="text-center aw-oh-cell"><?php echo $order['aw_history']['duplicates_html']; ?></td>
+                    <?php endif; ?>
+                  <?php endif; ?>
+]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,8 @@
+{% if orders|length > 0 and orders[0].aw_history is defined %}
+    {% if orders[0].aw_history.show_history %}
+        <td class="text-center">{{ orders[0].aw_history.label_history }}</td>
+    {% endif %}
+    {% if orders[0].aw_history.show_duplicates %}
+        <td class="text-center">{{ orders[0].aw_history.label_duplicates }}</td>
+    {% endif %}
+{% endif %}

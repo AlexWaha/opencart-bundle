@@ -1,0 +1,162 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-aw-orders-history" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> {{ success }}
+            </div>
+        {% endif %}
+
+        <div id="aw-oh-flash"></div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-aw-orders-history" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'general',       label: tab_general },
+                                { id: 'thresholds',    label: tab_thresholds },
+                                { id: 'statuses',      label: tab_statuses },
+                                { id: 'duplicates',    label: tab_duplicates },
+                                { id: 'display',       label: tab_display },
+                                { id: 'import_export', label: tab_import_export },
+                                { id: 'support',       label: tab_support }
+                            ] %}
+                            {% set active_tab = 'general' %}
+
+                            {% include 'extension/module/aw_buyer_history/v-tabs-nav.twig' with {
+                                tabs: tabs,
+                                active_tab: active_tab
+                            } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    {% set is_active = (active_tab == t.id) or (active_tab is not defined and loop.first) %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ is_active ? 'active' }}">
+                                        {% include 'extension/module/aw_buyer_history/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+[data-coloris] { cursor: pointer; }
+</style>
+<script>
+Coloris({
+    themeMode: 'light',
+    alpha: false
+});
+
+$('#form-aw-orders-history').on('submit', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $flash = $('#aw-oh-flash');
+
+    $.ajax({
+        url: $form.attr('action'),
+        type: 'POST',
+        data: $form.serialize(),
+        dataType: 'json',
+        beforeSend: function () { $flash.empty(); },
+        success: function (json) {
+            if (json.error) {
+                $flash.html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json.error + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+            } else if (json.success) {
+                $flash.html('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + (json.text || '{{ text_success }}') + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+        error: function (xhr) {
+            $flash.html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + xhr.statusText + '</div>');
+        }
+    });
+});
+
+// Live preview for color inputs
+$(document).on('input change', 'input[data-coloris]', function () {
+    var name = this.name || '';
+    var value = this.value || '';
+
+    if (! /^#[0-9a-fA-F]{6}$/.test(value)) {
+        return;
+    }
+
+    // Tier colors: color_{low|mid|high}_{bg|text}
+    var mTier = name.match(/^color_(low|mid|high)_(bg|text)$/);
+
+    if (mTier) {
+        var tier = mTier[1];
+        var kind = mTier[2];
+        $('.aw-oh-preview-tier[data-tier="' + tier + '"]').css(kind === 'bg' ? 'background' : 'color', value);
+
+        return;
+    }
+
+    // Duplicate colors
+    if (name === 'color_dup_bg') {
+        $('.aw-oh-preview-dup').css('background', value);
+
+        return;
+    }
+
+    if (name === 'color_dup_text') {
+        $('.aw-oh-preview-dup').css('color', value);
+
+        return;
+    }
+
+    // Status colors: status_colors[N]
+    var mStatus = name.match(/^status_colors\[(\d+)\]$/);
+
+    if (mStatus) {
+        var sid = mStatus[1];
+        var $el = $('.aw-oh-status-label[data-status-id="' + sid + '"]');
+
+        $el.css({ background: value || '#cccccc', color: '#fff' });
+    }
+});
+
+$(document).on('click', '.aw-oh-preset-chip', function (e) {
+    e.preventDefault();
+    var $btn = $(this);
+    var preset = $btn.data('preset');
+    $('input[name="duplicate_window_preset"]').val(preset);
+    $('.aw-oh-preset-chip').removeClass('btn-primary').addClass('btn-default');
+    $btn.removeClass('btn-default').addClass('btn-primary');
+    $('#aw-oh-custom-window').toggle(preset === 'custom');
+});
+</script>
+{{ footer }}

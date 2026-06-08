@@ -1,0 +1,46 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_threshold_mid }}</label>
+    <div class="col-sm-3">
+        <input type="number" name="threshold_mid" value="{{ threshold_mid }}" min="1" class="form-control">
+    </div>
+    <label class="col-sm-3 control-label">{{ entry_threshold_high }}</label>
+    <div class="col-sm-3">
+        <input type="number" name="threshold_high" value="{{ threshold_high }}" min="1" class="form-control">
+    </div>
+</div>
+
+<hr>
+
+{% set tier_rows = [
+    { name: 'low',  label: entry_color_low,  bg: color_low_bg,  fg: color_low_text,  example: '1' },
+    { name: 'mid',  label: entry_color_mid,  bg: color_mid_bg,  fg: color_mid_text,  example: threshold_mid },
+    { name: 'high', label: entry_color_high, bg: color_high_bg, fg: color_high_text, example: threshold_high }
+] %}
+
+{% for row in tier_rows %}
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ row.label }}</label>
+    <div class="col-sm-3">
+        <input type="text" data-coloris name="color_{{ row.name }}_bg" value="{{ row.bg }}" class="form-control" placeholder="{{ entry_color_bg }}">
+        <small class="text-muted">{{ entry_color_bg }}</small>
+    </div>
+    <div class="col-sm-3">
+        <input type="text" data-coloris name="color_{{ row.name }}_text" value="{{ row.fg }}" class="form-control" placeholder="{{ entry_color_text }}">
+        <small class="text-muted">{{ entry_color_text }}</small>
+    </div>
+    <div class="col-sm-3" style="padding-top:6px;">
+        <span class="label aw-oh-preview-tier" data-tier="{{ row.name }}" style="background:{{ row.bg }};color:{{ row.fg }};padding:5px 10px;font-size:12px;border-radius:4px;display:inline-block;">{{ row.example }}</span>
+    </div>
+</div>
+{% endfor %}
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ text_preview }}</label>
+    <div class="col-sm-9" style="padding-top:6px;">
+        <span class="label aw-oh-preview-tier" data-tier="low"  style="background:{{ color_low_bg }};color:{{ color_low_text }};padding:5px 10px;font-size:12px;border-radius:4px;margin-right:6px;">1</span>
+        <span class="label aw-oh-preview-tier" data-tier="mid"  style="background:{{ color_mid_bg }};color:{{ color_mid_text }};padding:5px 10px;font-size:12px;border-radius:4px;margin-right:6px;">{{ threshold_mid }}</span>
+        <span class="label aw-oh-preview-tier" data-tier="high" style="background:{{ color_high_bg }};color:{{ color_high_text }};padding:5px 10px;font-size:12px;border-radius:4px;">{{ threshold_high }}+</span>
+    </div>
+</div>

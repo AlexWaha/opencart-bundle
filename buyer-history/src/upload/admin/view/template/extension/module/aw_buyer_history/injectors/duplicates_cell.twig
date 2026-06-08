@@ -1,0 +1,19 @@
+{% if duplicates|length > 0 or overflow|length > 0 %}
+<span class="aw-oh-dup-group">
+    {% for dup in duplicates %}
+        <a href="{{ dup.url|raw }}" target="{{ target }}" class="label aw-oh-dup-link" style="background:{{ bg }};color:{{ fg }};text-decoration:none;">#{{ dup.order_id }}</a>
+    {% endfor %}
+    {% if overflow|length > 0 %}
+        <div class="dropdown aw-oh-dup-more-wrap">
+            <button type="button" class="label aw-oh-dup-more" data-toggle="dropdown" aria-expanded="false" style="background:{{ bg }};color:{{ fg }};border:0;cursor:pointer;">
+                +{{ overflow|length }} <i class="fa fa-caret-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right aw-oh-dup-menu" role="menu">
+                {% for dup in overflow %}
+                    <li><a href="{{ dup.url|raw }}" target="{{ target }}">#{{ dup.order_id }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</span>
+{% endif %}

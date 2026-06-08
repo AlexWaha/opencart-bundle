@@ -1,0 +1,165 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ settings_url }}" data-toggle="tooltip" title="{{ button_settings }}" class="btn btn-default"><i class="fa fa-cog"></i></a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-filter"></i> {{ report_filter_title }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="post" enctype="multipart/form-data" class="form-horizontal" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ report_filter_search }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="aw-oh-filter-search" value="{{ filter_search }}" class="form-control" placeholder="email, phone, name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ report_filter_tier }}</label>
+                        <div class="col-sm-10">
+                            <select id="aw-oh-filter-tier" class="form-control">
+                                <option value="">{{ report_filter_tier_any }}</option>
+                                <option value="low" {% if filter_tier == 'low' %}selected{% endif %}>{{ report_filter_tier_low }}</option>
+                                <option value="mid" {% if filter_tier == 'mid' %}selected{% endif %}>{{ report_filter_tier_mid }}</option>
+                                <option value="high" {% if filter_tier == 'high' %}selected{% endif %}>{{ report_filter_tier_high }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ report_filter_duplicates }}</label>
+                        <div class="col-sm-10">
+                            <label class="checkbox-switch">
+                                <input type="checkbox" id="aw-oh-filter-duplicates" value="1" {% if filter_duplicates %}checked{% endif %}>
+                                <span class="checkbox-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" id="aw-oh-filter-apply" class="btn btn-primary"><i class="fa fa-search"></i> {{ button_apply }}</button>
+                            <button type="button" id="aw-oh-filter-clear" class="btn btn-default"><i class="fa fa-times"></i> {{ button_clear }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-list"></i> {{ report_heading }} ({{ total_count }})</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <td style="width:30px;"></td>
+                                <td>{{ report_column_customer }}</td>
+                                <td class="text-center">{{ report_column_total }}</td>
+                                <td class="text-right">{{ report_column_total_amount }}</td>
+                                <td class="text-right">{{ report_column_avg }}</td>
+                                <td class="text-center">{{ report_column_first }}</td>
+                                <td class="text-center">{{ report_column_last }}</td>
+                                <td class="text-center">{{ report_column_dup }}</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if rows|length > 0 %}
+                                {% for row in rows %}
+                                    {% set rid = 'cust-' ~ loop.index %}
+                                    <tr class="{% if row.has_duplicates %}aw-oh-row-has-dup{% endif %}">
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-default btn-xs aw-oh-expand-btn" data-toggle="collapse" data-target="#{{ rid }}" aria-expanded="false" data-rows-url="{{ row.rows_url }}">
+                                                <i class="fa fa-chevron-down"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <strong>{{ row.name|trim }}</strong><br>
+                                            {% if row.email %}<small><i class="fa fa-envelope"></i> {{ row.email }}</small>{% endif %}
+                                            {% if row.telephone %}<br><small><i class="fa fa-phone"></i> {{ row.telephone }}</small>{% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="label" style="background:{{ row.tier_bg }};color:{{ row.tier_fg }};font-size:12px;padding:5px 10px;border-radius:4px;">{{ row.total_orders }}</span>
+                                        </td>
+                                        <td class="text-right">{{ row.total_amount_fmt }}</td>
+                                        <td class="text-right">{{ row.avg_amount_fmt }}</td>
+                                        <td class="text-center">{{ row.first_order_fmt }}</td>
+                                        <td class="text-center">{{ row.last_order_fmt }}</td>
+                                        <td class="text-center">
+                                            {% if row.has_duplicates %}<i class="fa fa-exclamation-triangle text-danger" title="{{ report_text_has_duplicates }}"></i>{% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr id="{{ rid }}" class="collapse aw-oh-expand-row" data-loaded="0">
+                                        <td colspan="8">
+                                            <div class="aw-oh-expand-inner">
+                                                <div class="text-muted"><i class="fa fa-spinner fa-spin"></i> {{ report_text_loading }}</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="8" class="text-center">{{ report_text_no_results }}</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination|raw }}</div>
+                    <div class="col-sm-6 text-right">{{ results }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var baseUrl = 'index.php?route=extension/module/aw_buyer_history/report&{{ token_param }}';
+
+    function applyFilter() {
+        var url = '';
+        var search = $('#aw-oh-filter-search').val();
+        var tier = $('#aw-oh-filter-tier').val();
+        var dup = $('#aw-oh-filter-duplicates').is(':checked');
+
+        if (search) url += '&filter_search=' + encodeURIComponent(search);
+        if (tier) url += '&filter_tier=' + encodeURIComponent(tier);
+        if (dup) url += '&filter_duplicates=1';
+
+        location = baseUrl + url;
+    }
+
+    $('#aw-oh-filter-apply').on('click', applyFilter);
+    $('#aw-oh-filter-clear').on('click', function () { location = baseUrl; });
+    $('#aw-oh-filter-search').on('keydown', function (e) { if (e.keyCode === 13) applyFilter(); });
+
+    $(document).on('click', '.aw-oh-expand-btn', function () {
+        var $btn = $(this);
+        var $row = $($btn.attr('data-target'));
+        var loaded = $row.attr('data-loaded') === '1';
+        var url = $btn.attr('data-rows-url');
+
+        if (!loaded && url) {
+            $.get(url, function (html) {
+                $row.find('.aw-oh-expand-inner').html(html);
+                $row.attr('data-loaded', '1');
+            });
+        }
+    });
+})();
+</script>
+
+{{ footer }}

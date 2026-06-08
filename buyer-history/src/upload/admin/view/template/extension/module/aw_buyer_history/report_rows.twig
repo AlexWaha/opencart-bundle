@@ -1,0 +1,61 @@
+{% if orders|length > 0 %}
+<table class="table table-bordered table-hover aw-oh-orders-table" style="margin-bottom:0;background:#fff;">
+    <thead>
+        <tr>
+            <th style="width:90px;">{{ report_rows_order }}</th>
+            <th>{{ report_rows_status }}</th>
+            <th class="text-center" style="width:90px;">{{ report_rows_items }}</th>
+            <th class="text-center" style="width:140px;">{{ report_rows_total }}</th>
+            <th class="text-center" style="width:160px;">{{ report_rows_date }}</th>
+            <th class="text-right" style="width:80px;">{{ report_rows_action }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in orders %}
+        <tr>
+            <td><strong>#{{ o.order_id }}</strong></td>
+            <td>
+                {% if o.status_color %}
+                    <span class="label aw-oh-status-badge" style="background:{{ o.status_color }};">{{ o.status_name }}</span>
+                {% else %}
+                    {{ o.status_name }}
+                {% endif %}
+            </td>
+            <td class="text-center">
+                {% if o.products_count > 0 %}
+                    <span class="badge" style="background:#5bc0de;color:#fff;">{{ o.products_count }}</span>
+                {% else %}
+                    <span class="text-muted">0</span>
+                {% endif %}
+            </td>
+            <td class="text-center"><strong>{{ o.total_fmt }}</strong></td>
+            <td class="text-center">{{ o.date_fmt }}</td>
+            <td class="text-right"><a href="{{ o.view_url }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" title="View"><i class="fa fa-eye"></i></a></td>
+        </tr>
+        {% if o.products|length > 0 %}
+        <tr class="aw-oh-products-row">
+            <td colspan="6" style="background:#fafafa;">
+                <ul class="aw-oh-products-list">
+                    {% for p in o.products %}
+                        <li>
+                            <a href="{{ p.edit_url }}" target="_blank">{{ p.name }}</a>
+                            {% if p.model %}<small class="text-muted">[{{ p.model }}]</small>{% endif %}
+                            {% if p.options|length > 0 %}
+                                <span class="aw-oh-product-options">
+                                    {% for opt in p.options %}<span class="aw-oh-product-option-chip">{{ opt }}</span>{% endfor %}
+                                </span>
+                            {% endif %}
+                            <span class="aw-oh-product-qty">×{{ p.quantity }}</span>
+                            <span class="aw-oh-product-price text-muted">{{ p.line_total_fmt }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="text-muted">{{ report_text_no_results }}</div>
+{% endif %}

@@ -1,0 +1,232 @@
+.aw-oh-cell {
+    vertical-align: middle !important;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.aw-oh-cell .label,
+.aw-oh-cell .aw-oh-badge,
+.aw-oh-cell .aw-oh-dup-link,
+.aw-oh-cell .aw-oh-dup-more {
+    font-size: 13px !important;
+    line-height: 1.4;
+}
+
+#column-left ~ #content thead td,
+#column-left ~ #content table.list thead td {
+    font-size: 13px;
+}
+
+.aw-oh-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    border-radius: 4px;
+    border: 0;
+    outline: 0;
+}
+
+.aw-oh-trigger {
+    cursor: pointer;
+}
+
+.aw-oh-trigger:hover,
+.aw-oh-trigger:focus {
+    filter: brightness(0.95);
+}
+
+.aw-oh-dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.aw-oh-menu {
+    min-width: 280px;
+    padding: 0;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.aw-oh-menu-header {
+    padding: 10px 14px;
+    font-weight: 600;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e5e5e5;
+    color: #333;
+}
+
+.aw-oh-table {
+    margin-bottom: 0;
+}
+
+.aw-oh-table td {
+    padding: 8px 14px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    font-size: 13px;
+}
+
+.aw-oh-table tbody tr:first-child td {
+    border-top: 0 !important;
+}
+
+.aw-oh-total td {
+    background: #fafafa;
+    border-top: 1px solid #e0e0e0 !important;
+}
+
+.aw-oh-dup-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+}
+
+.aw-oh-cell .aw-oh-dup-link,
+.aw-oh-cell .aw-oh-dup-link:hover,
+.aw-oh-cell .aw-oh-dup-link:focus,
+.aw-oh-cell .aw-oh-dup-link:active,
+.aw-oh-cell .aw-oh-dup-link:visited {
+    text-decoration: none !important;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+.aw-oh-cell .aw-oh-dup-link:hover {
+    filter: brightness(0.9);
+}
+
+.aw-oh-cell .aw-oh-dup-more {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.aw-oh-dup-more-wrap {
+    display: inline-block;
+    position: relative;
+}
+
+.aw-oh-dup-menu {
+    max-height: 320px;
+    overflow-y: auto;
+    min-width: 140px;
+    padding: 4px 0;
+}
+
+.aw-oh-dup-menu li a {
+    padding: 4px 14px;
+    display: block;
+}
+
+.aw-oh-expand-row td {
+    background: #fafafa;
+    padding: 0 !important;
+}
+
+.aw-oh-expand-row .aw-oh-expand-inner {
+    padding: 18px 24px;
+}
+
+.aw-oh-orders-table th {
+    padding: 12px 14px !important;
+    font-size: 13px;
+    background: #f5f5f5;
+}
+
+.aw-oh-orders-table td {
+    padding: 12px 14px !important;
+    font-size: 13px;
+    vertical-align: middle !important;
+}
+
+.aw-oh-orders-table td strong {
+    font-size: 14px;
+}
+
+.aw-oh-status-badge {
+    color: #ffffff !important;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.aw-oh-row-has-dup,
+.aw-oh-row-has-dup + .aw-oh-expand-row td {
+    background: #fff5f5 !important;
+}
+
+.aw-oh-row-has-dup:hover {
+    background: #ffe8e8 !important;
+}
+
+.aw-oh-products-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0 6px 20px;
+}
+
+.aw-oh-products-list li {
+    padding: 6px 0;
+    border-bottom: 1px dashed #e0e0e0;
+    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.aw-oh-products-list li:last-child {
+    border-bottom: 0;
+}
+
+.aw-oh-products-list a {
+    font-weight: 500;
+}
+
+.aw-oh-product-options {
+    display: inline-flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.aw-oh-product-option-chip {
+    background: #eef4ff;
+    color: #335;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    border: 1px solid #d0dcf0;
+}
+
+.aw-oh-product-qty {
+    color: #555;
+    font-weight: 600;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.aw-oh-product-price {
+    min-width: 90px;
+    text-align: right;
+}
+
+.aw-oh-expand-btn {
+    cursor: pointer;
+}
+
+.aw-oh-expand-btn .fa-chevron-down {
+    transition: transform 0.2s;
+}
+
+.aw-oh-expand-btn[aria-expanded="true"] .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.aw-oh-preset-chip {
+    margin: 0 2px 4px 0;
+}

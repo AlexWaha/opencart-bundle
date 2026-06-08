@@ -1,0 +1,21 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_show_history }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="show_history_column" value="0">
+            <input type="checkbox" name="show_history_column" value="1" {% if show_history_column %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_show_duplicates }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="show_duplicates_column" value="0">
+            <input type="checkbox" name="show_duplicates_column" value="1" {% if show_duplicates_column %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
