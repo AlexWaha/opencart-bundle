@@ -44,4 +44,28 @@
 ]]></add>
         </operation>
     </file>
+
+    <file path="admin/view/template/common/header.twig" error="skip">
+        <operation error="skip">
+            <search><![CDATA[<title>{{ title }}</title>]]></search>
+            <add position="after"><![CDATA[
+<link rel="stylesheet" href="view/stylesheet/aw_buyer_history/style.css">
+]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/sale/order_list.twig" error="skip">
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left">{% if sort == 'order_status' %}]]></search>
+            <add position="before"><![CDATA[
+                {% if orders and orders.0.aw_history %}{% if orders.0.aw_history.show_history %}<td class="text-center">{{ orders.0.aw_history.label_history }}</td>{% endif %}{% if orders.0.aw_history.show_duplicates %}<td class="text-center">{{ orders.0.aw_history.label_duplicates }}</td>{% endif %}{% endif %}
+                ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left">{{ order.customer }}</td>]]></search>
+            <add position="after"><![CDATA[
+                {% if order.aw_history %}{% if order.aw_history.show_history %}<td class="text-center aw-oh-cell">{{ order.aw_history.history_html|raw }}</td>{% endif %}{% if order.aw_history.show_duplicates %}<td class="text-center aw-oh-cell">{{ order.aw_history.duplicates_html|raw }}</td>{% endif %}{% endif %}
+                ]]></add>
+        </operation>
+    </file>
 </modification>
