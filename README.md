@@ -66,24 +66,24 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
 
 <table>
   <tr>
-    <td width="50%"><b>DB Optimizer</b><br><img src="db-optimizer/img/screenshot.png" alt="DB Optimizer"></td>
-    <td width="50%"><b>Easy Checkout (page builder)</b><br><img src="easy-checkout/img/screenshot.png" alt="Easy Checkout"></td>
+    <td width="50%"><b>DB Optimizer</b><br><img src="db-optimizer/img/gallery/02-analysis.png" alt="DB Optimizer"></td>
+    <td width="50%"><b>Easy Checkout (page builder)</b><br><img src="easy-checkout/img/gallery/02-page-builder.png" alt="Easy Checkout"></td>
   </tr>
   <tr>
-    <td><b>Store Reviews</b><br><img src="store-reviews/img/screenshot.png" alt="Store Reviews"></td>
-    <td><b>FAQ</b><br><img src="faq/img/screenshot.png" alt="FAQ"></td>
+    <td><b>Store Reviews</b><br><img src="store-reviews/img/gallery/05-storefront.png" alt="Store Reviews"></td>
+    <td><b>FAQ</b><br><img src="faq/img/gallery/04-storefront.png" alt="FAQ"></td>
   </tr>
   <tr>
-    <td><b>Age Verification</b><br><img src="age-verification/img/screenshot.png" alt="Age Verification"></td>
-    <td><b>Alcohol Dilution Calculator</b><br><img src="moonshine-calc/img/screenshot.png" alt="Alcohol Dilution Calculator"></td>
+    <td><b>Age Verification</b><br><img src="age-verification/img/gallery/02-storefront-popup.png" alt="Age Verification"></td>
+    <td><b>Alcohol Dilution Calculator</b><br><img src="moonshine-calc/img/gallery/02-storefront.png" alt="Alcohol Dilution Calculator"></td>
   </tr>
   <tr>
-    <td><b>E-commerce Tracking (GA4)</b><br><img src="ecommerce-tracking/img/screenshot.png" alt="E-commerce Tracking"></td>
-    <td><b>SMS Notifications</b><br><img src="sms-notifications/img/screenshot.png" alt="SMS Notifications"></td>
+    <td><b>E-commerce Tracking (GA4)</b><br><img src="ecommerce-tracking/img/gallery/02-general.png" alt="E-commerce Tracking"></td>
+    <td><b>SMS Notifications</b><br><img src="sms-notifications/img/gallery/02-sms-templates.png" alt="SMS Notifications"></td>
   </tr>
   <tr>
-    <td><b>Microdata</b><br><img src="microdata/img/screenshot.png" alt="Microdata"></td>
-    <td><b>Buyer History</b><br><img src="buyer-history/img/screenshot.png" alt="Buyer History"></td>
+    <td><b>Microdata</b><br><img src="microdata/img/gallery/02-organization.png" alt="Microdata"></td>
+    <td><b>Buyer History</b><br><img src="buyer-history/img/gallery/08-order-list-columns.png" alt="Buyer History"></td>
   </tr>
 </table>
 
