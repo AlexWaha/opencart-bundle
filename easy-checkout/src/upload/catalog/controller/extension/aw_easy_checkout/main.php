@@ -25,6 +25,27 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         $this->url->addRewrite($helper);
     }
 
+    public function replace(&$route = null, &$args = null)
+    {
+        if (! $this->moduleConfig->get('status')) {
+            return;
+        }
+
+        $current = is_string($route) && $route !== ''
+            ? $route
+            : (string) ($this->request->get['route'] ?? '');
+
+        $target = $this->url->link('extension/' . $this->moduleName . '/main', '', true);
+
+        if ($current === 'checkout/cart' && $this->moduleConfig->get('replace_cart')) {
+            $this->response->redirect($target);
+        }
+
+        if ($current === 'checkout/checkout' && $this->moduleConfig->get('replace_checkout')) {
+            $this->response->redirect($target);
+        }
+    }
+
     public function index()
     {
         $this->load->language('extension/' . $this->moduleName . '/lang');

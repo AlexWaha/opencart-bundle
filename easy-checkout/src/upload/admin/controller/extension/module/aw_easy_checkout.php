@@ -1056,6 +1056,7 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->load->model('extension/module/' . $this->moduleName);
         $this->model_extension_module_aw_easy_checkout->install();
 
+        $this->installEvents();
         $this->installPermissions();
     }
 
@@ -1065,8 +1066,38 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleChildName);
 
+        $this->uninstallEvents();
+
         $this->awCore->removeConfig($this->moduleName);
         $this->awCore->removeConfig($this->moduleChildName);
+    }
+
+    private function installEvents(): void
+    {
+        $this->load->model('setting/event');
+
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_replace_cart',
+            'catalog/controller/checkout/cart/before',
+            'extension/' . $this->moduleName . '/main/replace'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_replace_checkout',
+            'catalog/controller/checkout/checkout/before',
+            'extension/' . $this->moduleName . '/main/replace'
+        );
+    }
+
+    private function uninstallEvents(): void
+    {
+        $this->load->model('setting/event');
+
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
     }
 
     protected function installPermissions()
