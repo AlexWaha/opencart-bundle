@@ -2,14 +2,14 @@
 
 # OpenCart Extension Bundle
 
-**13 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
+**15 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
 
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
 
 ![PHP](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)
 ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Modules](https://img.shields.io/badge/Modules-14-green)
+![Modules](https://img.shields.io/badge/Modules-15-green)
 [![License](https://img.shields.io/github/license/AlexWaha/opencart-bundle)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AlexWaha/opencart-bundle?style=social)](https://github.com/AlexWaha/opencart-bundle/stargazers)
 
@@ -44,6 +44,7 @@ All modules use a shared helper library (**AW Core**) and the same admin UI, so 
 | <img src="xml-feed/img/extension.png" width="120"> | **[XML Feed](xml-feed)** ⭐ | Product feeds for Google Merchant, Facebook and any marketplace. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/xml-feed/dist/aw_xml_feed_oc2.3-3.x.ocmod.zip) · [Docs](xml-feed/docs/en.md) |
 | <img src="ecommerce-tracking/img/extension.png" width="120"> | **[E-commerce Tracking (GA4)](ecommerce-tracking)** ⭐ | Full GA4 e-commerce event tracking via OpenCart events. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/ecommerce-tracking/dist/aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip) · [Docs](ecommerce-tracking/docs/en.md) |
 | <img src="gdpr-consent/img/extension.png" width="120"> | **[GDPR Consent](gdpr-consent)** ⭐ | Cookiebot-style cookie consent bar with full Google Consent Mode v2 signals. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/gdpr-consent/dist/aw_gdpr_consent_oc2.3-3.x.ocmod.zip) · [Docs](gdpr-consent/docs/en.md) |
+| <img src="redirect/img/extension.png" width="120"> | **[Redirect Manager](redirect)** ⭐ | URL redirect rules (301/302/410, wildcards) + auto 404 resolver, served from a hot cache. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/redirect/dist/aw_redirect_oc2.3-3.x.ocmod.zip) · [Docs](redirect/docs/en.md) |
 | <img src="landing-pages/img/extension.png" width="120"> | **[Landing Pages](landing-pages)** | Build custom landing pages and short marketing links. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip) · [Docs](landing-pages/docs/en.md) |
 | <img src="age-verification/img/extension.png" width="120"> | **[Age Verification](age-verification)** | Age-gate popup shown before customers enter the store. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip) · [Docs](age-verification/docs/en.md) |
 | <img src="moonshine-calc/img/extension.png" width="120"> | **[Alcohol Dilution Calculator](moonshine-calc)** | Interactive alcohol/moonshine dilution calculator page. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip) · [Docs](moonshine-calc/docs/en.md) |
@@ -86,6 +87,10 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
   <tr>
     <td><b>GDPR Consent (storefront)</b><br><img src="gdpr-consent/img/gallery/03-storefront.png" alt="GDPR Consent storefront"></td>
     <td><b>GDPR Consent (admin)</b><br><img src="gdpr-consent/img/gallery/01-admin.png" alt="GDPR Consent admin"></td>
+  </tr>
+  <tr>
+    <td><b>Redirect Manager (rules)</b><br><img src="redirect/img/gallery/01-rules-list.png" alt="Redirect Manager rules"></td>
+    <td><b>Redirect Manager (404 resolver)</b><br><img src="redirect/img/gallery/03-404-resolver.png" alt="Redirect Manager 404 resolver"></td>
   </tr>
 </table>
 

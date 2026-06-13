@@ -1,0 +1,147 @@
+{{ header }}{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ log_url }}" class="btn btn-default"><i class="fa fa-bug"></i> {{ text_log }}</a>
+                <a href="{{ settings_url }}" class="btn btn-default"><i class="fa fa-cog"></i> {{ text_settings }}</a>
+                <a href="{{ add }}" class="btn btn-primary"><i class="fa fa-plus"></i> {{ button_add }}</a>
+                <button type="submit" form="form-redirect-list" formaction="{{ delete }}"
+                        onclick="return confirm('{{ text_confirm }}');"
+                        class="btn btn-danger"><i class="fa fa-trash"></i> {{ button_delete }}</button>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-exchange"></i> {{ text_list }}</h3>
+            </div>
+            <div class="panel-body">
+                <div class="well">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>{{ entry_source }}</label>
+                                <input type="text" id="filter-source" value="{{ filter_source }}" placeholder="{{ entry_source }}" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>{{ entry_match_type }}</label>
+                                <select id="filter-match-type" class="form-control">
+                                    <option value="">{{ text_all }}</option>
+                                    <option value="0" {{ filter_match_type == '0' ? 'selected' }}>{{ text_exact }}</option>
+                                    <option value="1" {{ filter_match_type == '1' ? 'selected' }}>{{ text_wildcard }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>{{ entry_status }}</label>
+                                <select id="filter-status" class="form-control">
+                                    <option value="">{{ text_all }}</option>
+                                    <option value="1" {{ filter_status == '1' ? 'selected' }}>{{ text_enabled }}</option>
+                                    <option value="0" {{ filter_status == '0' ? 'selected' }}>{{ text_disabled }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="button" id="btn-filter" class="btn btn-primary btn-block"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-redirect-list">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th style="width:1px;" class="text-center">
+                                    <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
+                                </th>
+                                <th>{{ column_source }}</th>
+                                <th>{{ column_target }}</th>
+                                <th class="text-center" style="width:90px;">{{ column_type }}</th>
+                                <th class="text-center" style="width:70px;">{{ column_code }}</th>
+                                <th class="text-center" style="width:70px;">{{ column_hits }}</th>
+                                <th class="text-center" style="width:90px;">{{ column_status }}</th>
+                                <th class="text-right" style="width:60px;">{{ column_action }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if redirects %}
+                                {% for r in redirects %}
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" name="selected[]" value="{{ r.redirect_id }}"/></td>
+                                        <td><span class="badge-code">{{ r.source }}</span></td>
+                                        <td><span class="badge-code">{{ r.target }}</span></td>
+                                        <td class="text-center">
+                                            {% if r.match_type %}
+                                                <span class="label label-warning">{{ text_wildcard }}</span>
+                                            {% else %}
+                                                <span class="label label-default">{{ text_exact }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ r.status_code }}</td>
+                                        <td class="text-center">{{ r.hits }}</td>
+                                        <td class="text-center">
+                                            {% if r.status %}
+                                                <span class="label label-success">{{ text_enabled }}</span>
+                                            {% else %}
+                                                <span class="label label-danger">{{ text_disabled }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="{{ r.edit }}" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td class="text-center" colspan="8">{{ text_no_results }}</td></tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination }}</div>
+                    <div class="col-sm-6 text-right">{{ results }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    'use strict';
+    document.getElementById('btn-filter').addEventListener('click', function () {
+        var params = new URLSearchParams(window.location.search);
+        var map = { filter_source: 'filter-source', filter_match_type: 'filter-match-type', filter_status: 'filter-status' };
+        Object.keys(map).forEach(function (key) {
+            var val = document.getElementById(map[key]).value;
+            if (val !== '') { params.set(key, val); } else { params.delete(key); }
+        });
+        params.delete('page');
+        window.location.search = params.toString();
+    });
+})();
+</script>
+{{ footer }}

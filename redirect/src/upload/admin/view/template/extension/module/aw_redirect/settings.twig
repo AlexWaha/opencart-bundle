@@ -1,0 +1,90 @@
+{{ header }}
+{{ column_left }}
+<div id="content" class="theme-origin">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-{{ module_name }}" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title|raw }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error.warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error.warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-cog"></i> {{ text_settings }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-{{ module_name }}" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% set tabs = [
+                                { id: 'general', label: tab_general },
+                                { id: 'import_export', label: tab_import_export },
+                                { id: 'support', label: tab_support }
+                            ] %}
+                            {% include 'extension/module/aw_redirect/v-tabs-nav.twig' with { tabs: tabs, active_tab: 'general' } %}
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                {% for t in tabs %}
+                                    <div id="v-tab_{{ t.id }}" class="tab-pane {{ loop.first ? 'active' }}">
+                                        {% include 'extension/module/aw_redirect/tabs/' ~ t.id ~ '.twig' ignore missing %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    'use strict';
+    var exportBtn = document.getElementById('btn-export-csv');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function () { window.location.href = '{{ export_url }}'; });
+    }
+
+    var importBtn = document.getElementById('btn-import-csv');
+    var fileInput = document.getElementById('import-file');
+    if (importBtn && fileInput) {
+        importBtn.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function () {
+            if (!fileInput.value) { return; }
+            if (!confirm('{{ text_import_confirm|e('js') }}')) { fileInput.value = ''; return; }
+            var fd = new FormData();
+            fd.append('import_file', fileInput.files[0]);
+            var $tab = $('#v-tab_import_export');
+            $.ajax({
+                url: '{{ import_action }}',
+                type: 'POST', data: fd, dataType: 'json', cache: false, contentType: false, processData: false,
+                success: function (json) {
+                    $tab.find('.alert').remove();
+                    fileInput.value = '';
+                    if (json.error) { $tab.prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json.error + '</div>'); }
+                    if (json.success) { $tab.prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json.success + '</div>'); setTimeout(function () { location.reload(); }, 1500); }
+                }
+            });
+        });
+    }
+})();
+</script>
+{{ footer }}

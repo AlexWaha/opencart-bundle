@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-download"></i> {{ button_export }}</h4>
+            </div>
+            <div class="panel-body">
+                <p>{{ text_export_description }}</p>
+                <button type="button" id="btn-export-csv" class="btn btn-success btn-lg btn-block">
+                    <i class="fa fa-download"></i> {{ button_export }}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-upload"></i> {{ button_import }}</h4>
+            </div>
+            <div class="panel-body">
+                <p>{{ text_import_description }}</p>
+                <div class="alert alert-warning">{{ text_import_warning }}</div>
+                <button type="button" id="btn-import-csv" class="btn btn-primary btn-lg btn-block">
+                    <i class="fa fa-upload"></i> {{ button_import }}
+                </button>
+                <input type="file" id="import-file" accept=".csv" style="display:none;">
+            </div>
+        </div>
+    </div>
+</div>
+<p class="help-block"><code>source,target,status_code,match_query,store_id,status</code></p>
