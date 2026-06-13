@@ -1,0 +1,37 @@
+<div id="aw-gdpr-consent" class="aw-gdpr aw-gdpr-theme-{{ theme }}" style="--aw-gdpr-accent: {{ accent_color }};">
+    <div class="aw-gdpr-bar" role="dialog" aria-live="polite" aria-label="{{ title }}">
+        <div class="aw-gdpr-inner">
+            <div class="aw-gdpr-content">
+                <strong class="aw-gdpr-title">{{ title }}</strong>
+                <div class="aw-gdpr-message">
+                    {{ message|raw }}
+                    {% if policy_link %}
+                        <a class="aw-gdpr-policy" href="{{ policy_link }}" target="_blank" rel="noopener">{{ text_policy_link }}</a>
+                    {% endif %}
+                </div>
+
+                <div class="aw-gdpr-cats">
+                    {% for category in categories %}
+                        <label class="aw-gdpr-cat{{ category.locked ? ' is-locked' : '' }}" title="{{ category.description }}">
+                            <input type="checkbox" data-aw-gdpr-cat="{{ category.key }}"{{ category.locked ? ' checked disabled' : '' }}>
+                            <span class="aw-gdpr-cat-mark"></span>
+                            <span class="aw-gdpr-cat-name">{{ category.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="aw-gdpr-actions">
+                <button type="button" class="aw-gdpr-btn aw-gdpr-btn-accent" data-aw-gdpr="accept">{{ button_accept }}</button>
+                <button type="button" class="aw-gdpr-btn aw-gdpr-btn-ghost" data-aw-gdpr="selection">{{ button_selection }}</button>
+                <button type="button" class="aw-gdpr-btn aw-gdpr-btn-ghost" data-aw-gdpr="deny">{{ button_deny }}</button>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="aw-gdpr-widget" data-aw-gdpr="reopen" aria-label="{{ button_settings }}">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-4-4 4 4 0 0 1-4-4 2 2 0 0 0-2-2zm-3 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm6 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-7 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
+        </svg>
+    </button>
+</div>

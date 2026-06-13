@@ -1,0 +1,72 @@
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_status }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="status">
+        <input type="hidden" name="status" value="0" id="status-off" {% if not gdpr_consent_status %}checked="checked"{% endif %} />
+        <input type="checkbox" name="status" value="1" id="status" {% if gdpr_consent_status %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_title }}</label>
+    <div class="col-xs-9 col-sm-6">
+        {% for language in languages %}
+            <div class="input-group mb-15">
+                <span class="input-group-addon">
+                    <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" alt="{{ language.name }}"/>
+                </span>
+                <input type="text" name="title[{{ language.language_id }}]" value="{{ gdpr_consent_title[language.language_id] ?? '' }}" placeholder="{{ entry_title }}" class="form-control"/>
+            </div>
+            {% if error.title[language.language_id] %}
+                <div class="text-danger">{{ error.title[language.language_id] }}</div>
+            {% endif %}
+        {% endfor %}
+        <p class="help-block">{{ help_title }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_message }}</label>
+    <div class="col-sm-9">
+        <ul class="nav nav-tabs" id="language-message">
+            {% for language in languages %}
+                <li{% if loop.first %} class="active"{% endif %}>
+                    <a href="#language-msg{{ language.language_id }}" data-toggle="tab">
+                        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/> {{ language.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for language in languages %}
+                <div class="tab-pane{% if loop.first %} active{% endif %}" id="language-msg{{ language.language_id }}">
+                    <textarea name="message[{{ language.language_id }}]" rows="4" placeholder="{{ entry_message }}" id="input-message{{ language.language_id }}" class="form-control summernote">{{ gdpr_consent_message[language.language_id] ?? '' }}</textarea>
+                </div>
+            {% endfor %}
+        </div>
+        <p class="help-block">{{ help_message }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-policy-page">{{ entry_policy_page }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <select name="policy_page" id="input-policy-page" class="form-control">
+            <option value="0">{{ text_select_page }}</option>
+            {% for information in informations %}
+                <option value="{{ information.information_id }}" {{ gdpr_consent_policy_page == information.information_id ? 'selected' : '' }}>{{ information.title }}</option>
+            {% endfor %}
+        </select>
+        <p class="help-block">{{ help_policy_page }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-cookie-days">{{ entry_cookie_days }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input type="number" name="cookie_days" value="{{ gdpr_consent_cookie_days }}" placeholder="365" id="input-cookie-days" class="form-control" min="1" max="730"/>
+        {% if error.cookie_days %}
+            <div class="text-danger">{{ error.cookie_days }}</div>
+        {% endif %}
+        <p class="help-block">{{ help_cookie_days }}</p>
+    </div>
+</div>

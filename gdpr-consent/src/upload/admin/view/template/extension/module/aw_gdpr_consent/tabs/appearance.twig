@@ -1,0 +1,18 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-theme">{{ entry_theme }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <select name="theme" id="input-theme" class="form-control">
+            <option value="light" {{ gdpr_consent_theme == 'light' ? 'selected' : '' }}>{{ text_theme_light }}</option>
+            <option value="dark" {{ gdpr_consent_theme == 'dark' ? 'selected' : '' }}>{{ text_theme_dark }}</option>
+        </select>
+        <p class="help-block">{{ help_theme }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="input-accent-color">{{ entry_accent_color }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input type="color" name="accent_color" value="{{ gdpr_consent_accent_color }}" id="input-accent-color" class="form-control" style="max-width: 80px; padding: 4px;"/>
+        <p class="help-block">{{ help_accent_color }}</p>
+    </div>
+</div>

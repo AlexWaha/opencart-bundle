@@ -1,0 +1,19 @@
+<script>
+    window.AwGdprConsent = {
+        cookieName: 'aw_gdpr_consent',
+        cookieDays: {{ cookie_days }},
+        signals: {{ signals|raw }}
+    };
+    (() => {
+        const { signals } = window.AwGdprConsent;
+        const flat = Object.values(signals).flat();
+        const state = Object.fromEntries(
+            flat.map((signal) => [signal, document.cookie.includes(`${signal}=granted`) ? 'granted' : 'denied'])
+        );
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+
+        window.gtag('consent', 'default', state);
+    })();
+</script>

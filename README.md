@@ -2,19 +2,18 @@
 
 # OpenCart Extension Bundle
 
-**13 free, open-source extensions for OpenCart 2.3.x & 3.x — checkout, SEO, marketing, notifications and performance, all in one place.**
+**13 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
 
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
 
 ![PHP](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)
 ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Modules](https://img.shields.io/badge/Modules-13-green)
+![Modules](https://img.shields.io/badge/Modules-14-green)
 [![License](https://img.shields.io/github/license/AlexWaha/opencart-bundle)](LICENSE)
-![Last commit](https://img.shields.io/github/last-commit/AlexWaha/opencart-bundle)
 [![Stars](https://img.shields.io/github/stars/AlexWaha/opencart-bundle?style=social)](https://github.com/AlexWaha/opencart-bundle/stargazers)
 
-### ⭐ If this bundle saves you time, please [star the repo](https://github.com/AlexWaha/opencart-bundle) — it helps other OpenCart store owners find it.
+### ⭐ If this bundle saves you time, please [star the repo](https://github.com/AlexWaha/opencart-bundle). It helps other OpenCart store owners find it.
 
 </div>
 
@@ -22,15 +21,15 @@
 
 ## Overview
 
-**OpenCart Extension Bundle** is a free and open-source collection of extensions for the OpenCart e-commerce CMS. Every extension is compatible with **OpenCart 2.3.x and 3.x** (4.x* partial), ships as a ready-to-install `*.ocmod.zip`, and comes with English and Russian docs. Provided **as is**, without warranty.
+**OpenCart Extension Bundle** is a free, open-source collection of extensions for the OpenCart e-commerce CMS. Every extension works on **OpenCart 2.3.x and 3.x** (4.x is partially supported), installs from a ready-to-use `*.ocmod.zip`, and includes English and Russian docs. Provided **as is**, without warranty.
 
-All modules share a small helper library (**AW Core**) and a consistent admin UI, so they look and behave the same across your store.
+All modules use a shared helper library (**AW Core**) and the same admin UI, so they look and behave consistently across your store.
 
 ## Installation
 
-1. Install **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)** first — shared helper functionality required by all extensions.
+1. Install **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)** first. It holds the shared helper code that every extension needs.
 2. Install any extension's `*.ocmod.zip` from its **`dist/`** folder (links in the table below).
-3. For step-by-step setup, see the **`docs/en.md`** / **`docs/ru.md`** inside each extension folder.
+3. For step-by-step setup, see **`docs/en.md`** or **`docs/ru.md`** inside each extension folder.
 
 > Always back up your store before installing extensions on production.
 
@@ -44,6 +43,7 @@ All modules share a small helper library (**AW Core**) and a consistent admin UI
 | <img src="sms-notifications/img/extension.png" width="120"> | **[SMS Notifications](sms-notifications)** ⭐ | Order status SMS + Telegram alerts, OTP login, 30+ SMS gateways. | [Download](https://github.com/AlexWaha/opencart-bundle/tree/master/sms-notifications/dist/aw_sms_notify_oc2.3-3.x.ocmod.zip) · [Docs](sms-notifications/docs/en.md) |
 | <img src="xml-feed/img/extension.png" width="120"> | **[XML Feed](xml-feed)** ⭐ | Product feeds for Google Merchant, Facebook and any marketplace. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/xml-feed/dist/aw_xml_feed_oc2.3-3.x.ocmod.zip) · [Docs](xml-feed/docs/en.md) |
 | <img src="ecommerce-tracking/img/extension.png" width="120"> | **[E-commerce Tracking (GA4)](ecommerce-tracking)** ⭐ | Full GA4 e-commerce event tracking via OpenCart events. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/ecommerce-tracking/dist/aw_ecommerce_tracking_oc2.3-3.x.ocmod.zip) · [Docs](ecommerce-tracking/docs/en.md) |
+| <img src="gdpr-consent/img/extension.png" width="120"> | **[GDPR Consent](gdpr-consent)** ⭐ | Cookiebot-style cookie consent bar with full Google Consent Mode v2 signals. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/gdpr-consent/dist/aw_gdpr_consent_oc2.3-3.x.ocmod.zip) · [Docs](gdpr-consent/docs/en.md) |
 | <img src="landing-pages/img/extension.png" width="120"> | **[Landing Pages](landing-pages)** | Build custom landing pages and short marketing links. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/landing-pages/dist/aw_landing_pages_oc2.3-3.x.ocmod.zip) · [Docs](landing-pages/docs/en.md) |
 | <img src="age-verification/img/extension.png" width="120"> | **[Age Verification](age-verification)** | Age-gate popup shown before customers enter the store. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/age-verification/dist/aw_age_verification_oc2.3-3.x.ocmod.zip) · [Docs](age-verification/docs/en.md) |
 | <img src="moonshine-calc/img/extension.png" width="120"> | **[Alcohol Dilution Calculator](moonshine-calc)** | Interactive alcohol/moonshine dilution calculator page. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/moonshine-calc/dist/aw_moonshine_calculator_oc2.3-3.x.ocmod.zip) · [Docs](moonshine-calc/docs/en.md) |
@@ -52,7 +52,7 @@ All modules share a small helper library (**AW Core**) and a consistent admin UI
 | <img src="store-reviews/img/extension.png" width="120"> | **[Store Reviews](store-reviews)** | Customer store reviews with a configurable carousel. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/store-reviews/dist/aw_store_reviews_oc2.3-3.x.ocmod.zip) · [Docs](store-reviews/docs/en.md) |
 | <img src="buyer-history/img/extension.png" width="120"> | **[Buyer History](buyer-history)** | Customer order history and duplicate-order flags in the order list. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/buyer-history/dist/aw_buyer_history_oc2.3-3.x.ocmod.zip) · [Docs](buyer-history/docs/en.md) |
 | <img src="microdata/img/extension.png" width="120"> | **[Microdata](microdata)** | Schema.org microdata for rich search-result snippets. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip) · [Docs](microdata/docs/en.md) |
-| <img src="db-optimizer/img/extension.png" width="120"> | **[DB Optimizer](db-optimizer)** | Analyze the database, add missing indexes and convert tables to InnoDB — safely and reversibly. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/db-optimizer/dist/aw_db_optimize_oc2.3-3.x.ocmod.zip) · [Docs](db-optimizer/docs/en.md) |
+| <img src="db-optimizer/img/extension.png" width="120"> | **[DB Optimizer](db-optimizer)** | Analyze the database, add missing indexes and convert tables to InnoDB, safely and reversibly. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/master/db-optimizer/dist/aw_db_optimize_oc2.3-3.x.ocmod.zip) · [Docs](db-optimizer/docs/en.md) |
 
 > ⭐ = featured. More extensions are on the way (30+ planned).
 
@@ -85,6 +85,10 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
     <td><b>Microdata</b><br><img src="microdata/img/gallery/02-organization.png" alt="Microdata"></td>
     <td><b>Buyer History</b><br><img src="buyer-history/img/gallery/08-order-list-columns.png" alt="Buyer History"></td>
   </tr>
+  <tr>
+    <td><b>GDPR Consent (storefront)</b><br><img src="gdpr-consent/img/gallery/03-storefront.png" alt="GDPR Consent storefront"></td>
+    <td><b>GDPR Consent (admin)</b><br><img src="gdpr-consent/img/gallery/01-admin.png" alt="GDPR Consent admin"></td>
+  </tr>
 </table>
 
 ---
@@ -95,7 +99,7 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
 |---|---|
 | 2.3.x | ✅ Fully supported |
 | 3.x | ✅ Fully supported |
-| 4.x | ⚠️ Partial — not all extensions are compatible yet |
+| 4.x | ⚠️ Partial, not all extensions are compatible yet |
 
 ---
 
@@ -103,11 +107,11 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
 
 Before submitting a bug report, please:
 
-1. **Search existing issues** — check open and closed [issues](https://github.com/AlexWaha/opencart-bundle/issues).
+1. **Search existing issues** in the open and closed [issues](https://github.com/AlexWaha/opencart-bundle/issues).
 2. **Open a bug report** via [GitHub Issues](https://github.com/AlexWaha/opencart-bundle/issues/new/choose).
 3. **Contact directly** via [Telegram](https://t.me/alexwaha_dev) if needed.
 4. **Core-related issues** with OpenCart itself should be reported upstream.
-5. **Check your environment** — make sure the issue is not caused by your hosting.
+5. **Check your environment** and make sure the issue is not caused by your hosting.
 
 > **Important**
 > - Not all extensions are compatible with the latest OpenCart 4.x.
@@ -129,7 +133,7 @@ Licensed under the [GNU General Public License v3 (GPLv3)](LICENSE).
 
 ## About the Developer
 
-Alex Vakhovski — Software Engineer with over a decade of full-stack experience and strong e-commerce expertise. I build scalable, high-performance applications and deliver robust, stable architecture that drives operational efficiency and revenue.
+I'm Alex Vakhovski, a full-stack software engineer with more than ten years of experience, most of it spent building and running e-commerce stores. These extensions come out of real problems I kept hitting on client projects, so I packaged them up and made them free.
 
 Learn more on my [website](https://alexwaha.com) and connect on [LinkedIn](https://www.linkedin.com/in/alexwaha).
 
