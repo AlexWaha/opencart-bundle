@@ -62,8 +62,6 @@ All modules use a shared helper library (**AW Core**) and the same admin UI, so 
 
 Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
 
-![alexwaha Demo Store homepage](docs/screenshots/home.png)
-
 <table>
   <tr>
     <td width="50%"><b>DB Optimizer</b><br><img src="db-optimizer/img/gallery/02-analysis.png" alt="DB Optimizer"></td>
