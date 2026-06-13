@@ -28,6 +28,7 @@ $_['entry_cookie_days'] = 'Cookie Storage Days';
 // Tabs
 $_['tab_general'] = 'General';
 $_['tab_appearance'] = 'Appearance';
+$_['tab_import_export'] = 'Import / Export';
 $_['tab_support'] = 'Support';
 
 // Help
@@ -42,8 +43,21 @@ $_['help_cookie_days'] = 'How long the visitor choice is remembered (default 365
 $_['button_save'] = 'Save';
 $_['button_cancel'] = 'Cancel';
 
+// Import / Export
+$_['text_import_export_title'] = 'Import / Export Settings';
+$_['text_import_export_info'] = 'Save the module configuration to a JSON file or restore it on another store.';
+$_['text_export_description'] = 'Download the current module settings as a JSON file.';
+$_['text_import_description'] = 'Upload a previously exported JSON file to restore the settings.';
+$_['text_import_warning'] = 'Importing will overwrite all current module settings. Continue?';
+$_['text_import_success'] = 'Settings imported successfully!';
+$_['button_export'] = 'Export';
+$_['button_import'] = 'Import';
+
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify GDPR consent module!';
 $_['error_title'] = 'Title must be between 3 and 255 characters!';
 $_['error_cookie_days'] = 'Cookie storage days must be between 1 and 730 days!';
+$_['error_import_file'] = 'Warning: Please select a valid JSON file to import!';
+$_['error_import_read_file'] = 'Failed to read the uploaded file!';
+$_['error_import_failed'] = 'Import failed: %s';
 $_['error_warning'] = 'Warning: Please check the form carefully for errors!';

@@ -40,6 +40,7 @@
                             {% set tabs = [
                                 { id: 'general', label: tab_general },
                                 { id: 'appearance', label: tab_appearance },
+                                { id: 'import_export', label: tab_import_export },
                                 { id: 'support', label: tab_support }
                             ] %}
                             {% set active_tab = 'general' %}
@@ -94,5 +95,64 @@
       },
     });
   }
+
+  $('#btn-export-config').on('click', function () {
+    var btn = $(this);
+    btn.button('loading');
+    window.location.href = 'index.php?route=extension/module/{{ module_name }}/exportConfig&{{ token_param }}';
+    setTimeout(function () { btn.button('reset'); }, 2000);
+  });
+
+  $('#btn-import-config').on('click', function () {
+    $('#import-file').trigger('click');
+  });
+
+  $('#import-file').on('change', function () {
+    var fileInput = $(this);
+    var importBtn = $('#btn-import-config');
+    var $vTab = $('#v-tab_import_export');
+
+    if (!fileInput.val()) {
+      return;
+    }
+
+    if (!confirm("{{ text_import_warning|striptags|e('js') }}")) {
+      fileInput.val('');
+      return;
+    }
+
+    var formData = new FormData();
+    formData.append('import_file', fileInput[0].files[0]);
+    importBtn.button('loading');
+
+    $.ajax({
+      url: 'index.php?route=extension/module/{{ module_name }}/importConfig&{{ token_param }}',
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: function (json) {
+        $vTab.find('.alert-dismissable').remove();
+        importBtn.button('reset');
+        fileInput.val('');
+
+        if (json['error']) {
+          $vTab.prepend('<div class="alert alert-danger alert-dismissable"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        }
+
+        if (json['success']) {
+          $vTab.prepend("<div class='alert alert-success'><i class='fa fa-check-circle'></i> " + json['success'] + "</div>");
+          setTimeout(function () { location.reload(); }, 1500);
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        importBtn.button('reset');
+        $vTab.find('.alert-dismissable').remove();
+        $vTab.prepend('<div class="alert alert-danger alert-dismissable"><i class="fa fa-exclamation-circle"></i> ' + thrownError + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+      }
+    });
+  });
 </script>
 {{ footer }}
