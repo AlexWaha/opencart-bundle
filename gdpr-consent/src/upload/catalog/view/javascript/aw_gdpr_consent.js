@@ -24,7 +24,12 @@
         document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
     };
 
-    const hasConsent = () => document.cookie.includes(`${config.cookieName}=`);
+    const getCookie = (name) => {
+        const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+        return match ? decodeURIComponent(match[1]) : null;
+    };
+
+    const hasConsent = () => getCookie(config.cookieName) !== null;
 
     const pushUpdate = (signalState) => {
         window.dataLayer = window.dataLayer || [];
@@ -58,6 +63,24 @@
 
         const showBar = () => root.classList.add('is-open');
         const hideBar = () => root.classList.remove('is-open');
+
+        const restore = () => {
+            const saved = getCookie(config.cookieName);
+
+            if (!saved) {
+                return;
+            }
+
+            const granted = saved.split('|');
+
+            categories.forEach((category) => {
+                const input = root.querySelector(`[data-aw-gdpr-cat="${category}"]`);
+
+                if (input && !input.disabled) {
+                    input.checked = granted.includes(category);
+                }
+            });
+        };
 
         const collect = () => [
             ...categories.filter((category) => {
@@ -95,6 +118,8 @@
                 action();
             }
         });
+
+        restore();
 
         if (!hasConsent()) {
             showBar();
