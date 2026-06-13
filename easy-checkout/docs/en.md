@@ -55,7 +55,7 @@
 
 ### Step 1: Prerequisites
 
-1. Make sure you have the **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)** module installed
+1. Make sure you have the **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)** module installed
 
    > **Important:** This is auxiliary functionality for all AlexWaha modules
 
@@ -1865,7 +1865,7 @@ If you can't solve the problem yourself:
 
 ### License
 
-This project is distributed under [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
+This project is distributed under [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE).
 
 Rights and authorship of this software belong to developer:
 **Alexander Vakhovski (Oleksandr Vakhovskyi)**

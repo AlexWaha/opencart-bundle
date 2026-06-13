@@ -52,7 +52,7 @@
 
 ### Требования
 
-1. Установите **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+1. Установите **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
 2. Для Opencart 2.3.x: отключите FTP модуль или настройте FTP
 
@@ -324,7 +324,7 @@ window.awEcommerceTracking.push({ event: 'custom', data: 'value' });
 
 ### Лицензия
 
-[GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE)
+[GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE)
 
 **Автор:** Alexander Vakhovski (Oleksandr Vakhovskyi) / Alexwaha
 

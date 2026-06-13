@@ -73,7 +73,7 @@
 
 ### Шаг 1: Предварительные требования
 
-1. Убедитесь, что у вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+1. Убедитесь, что у вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
    > **Важно:** Это вспомогательный функционал, необходимый для работы всех модулей AlexWaha
 

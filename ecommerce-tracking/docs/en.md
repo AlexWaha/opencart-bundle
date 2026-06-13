@@ -52,7 +52,7 @@
 
 ### Prerequisites
 
-1. Install **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+1. Install **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
 2. For Opencart 2.3.x: FTP disable module or correct FTP settings
 
@@ -351,7 +351,7 @@ The module registers a dedicated controller event for Easy Checkout. If events a
 
 ### License
 
-[GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE)
+[GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE)
 
 **Author:** Alexander Vakhovski (Oleksandr Vakhovskyi) / Alexwaha
 

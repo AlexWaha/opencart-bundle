@@ -67,7 +67,7 @@ OpenCart.
 
 ## Лицензия
 
-Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
+Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE).
 
 Права и авторство на это программное обеспечение принадлежат разработчику Oleksandr Vakhovskyi (Alexwaha), сайт [https://alexwaha.com](https://alexwaha.com)
 

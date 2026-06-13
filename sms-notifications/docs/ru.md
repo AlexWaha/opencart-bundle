@@ -27,7 +27,7 @@
 
 1. **Установка основного модуля**
 
-   Убедитесь в том, что у Вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+   Убедитесь в том, что у Вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
    > Это вспомогательный функционал для работы всех моих модулей.
 
@@ -371,7 +371,7 @@ $this->model_extension_module_aw_sms_notify->sendMessage($smsData);
 
 ## Лицензия
 
-Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
+Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE).
 
 Права и авторство на ПО принадлежат разработчику Ваховскому Александру Витальевичу (Alexwaha), сайт [https://alexwaha.com](https://alexwaha.com)
 

@@ -55,7 +55,7 @@
 
 ### Шаг 1: Предварительные требования
 
-1. Убедитесь в том, что у Вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/master/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
+1. Убедитесь в том, что у Вас установлен модуль **[aw_core_oc2.3-3.x.ocmod.zip](https://github.com/AlexWaha/opencart-bundle/blob/main/Core/dist/aw_core_oc2.3_3.x.ocmod.zip)**
 
    > **Важно:** Это вспомогательный функционал для работы всех модулей AlexWaha
 
@@ -1865,7 +1865,7 @@ echo '</pre>';
 
 ### Лицензия
 
-Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/master/LICENSE).
+Этот проект распространяется под лицензией [GNU General Public License version 3 (GPLv3)](https://github.com/alexwaha/opencart-bundle/blob/main/LICENSE).
 
 Права и авторство данного программного обеспечения принадлежат разработчику:
 **Александр Ваховский (Oleksandr Vakhovskyi)**
