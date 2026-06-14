@@ -75,18 +75,6 @@ The settings screen (**Extensions -> Modules -> alexwaha.com - Viewed Products**
 
 ---
 
-## Screenshots
-
-| | |
-|---|---|
-| Recently Viewed block on a product page | ![Widget](../img/viewed_widget.png) |
-| Viewed Products account page | ![Page](../img/viewed_page.png) |
-| Account link in the customer account | ![Account](../img/account_menu.png) |
-| Admin - Widget tab | ![Admin widget](../img/admin_widget.png) |
-| Admin - Account Page tab (SEO) | ![Admin page](../img/admin_page_seo.png) |
-
----
-
 ## For Developers
 
 ### Technical Overview
