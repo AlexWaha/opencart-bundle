@@ -34,6 +34,7 @@ class ControllerExtensionModuleAwViewedPage extends Controller
         $this->load->language('extension/module/aw_viewed_page');
 
         $this->document->setTitle($this->language->get('heading_title'));
+        $this->document->setRobots('noindex,follow');
 
         $data['heading_title'] = $this->language->get('heading_title');
         $data['button_continue'] = $this->language->get('button_continue');

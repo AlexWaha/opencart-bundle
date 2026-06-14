@@ -27,3 +27,42 @@
         {% endfor %}
     </div>
 </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_seo_url }}</label>
+    <div class="col-sm-10">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <td class="text-left">{{ entry_store }}</td>
+                <td class="text-left">{{ entry_seo_url }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for store in store_list %}
+                <tr>
+                    <td class="text-left">{{ store.name }}</td>
+                    <td class="text-left">
+                        {% if is_legacy %}
+                            {% set lang = languages|filter(l => l.language_id == config_language_id)|first %}
+                            <div class="input-group">
+                                <span class="input-group-addon"><img src="language/{{ lang.code }}/{{ lang.code }}.png" title="{{ lang.name }}"/></span>
+                                <input type="text" name="seo_url[{{ store.store_id }}][{{ lang.language_id }}]" value="{{ seo_url[store.store_id][lang.language_id] is defined ? seo_url[store.store_id][lang.language_id] : '' }}" placeholder="{{ entry_seo_url }}" class="form-control"/>
+                            </div>
+                            {% if error_seo_url[store.store_id][lang.language_id] is defined %}<div class="text-danger">{{ error_seo_url[store.store_id][lang.language_id] }}</div>{% endif %}
+                        {% else %}
+                            {% for language in languages %}
+                                <div class="input-group{{ not loop.last ? ' mb-10' }}">
+                                    <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+                                    <input type="text" name="seo_url[{{ store.store_id }}][{{ language.language_id }}]" value="{{ seo_url[store.store_id][language.language_id] is defined ? seo_url[store.store_id][language.language_id] : '' }}" placeholder="{{ entry_seo_url }}" class="form-control"/>
+                                </div>
+                                {% if error_seo_url[store.store_id][language.language_id] is defined %}<div class="text-danger">{{ error_seo_url[store.store_id][language.language_id] }}</div>{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="help-block">{{ help_seo_url }}</div>
+    </div>
+</div>

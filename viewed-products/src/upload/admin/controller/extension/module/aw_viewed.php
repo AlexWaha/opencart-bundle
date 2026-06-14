@@ -63,6 +63,14 @@ class ControllerExtensionModuleAwViewed extends Controller
                 'menu_label'    => $this->request->post['menu_label'] ?? [],
             ]);
 
+            $seoUrls = $this->filterSeoUrls($this->request->post['seo_url'] ?? []);
+
+            if ($seoUrls) {
+                $this->awCore->setSeoUrls($seoUrls, 'extension/module/aw_viewed_page');
+            }
+
+            $this->cache->delete('seo_pro');
+
             $this->session->data['success'] = $this->language->get('text_success');
             $this->response->redirect($this->url->link($this->routeExtension, $this->tokenData['param'] . '&type=module', true));
         }
@@ -86,6 +94,18 @@ class ControllerExtensionModuleAwViewed extends Controller
 
         $this->load->model('localisation/language');
         $data['languages'] = $this->model_localisation_language->getLanguages();
+
+        $this->load->model('setting/store');
+        $data['store_list'] = [['store_id' => 0, 'name' => $this->language->get('text_default')]];
+
+        foreach ($this->model_setting_store->getStores() as $store) {
+            $data['store_list'][] = ['store_id' => $store['store_id'], 'name' => $store['name']];
+        }
+
+        $data['is_legacy'] = $this->awCore->isLegacy();
+        $data['config_language_id'] = (int) $this->config->get('config_language_id');
+        $data['seo_url'] = $this->request->post['seo_url'] ?? ($this->awCore->getSeoUrls('extension/module/aw_viewed_page') ?? []);
+        $data['error_seo_url'] = $this->error['seo_url'] ?? [];
 
         $data['name']      = $this->request->post['name']      ?? ($module_info['name'] ?? '');
         $data['status']    = $this->request->post['status']    ?? ($module_info['status'] ?? 0);
@@ -206,6 +226,42 @@ class ControllerExtensionModuleAwViewed extends Controller
             $this->error['height'] = $this->language->get('error_height');
         }
 
+        // SEO keyword is optional; validate only filled values.
+        if (isset($this->request->post['seo_url'])) {
+            foreach ($this->request->post['seo_url'] as $storeId => $languages) {
+                foreach ($languages as $languageId => $seoUrl) {
+                    $seoUrl = trim((string) $seoUrl);
+
+                    if ($seoUrl === '') {
+                        continue;
+                    }
+
+                    if (utf8_strlen($seoUrl) > 255) {
+                        $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url');
+                    } elseif (count(array_keys(array_map('trim', $languages), $seoUrl)) > 1) {
+                        $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url_unique');
+                    } elseif ($this->awCore->seoUrlExists($seoUrl, (int) $storeId, (int) $languageId, 'extension/module/aw_viewed_page')) {
+                        $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url_exists');
+                    }
+                }
+            }
+        }
+
         return !$this->error;
+    }
+
+    private function filterSeoUrls(array $seoUrls): array
+    {
+        $filtered = [];
+
+        foreach ($seoUrls as $storeId => $languages) {
+            foreach ($languages as $languageId => $seoUrl) {
+                if (trim((string) $seoUrl) !== '') {
+                    $filtered[$storeId][$languageId] = $seoUrl;
+                }
+            }
+        }
+
+        return $filtered;
     }
 }

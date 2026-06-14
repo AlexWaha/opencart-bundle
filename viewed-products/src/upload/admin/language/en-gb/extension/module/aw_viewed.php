@@ -24,9 +24,14 @@ $_['entry_product_limit'] = 'Max Stored Products';
 $_['entry_page_enabled']  = 'Enable Account Page';
 $_['entry_menu_link']     = 'Show Account Menu Link';
 $_['entry_menu_label']    = 'Menu Link Text';
+$_['entry_seo_url']       = 'SEO Keyword';
+$_['entry_store']         = 'Store';
+
+$_['text_default']        = 'Default';
 
 $_['help_storage_days']   = 'How many days viewed products are kept (also the cookie lifetime).';
 $_['help_product_limit']  = 'Maximum number of products stored per visitor.';
+$_['help_seo_url']        = 'SEO keyword for the Viewed Products page. Leave empty to use the default index.php URL. The page is excluded from indexing (noindex).';
 
 $_['button_save']         = 'Save';
 $_['button_cancel']       = 'Cancel';
@@ -35,3 +40,6 @@ $_['error_permission']    = 'Warning: You do not have permission to modify the V
 $_['error_name']          = 'Module Name must be between 3 and 64 characters!';
 $_['error_width']         = 'Image Width required!';
 $_['error_height']        = 'Image Height required!';
+$_['error_seo_url']       = 'SEO Keyword must be between 1 and 255 characters!';
+$_['error_seo_url_exists'] = 'SEO Keyword is already in use!';
+$_['error_seo_url_unique'] = 'SEO Keyword must be unique!';
