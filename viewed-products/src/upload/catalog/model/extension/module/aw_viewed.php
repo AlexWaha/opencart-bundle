@@ -9,6 +9,19 @@
 
 class ModelExtensionModuleAwViewed extends Model
 {
+    public function isProductViewable(int $productId): bool
+    {
+        $query = $this->db->query("SELECT p.product_id FROM `" . DB_PREFIX . "product` p
+            JOIN `" . DB_PREFIX . "product_to_store` p2s ON (p.product_id = p2s.product_id)
+            WHERE p.product_id = '" . (int) $productId . "'
+            AND p.status = '1'
+            AND p.date_available <= NOW()
+            AND p2s.store_id = '" . (int) $this->config->get('config_store_id') . "'
+            LIMIT 1");
+
+        return (bool) $query->num_rows;
+    }
+
     public function addViewedProduct(string $sessionToken, int $productId, int $productLimit): void
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "aw_viewed`

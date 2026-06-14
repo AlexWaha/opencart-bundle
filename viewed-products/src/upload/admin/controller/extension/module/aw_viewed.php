@@ -33,10 +33,10 @@ class ControllerExtensionModuleAwViewed extends Controller
 
     public function index(): void
     {
+        $data = $this->language->load('extension/module/' . $this->moduleName);
+
         $this->document->setTitle($this->language->get('heading_main_title'));
         $this->awCore->addStyles();
-
-        $data = $this->language->load('extension/module/' . $this->moduleName);
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
             $instance = [
@@ -126,7 +126,7 @@ class ControllerExtensionModuleAwViewed extends Controller
         $this->installEvents();
         $this->installPermissions();
 
-        if (!$this->moduleConfig->has('storage_days')) {
+        if ($this->moduleConfig->get('storage_days') === null) {
             $this->awCore->setConfig($this->moduleName, [
                 'storage_days'  => 7,
                 'product_limit' => 50,

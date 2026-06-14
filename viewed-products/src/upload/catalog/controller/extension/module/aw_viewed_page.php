@@ -27,8 +27,7 @@ class ControllerExtensionModuleAwViewedPage extends Controller
     public function index(): void
     {
         if ($this->moduleConfig === null || !$this->moduleConfig->get('page_enabled', true)) {
-            $this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 404 Not Found');
-            $this->response->setOutput($this->load->controller('error/not_found'));
+            $this->load->controller('error/not_found');
             return;
         }
 

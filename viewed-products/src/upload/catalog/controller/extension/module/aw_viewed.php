@@ -51,6 +51,10 @@ class ControllerExtensionModuleAwViewed extends Controller
 
         $this->load->model('extension/module/' . $this->moduleName);
 
+        if (!$this->model_extension_module_aw_viewed->isProductViewable((int) $this->request->get['product_id'])) {
+            return;
+        }
+
         if (empty($this->request->cookie[self::COOKIE])) {
             $this->model_extension_module_aw_viewed->deleteOldViewedProduct($storageDays);
             $token = token(32);
@@ -100,7 +104,9 @@ class ControllerExtensionModuleAwViewed extends Controller
         $href = $this->url->link('extension/module/aw_viewed_page');
         $link = '<li><a href="' . $href . '">' . $label . '</a></li>';
 
-        $marker = 'route=account/wishlist';
+        // Anchor on the actual wishlist link the page rendered (SEO-safe).
+        $wishlistUrl = $this->url->link('account/wishlist', '', true);
+        $marker = 'href="' . $wishlistUrl . '"';
         $pos = strpos($output, $marker);
 
         if ($pos === false) {
