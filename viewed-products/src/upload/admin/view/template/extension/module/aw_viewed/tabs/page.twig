@@ -16,13 +16,14 @@
         </label>
     </div>
 </div>
-{% for language in languages %}
 <div class="form-group">
-    <label class="col-sm-2 control-label" for="input-menu-label-{{ language.language_id }}">
-        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"> {{ entry_menu_label }}
-    </label>
+    <label class="col-sm-2 control-label">{{ entry_menu_label }}</label>
     <div class="col-sm-10">
-        <input type="text" name="menu_label[{{ language.language_id }}]" value="{{ menu_label[language.language_id] is defined ? menu_label[language.language_id] : '' }}" id="input-menu-label-{{ language.language_id }}" class="form-control">
+        {% for language in languages %}
+        <div class="input-group{{ not loop.last ? ' mb-10' }}">
+            <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span>
+            <input type="text" name="menu_label[{{ language.language_id }}]" value="{{ menu_label[language.language_id] is defined ? menu_label[language.language_id] : '' }}" class="form-control">
+        </div>
+        {% endfor %}
     </div>
 </div>
-{% endfor %}
