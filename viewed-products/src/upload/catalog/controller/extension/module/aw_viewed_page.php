@@ -95,6 +95,10 @@ class ControllerExtensionModuleAwViewedPage extends Controller
 
         $data['text_empty'] = $this->language->get('text_empty');
         $data['button_delete'] = $this->language->get('button_delete');
+        $data['button_cart'] = $this->language->get('button_cart');
+        $data['button_wishlist'] = $this->language->get('button_wishlist');
+        $data['button_compare'] = $this->language->get('button_compare');
+        $data['text_tax'] = $this->language->get('text_tax');
         $data['delete'] = $this->customer->isLogged();
         $data['products'] = $this->buildProducts($ids, $width ?: 200, $height ?: 200);
 
@@ -140,17 +144,24 @@ class ControllerExtensionModuleAwViewedPage extends Controller
                 $special = $this->currency->format($this->tax->calculate($info['special'], $info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
             }
 
+            if ($this->config->get('config_tax')) {
+                $tax = $this->currency->format((float) $info['special'] ?: $info['price'], $this->session->data['currency']);
+            } else {
+                $tax = false;
+            }
+
             $rating = $this->config->get('config_review_status') ? (int) $info['rating'] : false;
 
             $products[] = [
-                'product_id' => $productId,
-                'thumb'      => $this->model_tool_image->resize($image, $width, $height),
-                'name'       => $info['name'],
-                'description' => utf8_substr(strip_tags(html_entity_decode($info['description'], ENT_QUOTES, 'UTF-8')), 0, (int) $this->config->get('theme_' . $this->config->get('config_theme') . '_product_description_length')) . '..',
-                'price'      => $price,
-                'special'    => $special,
-                'rating'     => $rating,
-                'href'       => $this->url->link('product/product', 'product_id=' . $productId),
+                'product_id'  => $productId,
+                'thumb'       => $this->model_tool_image->resize($image, $width, $height),
+                'name'        => $info['name'],
+                'description' => utf8_substr(trim(strip_tags(html_entity_decode($info['description'], ENT_QUOTES, 'UTF-8'))), 0, (int) $this->config->get('theme_' . $this->config->get('config_theme') . '_product_description_length')) . '..',
+                'price'       => $price,
+                'special'     => $special,
+                'tax'         => $tax,
+                'rating'      => $rating,
+                'href'        => $this->url->link('product/product', 'product_id=' . $productId),
             ];
         }
 

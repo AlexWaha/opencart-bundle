@@ -86,8 +86,8 @@ class ControllerExtensionModuleAwViewed extends Controller
     }
 
     /**
-     * Event: catalog/view/account/account/after.
-     * Injects the "Viewed Products" menu link into the account page output.
+     * Event: catalog/view/extension/module/account/after.
+     * Injects the "Viewed Products" link into the account menu module (list-group).
      */
     public function accountMenu(&$route, &$data, &$output): void
     {
@@ -102,24 +102,23 @@ class ControllerExtensionModuleAwViewed extends Controller
         $label = !empty($labels[$languageId]) ? $labels[$languageId] : $this->language->get('text_viewed');
 
         $href = $this->url->link('extension/module/aw_viewed_page');
-        $link = '<li><a href="' . $href . '">' . $label . '</a></li>';
+        $link = '<a href="' . $href . '" class="list-group-item">' . $label . '</a>';
 
-        // Anchor on the actual wishlist link the page rendered (SEO-safe).
-        $wishlistUrl = $this->url->link('account/wishlist', '', true);
-        $marker = 'href="' . $wishlistUrl . '"';
+        // Anchor on the wishlist item the module rendered (SEO-safe).
+        $marker = 'href="' . $this->url->link('account/wishlist') . '"';
         $pos = strpos($output, $marker);
 
         if ($pos === false) {
             return;
         }
 
-        $liEnd = strpos($output, '</li>', $pos);
+        $aEnd = strpos($output, '</a>', $pos);
 
-        if ($liEnd === false) {
+        if ($aEnd === false) {
             return;
         }
 
-        $insertAt = $liEnd + strlen('</li>');
+        $insertAt = $aEnd + strlen('</a>');
         $output = substr($output, 0, $insertAt) . $link . substr($output, $insertAt);
     }
 
@@ -187,6 +186,10 @@ class ControllerExtensionModuleAwViewed extends Controller
 
         $data['delete'] = $this->customer->isLogged();
         $data['button_delete'] = $this->language->get('button_delete');
+        $data['button_cart'] = $this->language->get('button_cart');
+        $data['button_wishlist'] = $this->language->get('button_wishlist');
+        $data['button_compare'] = $this->language->get('button_compare');
+        $data['text_tax'] = $this->language->get('text_tax');
         $data['products'] = $this->buildProducts($ids, $width, $height);
 
         $this->response->setOutput($this->awCore->render('extension/aw_viewed/widget_list', $data));
@@ -235,16 +238,26 @@ class ControllerExtensionModuleAwViewed extends Controller
                 $special = $this->currency->format($this->tax->calculate($info['special'], $info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
             }
 
+            if ($this->config->get('config_tax')) {
+                $tax = $this->currency->format((float) $info['special'] ?: $info['price'], $this->session->data['currency']);
+            } else {
+                $tax = false;
+            }
+
             $rating = $this->config->get('config_review_status') ? (int) $info['rating'] : false;
 
+            $descriptionLength = (int) $this->config->get('theme_' . $this->config->get('config_theme') . '_product_description_length');
+
             $products[] = [
-                'product_id' => $productId,
-                'thumb'      => $this->model_tool_image->resize($image, $width, $height),
-                'name'       => $info['name'],
-                'price'      => $price,
-                'special'    => $special,
-                'rating'     => $rating,
-                'href'       => $this->url->link('product/product', 'product_id=' . $productId),
+                'product_id'  => $productId,
+                'thumb'       => $this->model_tool_image->resize($image, $width, $height),
+                'name'        => $info['name'],
+                'description' => utf8_substr(trim(strip_tags(html_entity_decode($info['description'], ENT_QUOTES, 'UTF-8'))), 0, $descriptionLength) . '..',
+                'price'       => $price,
+                'special'     => $special,
+                'tax'         => $tax,
+                'rating'      => $rating,
+                'href'        => $this->url->link('product/product', 'product_id=' . $productId),
             ];
         }
 
