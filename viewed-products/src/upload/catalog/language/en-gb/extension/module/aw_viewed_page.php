@@ -1,4 +1,5 @@
 <?php
+
 $_['heading_title']   = 'Viewed Products';
 $_['text_home']       = 'Home';
 $_['text_empty']      = 'You have not viewed any products yet.';

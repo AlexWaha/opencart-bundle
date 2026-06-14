@@ -1,7 +1,8 @@
 <?php
+
 $_['heading_title']       = '<span style="color:#0937cc;">alexwaha.com</span> - <i class="fa fa-puzzle-piece"></i> Viewed Products';
 $_['heading_main_title']  = 'alexwaha.com - Viewed Products';
-$_['heading_title_widget']= 'Просмотренные товары';
+$_['heading_title_widget'] = 'Просмотренные товары';
 $_['text_edit']           = 'Настройки модуля';
 $_['text_home']           = 'Главная';
 $_['text_extension']      = 'Расширения';
