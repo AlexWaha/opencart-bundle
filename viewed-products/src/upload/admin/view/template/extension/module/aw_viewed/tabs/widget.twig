@@ -7,9 +7,11 @@
 </div>
 {% for language in languages %}
 <div class="form-group">
-    <label class="col-sm-2 control-label">{{ entry_title }} ({{ language.name }})</label>
+    <label class="col-sm-2 control-label" for="input-title-{{ language.language_id }}">
+        <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"> {{ entry_title }}
+    </label>
     <div class="col-sm-10">
-        <input type="text" name="title[{{ language.language_id }}]" value="{{ title[language.language_id] is defined ? title[language.language_id] : '' }}" class="form-control">
+        <input type="text" name="title[{{ language.language_id }}]" value="{{ title[language.language_id] is defined ? title[language.language_id] : '' }}" id="input-title-{{ language.language_id }}" class="form-control">
     </div>
 </div>
 {% endfor %}
