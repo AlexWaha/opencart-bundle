@@ -155,6 +155,7 @@ class ControllerExtensionModuleAwViewed extends Controller
         $model->addEvent($this->moduleName, 'catalog/controller/product/product/before', 'extension/module/' . $this->moduleName . '/track');
         $model->addEvent($this->moduleName, 'catalog/controller/account/account/before', 'extension/module/' . $this->moduleName . '/accountLogin');
         $model->addEvent($this->moduleName, 'catalog/view/extension/module/account/after', 'extension/module/' . $this->moduleName . '/accountMenu');
+        $model->addEvent($this->moduleName, 'catalog/view/account/account/after', 'extension/module/' . $this->moduleName . '/accountList');
     }
 
     private function getEventModel()

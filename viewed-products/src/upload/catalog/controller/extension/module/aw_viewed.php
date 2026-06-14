@@ -87,39 +87,61 @@ class ControllerExtensionModuleAwViewed extends Controller
 
     /**
      * Event: catalog/view/extension/module/account/after.
-     * Injects the "Viewed Products" link into the account menu module (list-group).
+     * Injects the link into the account menu module (list-group sidebar).
      */
     public function accountMenu(&$route, &$data, &$output): void
+    {
+        $link = '<a href="' . $this->url->link('extension/module/aw_viewed_page') . '" class="list-group-item">' . $this->menuLabel() . '</a>';
+
+        // Anchor after the wishlist list-group item (SEO-safe).
+        $this->injectAfter($output, 'href="' . $this->url->link('account/wishlist') . '"', '</a>', $link);
+    }
+
+    /**
+     * Event: catalog/view/account/account/after.
+     * Injects the link into the account dashboard "My Account" content list,
+     * so it stays available even if the account menu module is removed.
+     */
+    public function accountList(&$route, &$data, &$output): void
+    {
+        $link = '<li><a href="' . $this->url->link('extension/module/aw_viewed_page') . '">' . $this->menuLabel() . '</a></li>';
+
+        // account/account.twig is a full-page template (includes the header, which
+        // also links to the wishlist). Anchor on the content list item specifically:
+        // the dashboard link is `href="...wishlist">`, the header one is `href="...wishlist" id=...`.
+        $this->injectAfter($output, 'href="' . $this->url->link('account/wishlist', '', true) . '">', '</li>', $link);
+    }
+
+    private function menuLabel(): string
+    {
+        $this->load->language('extension/module/' . $this->moduleName);
+
+        $languageId = (int) $this->config->get('config_language_id');
+        $labels = $this->moduleConfig->get('menu_label', []);
+
+        return !empty($labels[$languageId]) ? $labels[$languageId] : $this->language->get('text_viewed');
+    }
+
+    private function injectAfter(string &$output, string $marker, string $closingTag, string $html): void
     {
         if ($this->moduleConfig === null || !$this->moduleConfig->get('menu_link', false)) {
             return;
         }
 
-        $this->load->language('extension/module/' . $this->moduleName);
-
-        $languageId = (int) $this->config->get('config_language_id');
-        $labels = $this->moduleConfig->get('menu_label', []);
-        $label = !empty($labels[$languageId]) ? $labels[$languageId] : $this->language->get('text_viewed');
-
-        $href = $this->url->link('extension/module/aw_viewed_page');
-        $link = '<a href="' . $href . '" class="list-group-item">' . $label . '</a>';
-
-        // Anchor on the wishlist item the module rendered (SEO-safe).
-        $marker = 'href="' . $this->url->link('account/wishlist') . '"';
         $pos = strpos($output, $marker);
 
         if ($pos === false) {
             return;
         }
 
-        $aEnd = strpos($output, '</a>', $pos);
+        $end = strpos($output, $closingTag, $pos);
 
-        if ($aEnd === false) {
+        if ($end === false) {
             return;
         }
 
-        $insertAt = $aEnd + strlen('</a>');
-        $output = substr($output, 0, $insertAt) . $link . substr($output, $insertAt);
+        $insertAt = $end + strlen($closingTag);
+        $output = substr($output, 0, $insertAt) . $html . substr($output, $insertAt);
     }
 
     /**
