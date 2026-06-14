@@ -174,8 +174,17 @@ class ControllerExtensionModuleAwViewed extends Controller
     {
         $this->load->model('user/user_group');
 
-        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/module/' . $this->moduleName);
-        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/module/' . $this->moduleName);
+        $route = 'extension/module/' . $this->moduleName;
+
+        // Grant to the installing user's group and to the Administrator group (1).
+        $groupIds = array_unique([(int) $this->user->getGroupId(), 1]);
+
+        foreach ($groupIds as $groupId) {
+            foreach (['access', 'modify'] as $type) {
+                $this->model_user_user_group->removePermission($groupId, $type, $route);
+                $this->model_user_user_group->addPermission($groupId, $type, $route);
+            }
+        }
     }
 
     protected function validate(): bool
