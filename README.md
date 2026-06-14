@@ -2,14 +2,14 @@
 
 # OpenCart Extension Bundle
 
-**15 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
+**16 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
 
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
 
 ![PHP](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)
 ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Modules](https://img.shields.io/badge/Modules-15-green)
+![Modules](https://img.shields.io/badge/Modules-16-green)
 [![License](https://img.shields.io/github/license/AlexWaha/opencart-bundle)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AlexWaha/opencart-bundle?style=social)](https://github.com/AlexWaha/opencart-bundle/stargazers)
 
@@ -52,6 +52,7 @@ All modules use a shared helper library (**AW Core**) and the same admin UI, so 
 | <img src="faq/img/extension.png" width="120"> | **[FAQ](faq)** | Frequently Asked Questions blocks for products and pages. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/faq/dist/aw_faq_oc2.3-3.x.ocmod.zip) · [Docs](faq/docs/en.md) |
 | <img src="store-reviews/img/extension.png" width="120"> | **[Store Reviews](store-reviews)** | Customer store reviews with a configurable carousel. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/store-reviews/dist/aw_store_reviews_oc2.3-3.x.ocmod.zip) · [Docs](store-reviews/docs/en.md) |
 | <img src="buyer-history/img/extension.png" width="120"> | **[Buyer History](buyer-history)** | Customer order history and duplicate-order flags in the order list. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/buyer-history/dist/aw_buyer_history_oc2.3-3.x.ocmod.zip) · [Docs](buyer-history/docs/en.md) |
+| <img src="viewed-products/img/extension.png" width="120"> | **[Viewed Products](viewed-products)** | Recently viewed products block and a customer account page, loaded over AJAX. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/viewed-products/dist/aw_viewed_oc2.3-3.x.ocmod.zip) · [Docs](viewed-products/docs/en.md) |
 | <img src="microdata/img/extension.png" width="120"> | **[Microdata](microdata)** | Schema.org microdata for rich search-result snippets. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip) · [Docs](microdata/docs/en.md) |
 | <img src="db-optimizer/img/extension.png" width="120"> | **[DB Optimizer](db-optimizer)** | Analyze the database, add missing indexes and convert tables to InnoDB, safely and reversibly. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/db-optimizer/dist/aw_db_optimize_oc2.3-3.x.ocmod.zip) · [Docs](db-optimizer/docs/en.md) |
 
@@ -91,6 +92,10 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
   <tr>
     <td><b>Redirect Manager (rules)</b><br><img src="redirect/img/gallery/01-rules-list.png" alt="Redirect Manager rules"></td>
     <td><b>Redirect Manager (404 resolver)</b><br><img src="redirect/img/gallery/03-404-resolver.png" alt="Redirect Manager 404 resolver"></td>
+  </tr>
+  <tr>
+    <td><b>Viewed Products (block)</b><br><img src="viewed-products/img/gallery/03-widget-storefront.png" alt="Viewed Products block"></td>
+    <td><b>Viewed Products (account page)</b><br><img src="viewed-products/img/gallery/04-account-page.png" alt="Viewed Products account page"></td>
   </tr>
 </table>
 
