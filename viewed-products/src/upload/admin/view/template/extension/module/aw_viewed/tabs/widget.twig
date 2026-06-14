@@ -1,0 +1,51 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-name">{{ entry_name }}</label>
+    <div class="col-sm-10">
+        <input type="text" name="name" value="{{ name }}" id="input-name" class="form-control">
+        {% if error_name %}<div class="text-danger">{{ error_name }}</div>{% endif %}
+    </div>
+</div>
+{% for language in languages %}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_title }} ({{ language.name }})</label>
+    <div class="col-sm-10">
+        <input type="text" name="title[{{ language.language_id }}]" value="{{ title[language.language_id] is defined ? title[language.language_id] : '' }}" class="form-control">
+    </div>
+</div>
+{% endfor %}
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-limit">{{ entry_limit }}</label>
+    <div class="col-sm-10"><input type="number" name="limit" value="{{ limit }}" id="input-limit" class="form-control"></div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-width">{{ entry_width }}</label>
+    <div class="col-sm-10">
+        <input type="number" name="width" value="{{ width }}" id="input-width" class="form-control">
+        {% if error_width %}<div class="text-danger">{{ error_width }}</div>{% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="input-height">{{ entry_height }}</label>
+    <div class="col-sm-10">
+        <input type="number" name="height" value="{{ height }}" id="input-height" class="form-control">
+        {% if error_height %}<div class="text-danger">{{ error_height }}</div>{% endif %}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_show_link }}</label>
+    <div class="col-sm-10">
+        <label class="checkbox-switch">
+            <input type="checkbox" name="show_link" value="1" {% if show_link %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_status }}</label>
+    <div class="col-sm-10">
+        <label class="checkbox-switch">
+            <input type="checkbox" name="status" value="1" {% if status %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>

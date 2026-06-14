@@ -1,0 +1,26 @@
+{% if products %}
+    {% for product in products %}
+        <div class="product-layout col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="product-thumb aw-viewed-item">
+                {% if delete %}
+                    <button type="button" class="btn btn-danger aw-viewed-delete" data-product-id="{{ product.product_id }}" title="{{ button_delete }}"><i class="fa fa-times"></i></button>
+                {% endif %}
+                <div class="image">
+                    <a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" class="img-responsive"></a>
+                </div>
+                <div class="caption">
+                    <h4><a href="{{ product.href }}">{{ product.name }}</a></h4>
+                    {% if product.price %}
+                        <p class="price">
+                            {% if product.special %}
+                                <span class="price-old">{{ product.price }}</span> <span class="price-new">{{ product.special }}</span>
+                            {% else %}
+                                {{ product.price }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

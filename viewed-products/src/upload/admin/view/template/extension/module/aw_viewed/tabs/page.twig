@@ -1,0 +1,26 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_page_enabled }}</label>
+    <div class="col-sm-10">
+        <label class="checkbox-switch">
+            <input type="checkbox" name="page_enabled" value="1" {% if page_enabled %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_menu_link }}</label>
+    <div class="col-sm-10">
+        <label class="checkbox-switch">
+            <input type="checkbox" name="menu_link" value="1" {% if menu_link %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+    </div>
+</div>
+{% for language in languages %}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ entry_menu_label }} ({{ language.name }})</label>
+    <div class="col-sm-10">
+        <input type="text" name="menu_label[{{ language.language_id }}]" value="{{ menu_label[language.language_id] is defined ? menu_label[language.language_id] : '' }}" class="form-control">
+    </div>
+</div>
+{% endfor %}

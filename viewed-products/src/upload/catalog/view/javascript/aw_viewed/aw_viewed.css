@@ -1,0 +1,8 @@
+.aw-viewed { margin: 20px 0; }
+.aw-viewed-head { margin: 0 0 10px; display: flex; justify-content: space-between; align-items: baseline; }
+.aw-viewed-title { font-size: 22px; color: #444; }
+.aw-viewed-all { font-size: 14px; color: #888; }
+.aw-viewed-all:hover { text-decoration: underline; }
+.aw-viewed-item { position: relative; }
+.aw-viewed-delete { position: absolute; top: 10px; left: 10px; z-index: 2; }
+.aw-viewed-empty { padding: 20px 0; }

@@ -1,0 +1,15 @@
+<div class="aw-viewed" data-aw-viewed-widget
+     data-url="{{ products_url }}"
+     data-delete-url="{{ delete_url }}"
+     data-limit="{{ limit }}"
+     data-width="{{ width }}"
+     data-height="{{ height }}"
+     data-product-id="{{ product_id }}">
+    <div class="aw-viewed-head">
+        <span class="aw-viewed-title">{{ heading_title }}</span>
+        {% if show_link %}
+            <a class="aw-viewed-all" href="{{ page_link }}"><i class="fa fa-eye"></i> {{ text_show_all }}</a>
+        {% endif %}
+    </div>
+    <div class="aw-viewed-body row" data-aw-viewed-target></div>
+</div>
