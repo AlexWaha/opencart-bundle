@@ -1,0 +1,38 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_cron_command }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="text" value="{{ cron_command }}" readonly onclick="this.select()" />
+        <div class="form-text">{{ help_cron_command }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_sitemap_url }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <p class="form-control-static">
+            <a href="{{ sitemap_url }}" target="_blank">{{ sitemap_url }}</a>
+        </p>
+        <div class="form-text">{{ help_sitemap_url }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_robots_line }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="text" value="{{ robots_line }}" readonly onclick="this.select()" />
+        <div class="form-text">{{ help_robots_line }}</div>
+    </div>
+</div>
+
+{% if rewrite_needed %}
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ entry_rewrite }}</label>
+        <div class="col-xs-9 col-sm-6">
+            <div class="alert alert-warning">{{ help_rewrite }}</div>
+            <label>Apache (.htaccess)</label>
+            <textarea class="form-control" rows="1" readonly onclick="this.select()">{{ rewrite_apache }}</textarea>
+            <label class="mt-10">Nginx</label>
+            <textarea class="form-control" rows="3" readonly onclick="this.select()">{{ rewrite_nginx }}</textarea>
+        </div>
+    </div>
+{% endif %}

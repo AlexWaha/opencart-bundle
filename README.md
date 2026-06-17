@@ -2,14 +2,14 @@
 
 # OpenCart Extension Bundle
 
-**16 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
+**17 free, open-source extensions for OpenCart 2.3.x and 3.x: checkout, SEO, marketing, notifications and performance, all in one place.**
 
 ![OpenCart Extension Bundle by alexwaha](opencart-bundle.png "OpenCart Extension Bundle by alexwaha")
 
 ![PHP](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)
 ![OpenCart 2.x](https://img.shields.io/badge/OpenCart-2.3.x-blue)
 ![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.x-blue)
-![Modules](https://img.shields.io/badge/Modules-16-green)
+![Modules](https://img.shields.io/badge/Modules-17-green)
 [![License](https://img.shields.io/github/license/AlexWaha/opencart-bundle)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AlexWaha/opencart-bundle?style=social)](https://github.com/AlexWaha/opencart-bundle/stargazers)
 
@@ -55,6 +55,7 @@ All modules use a shared helper library (**AW Core**) and the same admin UI, so 
 | <img src="viewed-products/img/extension.png" width="120"> | **[Viewed Products](viewed-products)** | Recently viewed products block and a customer account page, loaded over AJAX. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/viewed-products/dist/aw_viewed_oc2.3-3.x.ocmod.zip) · [Docs](viewed-products/docs/en.md) |
 | <img src="microdata/img/extension.png" width="120"> | **[Microdata](microdata)** | Schema.org microdata for rich search-result snippets. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/microdata/dist/aw_microdata_oc2.3-3.x.ocmod.zip) · [Docs](microdata/docs/en.md) |
 | <img src="db-optimizer/img/extension.png" width="120"> | **[DB Optimizer](db-optimizer)** | Analyze the database, add missing indexes and convert tables to InnoDB, safely and reversibly. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/db-optimizer/dist/aw_db_optimize_oc2.3-3.x.ocmod.zip) · [Docs](db-optimizer/docs/en.md) |
+| <img src="sitemap/img/extension.png" width="120"> | **[Unlimited Sitemap](sitemap)** | Sharded XML sitemap that scales to 50k+ products, with static cron generation and drop-in provider adapters. | [Download](https://github.com/AlexWaha/opencart-bundle/blob/main/sitemap/dist/aw_sitemap_oc2.3-3.x.ocmod.zip) · [Docs](sitemap/docs/en.md) |
 
 > ⭐ = featured. More extensions are on the way (30+ planned).
 
@@ -96,6 +97,10 @@ Captured on a live OpenCart 3.x demo store with a real 3,000-product catalog.
   <tr>
     <td><b>Viewed Products (block)</b><br><img src="viewed-products/img/gallery/03-widget-storefront.png" alt="Viewed Products block"></td>
     <td><b>Viewed Products (account page)</b><br><img src="viewed-products/img/gallery/04-account-page.png" alt="Viewed Products account page"></td>
+  </tr>
+  <tr>
+    <td><b>Unlimited Sitemap (settings)</b><br><img src="sitemap/img/gallery/01-general.png" alt="Unlimited Sitemap settings"></td>
+    <td><b>Unlimited Sitemap (providers)</b><br><img src="sitemap/img/gallery/02-providers.png" alt="Unlimited Sitemap providers"></td>
   </tr>
 </table>
 

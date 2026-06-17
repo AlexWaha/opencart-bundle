@@ -1,0 +1,96 @@
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_status }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="status">
+        <input type="hidden" name="status" value="0" id="status-off" {% if not status %}checked="checked"{% endif %} />
+        <input type="checkbox" name="status" value="1" id="status" {% if status %}checked="checked"{% endif %} />
+    </label>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="mode">{{ entry_mode }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <select name="mode" id="mode" class="form-control">
+            <option value="dynamic" {{ mode == 'dynamic' ? 'selected' }}>{{ text_mode_dynamic }}</option>
+            <option value="static" {{ mode == 'static' ? 'selected' }}>{{ text_mode_static }}</option>
+        </select>
+        <div class="form-text">{{ help_mode }}</div>
+        {% if show_threshold_warning %}
+            <div class="alert alert-warning mt-10">
+                <i class="fa fa-exclamation-triangle"></i>
+                {{ text_threshold_warning|replace({'%count%': total_products, '%threshold%': product_threshold}) }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group required">
+    <label class="col-sm-3 control-label" for="folder">{{ entry_folder }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="text" name="folder" id="folder" value="{{ folder }}" />
+        <div class="form-text">{{ help_folder }}</div>
+        {% if error.folder %}<div class="text-danger">{{ error.folder }}</div>{% endif %}
+    </div>
+</div>
+
+<div class="form-group required">
+    <label class="col-sm-3 control-label" for="shard_size">{{ entry_shard_size }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="number" min="100" max="50000" step="1" name="shard_size" id="shard_size" value="{{ shard_size }}" />
+        <div class="form-text">{{ help_shard_size }}</div>
+        {% if error.shard_size %}<div class="text-danger">{{ error.shard_size }}</div>{% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_product_images }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="product_images">
+        <input type="hidden" name="product_images" value="0" id="product_images-off" {% if not product_images %}checked="checked"{% endif %} />
+        <input type="checkbox" name="product_images" value="1" id="product_images" {% if product_images %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-sm-3"></div>
+    <div class="col-xs-9 col-sm-6"><div class="form-text">{{ help_product_images }}</div></div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_languages }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <div class="well well-sm" style="max-height: 200px; overflow: auto;">
+            {% for language in languages %}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="languages[]" value="{{ language.language_id }}" {{ language.language_id in languages_selected ? 'checked' }} />
+                        {{ language.name }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-text">{{ help_languages }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_cache_enabled }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="cache_enabled">
+        <input type="hidden" name="cache_enabled" value="0" id="cache_enabled-off" {% if not cache_enabled %}checked="checked"{% endif %} />
+        <input type="checkbox" name="cache_enabled" value="1" id="cache_enabled" {% if cache_enabled %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-sm-3"></div>
+    <div class="col-xs-9 col-sm-6"><div class="form-text">{{ help_cache_enabled }}</div></div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="cache_ttl">{{ entry_cache_ttl }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="number" min="0" step="1" name="cache_ttl" id="cache_ttl" value="{{ cache_ttl }}" />
+        <div class="form-text">{{ help_cache_ttl }}</div>
+        {% if error.cache_ttl %}<div class="text-danger">{{ error.cache_ttl }}</div>{% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="product_threshold">{{ entry_product_threshold }}</label>
+    <div class="col-xs-9 col-sm-6">
+        <input class="form-control" type="number" min="0" step="1" name="product_threshold" id="product_threshold" value="{{ product_threshold }}" />
+        <div class="form-text">{{ help_product_threshold }}</div>
+    </div>
+</div>

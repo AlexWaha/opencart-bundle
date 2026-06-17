@@ -1,0 +1,24 @@
+<div class="alert alert-info">{{ help_providers }}</div>
+<table class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <td class="text-left">{{ column_provider }}</td>
+        <td class="text-left">{{ column_code }}</td>
+        <td class="text-center">{{ column_status }}</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for provider in providers %}
+        <tr>
+            <td class="text-left">{{ provider.name }}</td>
+            <td class="text-left"><span class="badge-code">{{ provider.code }}</span></td>
+            <td class="text-center">
+                <label class="checkbox-switch" for="provider_{{ provider.code }}">
+                    <input type="hidden" name="provider_status[{{ provider.code }}]" value="0" {% if not provider.enabled %}checked="checked"{% endif %} />
+                    <input type="checkbox" name="provider_status[{{ provider.code }}]" value="1" id="provider_{{ provider.code }}" {% if provider.enabled %}checked="checked"{% endif %} />
+                </label>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

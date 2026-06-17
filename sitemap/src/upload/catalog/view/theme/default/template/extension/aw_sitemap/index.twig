@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for shard in shards %}<sitemap>
+<loc>{{ shard.loc }}</loc>
+<lastmod>{{ shard.lastmod }}</lastmod>
+</sitemap>
+{% endfor %}</sitemapindex>
