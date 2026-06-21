@@ -1,5 +1,7 @@
 # AW Store Reviews - Customer Reviews & Carousel for OpenCart
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-store-reviews](https://demo.alexwaha.com/module-store-reviews)
+
 ## Table of Contents
 
 1. [Module Information](#1-module-information)

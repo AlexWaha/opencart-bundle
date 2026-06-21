@@ -1,5 +1,7 @@
 # Manual | Alexwaha.com - Buyer History
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-buyer-history](https://demo.alexwaha.com/module-buyer-history)
+
 **For OpenCart 2.3 - 3.x**
 
 ---

@@ -1,5 +1,7 @@
 # Alexwaha.com - Viewed Products
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-viewed-products](https://demo.alexwaha.com/module-viewed-products)
+
 **Module for OpenCart v2.3 - 3.x**
 
 ---

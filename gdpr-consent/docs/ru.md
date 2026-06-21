@@ -1,5 +1,7 @@
 # Alexwaha.com - GDPR Consent
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-gdpr-consent](https://demo.alexwaha.com/module-gdpr-consent)
+
 **Модуль для OpenCart v2.3 - 3.x**
 
 ---

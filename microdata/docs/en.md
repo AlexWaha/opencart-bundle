@@ -1,5 +1,7 @@
 # Instructions | Alexwaha.com - Microdata
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-microdata](https://demo.alexwaha.com/module-microdata)
+
 **Schema.org Structured Data for OpenCart v2.3 - 3.x**
 
 ---

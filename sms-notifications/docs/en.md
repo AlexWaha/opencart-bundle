@@ -1,5 +1,7 @@
 # Alexwaha.com - SMS Notifications
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-sms-notifications](https://demo.alexwaha.com/module-sms-notifications)
+
 **Module for OpenCart v2.3 - 3.x**
 
 ---

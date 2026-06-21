@@ -1,5 +1,7 @@
 # Инструкция | Alexwaha.com - Buyer History
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-buyer-history](https://demo.alexwaha.com/module-buyer-history)
+
 **для OpenCart 2.3 - 3.x**
 
 ---

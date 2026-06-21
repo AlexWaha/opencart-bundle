@@ -13,6 +13,8 @@
 [![License](https://img.shields.io/github/license/AlexWaha/opencart-bundle)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AlexWaha/opencart-bundle?style=social)](https://github.com/AlexWaha/opencart-bundle/stargazers)
 
+### 🚀 [Live Demo](https://demo.alexwaha.com) - every module running in a real OpenCart store
+
 ### ⭐ If this bundle saves you time, please [star the repo](https://github.com/AlexWaha/opencart-bundle). It helps other OpenCart store owners find it.
 
 </div>

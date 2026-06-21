@@ -1,5 +1,7 @@
 # Alexwaha.com - SMS уведомления
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-sms-notifications](https://demo.alexwaha.com/module-sms-notifications)
+
 **Модуль для OpenCart v2.3 - 3.x**
 
 ---

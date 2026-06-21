@@ -1,5 +1,7 @@
 # Manual | Alexwaha.com - XML Feed
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-xml-feed](https://demo.alexwaha.com/module-xml-feed)
+
 **for Opencart v2.3 - 3.x**
 
 ---

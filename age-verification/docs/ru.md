@@ -1,5 +1,7 @@
 # Alexwaha.com - Подтверждение возраста
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-age-verification](https://demo.alexwaha.com/module-age-verification)
+
 **Модуль для OpenCart v2.3 - 3.x**
 
 ---

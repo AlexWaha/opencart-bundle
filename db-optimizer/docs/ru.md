@@ -1,5 +1,7 @@
 # Инструкция | Alexwaha.com - DB Optimizer
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-db-optimizer](https://demo.alexwaha.com/module-db-optimizer)
+
 ## Обзор
 
 DB Optimizer - модуль OpenCart (только админка), который анализирует базу данных и

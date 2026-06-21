@@ -1,5 +1,7 @@
 # Инструкция | Alexwaha.com - XML Feed
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-xml-feed](https://demo.alexwaha.com/module-xml-feed)
+
 **для Opencart v2.3 - 3.x**
 
 ---

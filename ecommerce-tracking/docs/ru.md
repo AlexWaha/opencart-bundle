@@ -1,5 +1,7 @@
 # Инструкция | Alexwaha.com - E-commerce Tracking (GA4)
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-ecommerce-tracking](https://demo.alexwaha.com/module-ecommerce-tracking)
+
 **для Opencart v2.3 - 3.x**
 
 ---

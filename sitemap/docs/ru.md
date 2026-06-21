@@ -1,5 +1,7 @@
 # Руководство | Alexwaha.com - Unlimited Sitemap
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-sitemap](https://demo.alexwaha.com/module-sitemap)
+
 **для Opencart v2.3 - 3.x**
 
 ---

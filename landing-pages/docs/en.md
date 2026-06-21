@@ -1,5 +1,7 @@
 # Alexwaha.com - Landing Pages
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-landing-pages](https://demo.alexwaha.com/module-landing-pages)
+
 **Module for OpenCart v2.3 - 3.x**
 
 ---

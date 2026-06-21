@@ -1,5 +1,7 @@
 # Alexwaha.com - Redirect Manager
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-redirect](https://demo.alexwaha.com/module-redirect)
+
 **Module for OpenCart v2.3 - 3.x**
 
 ---

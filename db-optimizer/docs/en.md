@@ -1,5 +1,7 @@
 # Instructions | Alexwaha.com - DB Optimizer
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-db-optimizer](https://demo.alexwaha.com/module-db-optimizer)
+
 ## Overview
 
 DB Optimizer is an admin-only OpenCart module that analyzes your database and helps

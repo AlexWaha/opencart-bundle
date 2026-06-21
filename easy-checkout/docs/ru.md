@@ -1,5 +1,7 @@
 # Инструкция | Alexwaha.com - Easy Checkout
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-easy-checkout](https://demo.alexwaha.com/module-easy-checkout)
+
 **для Opencart v2.3 - 3.x**
 
 ---

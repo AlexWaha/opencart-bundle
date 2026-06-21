@@ -1,5 +1,7 @@
 # Alexwaha.com - Moonshine Calculator
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-moonshine-calc](https://demo.alexwaha.com/module-moonshine-calc)
+
 **Module for OpenCart v2.3 - 3.x**
 
 ---

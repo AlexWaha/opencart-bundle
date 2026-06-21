@@ -1,5 +1,7 @@
 # AW Store Reviews - Отзывы покупателей и карусель для OpenCart
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-store-reviews](https://demo.alexwaha.com/module-store-reviews)
+
 ## Содержание
 
 1. [Информация о модуле](#1-информация-о-модуле)

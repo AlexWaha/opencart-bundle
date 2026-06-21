@@ -1,5 +1,7 @@
 # Alexwaha.com - Глобальный макет
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-global-layout](https://demo.alexwaha.com/module-global-layout)
+
 **Модуль для OpenCart v2.3 - 3.x**
 
 ---

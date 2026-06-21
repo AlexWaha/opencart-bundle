@@ -1,5 +1,7 @@
 # AW FAQ - Frequently Asked Questions for OpenCart
 
+> **Live demo:** see this module on the live demo store - [demo.alexwaha.com/module-faq](https://demo.alexwaha.com/module-faq)
+
 ## Table of Contents
 
 1. [Module Information](#1-module-information)

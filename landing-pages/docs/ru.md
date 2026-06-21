@@ -1,5 +1,7 @@
 # Alexwaha.com - Посадочные страницы
 
+> **Живое демо:** посмотреть модуль на демо-витрине - [demo.alexwaha.com/module-landing-pages](https://demo.alexwaha.com/module-landing-pages)
+
 **Модуль для OpenCart v2.3 - 3.x**
 
 ---
