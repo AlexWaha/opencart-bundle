@@ -15,6 +15,8 @@
 
 ### 🚀 [Live Demo](https://demo.alexwaha.com) - every module running in a real OpenCart store
 
+### 🔑 [Admin Demo](https://demo.alexwaha.com/admin/) - explore every module's admin settings. Login: `demo` · Password: `demo`
+
 ### ⭐ If this bundle saves you time, please [star the repo](https://github.com/AlexWaha/opencart-bundle). It helps other OpenCart store owners find it.
 
 </div>
