@@ -154,16 +154,12 @@ $_['entry_og_image']            = 'Default OG Image';
 
 // Tab 7 - Advanced
 $_['entry_global_rating']       = 'Global AggregateRating';
-$_['entry_fake_count']          = 'Fake Review Count Boost';
-$_['entry_fake_boost']          = 'Fake Rating Boost';
 $_['entry_force_instock']       = 'Force InStock';
 $_['entry_competitor_sameas']   = 'Competitor sameAs URLs';
 $_['entry_custom_jsonld']       = 'Custom JSON-LD';
 $_['entry_speakable']           = 'Speakable';
 
 $_['help_global_rating']        = 'Inject AggregateRating on all pages, not just product pages.';
-$_['help_fake_count']           = 'Static number added to real review count in Schema. E.g., 5 real reviews + 10 here = Google sees 15. Set 0 to disable.';
-$_['help_fake_boost']           = 'Value (0.0–5.0) added to real average rating. E.g., real avg 4.5 + boost 0.4 = 4.9 in Schema. Max 5.0. Set 0 to disable.';
 $_['help_force_instock']        = 'Force all products to show as InStock regardless of actual stock.';
 $_['help_competitor_sameas']    = 'Competitor website URLs added to Organization sameAs. Google may associate competitor brand searches with your site. Grey-hat SEO. Leave empty if unsure.';
 $_['help_custom_jsonld']        = 'Raw JSON-LD block injected into every page. Must be valid JSON.';

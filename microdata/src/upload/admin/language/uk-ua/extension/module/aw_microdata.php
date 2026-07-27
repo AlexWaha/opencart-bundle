@@ -154,16 +154,12 @@ $_['entry_og_image']            = 'OG зображення за замовчув
 
 // Tab 7 - Advanced
 $_['entry_global_rating']       = 'Глобальний AggregateRating';
-$_['entry_fake_count']          = 'Накрутка кількості відгуків';
-$_['entry_fake_boost']          = 'Накрутка рейтингу';
 $_['entry_force_instock']       = 'Завжди в наявності';
 $_['entry_competitor_sameas']   = 'Конкурентні sameAs URL';
 $_['entry_custom_jsonld']       = 'Користувацький JSON-LD';
 $_['entry_speakable']           = 'Speakable';
 
 $_['help_global_rating']        = 'Додавати AggregateRating на всі сторінки, не лише товарні.';
-$_['help_fake_count']           = 'Статичне число, що додається до реальної кількості відгуків у Schema. Наприклад: 5 реальних + 10 тут = Google бачить 15. 0 — вимкнено.';
-$_['help_fake_boost']           = 'Значення (0.0–5.0), що додається до середнього рейтингу. Наприклад: реальний 4.5 + 0.4 тут = 4.9 у Schema. Максимум 5.0. 0 — вимкнено.';
 $_['help_force_instock']        = 'Примусово показувати всі товари як "В наявності".';
 $_['help_competitor_sameas']    = 'URL сайтів конкурентів → потраплять до sameAs організації. Google може асоціювати запити про конкурентів з вашим сайтом. Сірий SEO. Залиште порожнім, якщо не впевнені.';
 $_['help_custom_jsonld']        = 'Довільний JSON-LD блок, що додається на кожну сторінку. Має бути валідним JSON.';

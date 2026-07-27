@@ -243,8 +243,6 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->params['categories_list'] = $this->model_catalog_category->getCategories();
 
         $this->params['global_rating'] = $this->moduleConfig->get('global_rating', false);
-        $this->params['fake_count'] = $this->moduleConfig->get('fake_count', 0);
-        $this->params['fake_boost'] = $this->moduleConfig->get('fake_boost', 0);
         $this->params['force_instock'] = $this->moduleConfig->get('force_instock', false);
         $this->params['competitor_sameas'] = $this->moduleConfig->get('competitor_sameas', []);
         $this->params['custom_jsonld'] = $this->moduleConfig->get('custom_jsonld', '');

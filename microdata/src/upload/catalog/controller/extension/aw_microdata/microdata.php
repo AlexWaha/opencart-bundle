@@ -496,27 +496,15 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         $rating = $this->model_extension_aw_microdata_microdata->getStoreAggregateRating();
 
-        $fakeCount = (int)$this->microdataConfig->get('fake_count', 0);
-        $fakeBoost = (float)$this->microdataConfig->get('fake_boost', 0);
-
-        $count = $rating['count'] + $fakeCount;
-        $avg = $rating['avg'];
-
-        if ($fakeBoost > 0 && $avg > 0) {
-            $avg = min(5, $avg + $fakeBoost);
-        } elseif ($fakeBoost > 0 && $avg == 0) {
-            $avg = min(5, $fakeBoost);
-        }
-
-        if ($count <= 0) {
+        if ($rating['count'] <= 0) {
             return [];
         }
 
         return [
             '@type'       => 'AggregateRating',
-            'ratingValue' => round($avg, 1),
+            'ratingValue' => round($rating['avg'], 1),
             'bestRating'  => 5,
-            'ratingCount' => $count,
+            'ratingCount' => $rating['count'],
         ];
     }
 
@@ -524,9 +512,9 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
     {
         $this->load->model('extension/aw_microdata/microdata');
 
-        $reviewSource = $this->microdataConfig->get('review_source', 'store');
+        $reviewSource = $this->microdataConfig->get('review_source', 'both');
 
-        if ($reviewSource === 'store' || $reviewSource === 'both') {
+        if ($reviewSource === 'store_only' || $reviewSource === 'both') {
             $reviews = $this->model_extension_aw_microdata_microdata->getStoreReviews($limit);
         } else {
             return [];
@@ -677,7 +665,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
                 $tags[] = '<meta property="product:category" content="' . htmlspecialchars($category, ENT_QUOTES, 'UTF-8') . '">';
             }
 
-            $quantity = $data['quantity'] ?? 0;
+            $quantity = (int)($productInfo['quantity'] ?? 0);
             $availability = ($this->microdataConfig->get('force_instock', false) || $quantity > 0) ? 'instock' : 'oos';
             $tags[] = '<meta property="product:availability" content="' . $availability . '">';
 
@@ -1028,7 +1016,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         }
 
         if ($priceValue > 0) {
-            $quantity = $data['quantity'] ?? 0;
+            $quantity = (int)($productInfo['quantity'] ?? 0);
             $alwaysInStock = $this->microdataConfig->get('force_instock', false);
             $availability = ($alwaysInStock || $quantity > 0)
                 ? 'https://schema.org/InStock'
@@ -1120,26 +1108,14 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $schema['offers'] = $offer;
         }
 
-        $reviewSource = $this->microdataConfig->get('review_source', 'product');
+        $reviewSource = $this->microdataConfig->get('review_source', 'both');
 
-        if ($reviewSource === 'product') {
+        if ($reviewSource === 'product_only' || $reviewSource === 'both') {
             $aggRating = $this->model_extension_aw_microdata_microdata->getProductAggregateRating($productId);
             $reviews = $this->model_extension_aw_microdata_microdata->getProductReviews($productId);
         } else {
-            $aggRating = $this->model_extension_aw_microdata_microdata->getStoreAggregateRating();
-            $reviews = $this->model_extension_aw_microdata_microdata->getStoreReviews();
-        }
-
-        if ($reviewSource !== 'product') {
-            $fakeCount = (int)$this->microdataConfig->get('fake_count', 0);
-            $fakeBoost = (float)$this->microdataConfig->get('fake_boost', 0);
-            $aggRating['count'] += $fakeCount;
-
-            if ($fakeBoost > 0 && $aggRating['avg'] > 0) {
-                $aggRating['avg'] = min(5, $aggRating['avg'] + $fakeBoost);
-            } elseif ($fakeBoost > 0 && $aggRating['avg'] == 0) {
-                $aggRating['avg'] = min(5, $fakeBoost);
-            }
+            $aggRating = ['avg' => 0, 'count' => 0];
+            $reviews = [];
         }
 
         if ($aggRating['count'] > 0) {
