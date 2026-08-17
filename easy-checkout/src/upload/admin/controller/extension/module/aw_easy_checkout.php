@@ -607,8 +607,6 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
 
             $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/' . $this->moduleName . '/main');
 
-            $this->installEvents();
-
             $this->session->data['success'] = $this->language->get('text_success');
 
             $this->response->redirect($this->url->link(

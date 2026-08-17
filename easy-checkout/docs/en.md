@@ -464,9 +464,9 @@ Numeric value to determine field display order.
 >
 > On a stock OpenCart install without this module's events registered, an unexpanded
 > `{custom_field_id_N}` token in the address format renders literally instead of being
-> replaced - keep the events installed if you rely on this token. If the module was
-> upgraded by overwriting files instead of reinstalling, the events are not re-registered
-> automatically; open the module's settings and save them once to re-register the events.
+> replaced - keep the events installed if you rely on this token. The events are created
+> by the module's installer; a shop that was upgraded by overwriting files instead of
+> reinstalling needs them added to the `oc_event` table by hand.
 >
 > On a stock OpenCart install, the customer's account order view will show the address
 > without the custom fields expanded, because `catalog/model/account/order.php` does not
