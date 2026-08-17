@@ -634,7 +634,12 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
             $this->load->model('localisation/country');
             $this->load->model('localisation/zone');
 
-            $this->session->data['shipping_address']['country_id'] = (isset($this->request->post['shipping_country_id'])) ? $this->request->post['shipping_country_id'] : '';
+            $shippingCountryId = (int) ($this->request->post['shipping_country_id'] ?? 0);
+            if ($shippingCountryId <= 0) {
+                $shippingCountryId = (int) $this->config->get('config_country_id');
+            }
+
+            $this->session->data['shipping_address']['country_id'] = $shippingCountryId;
             $this->session->data['shipping_address']['zone_id'] = (isset($this->request->post['shipping_zone_id'])) ? $this->request->post['shipping_zone_id'] : '';
             $this->session->data['shipping_address']['firstname'] = (isset($this->request->post['firstname'])) ? $this->request->post['firstname'] : '';
             $this->session->data['shipping_address']['lastname'] = (isset($this->request->post['lastname'])) ? $this->request->post['lastname'] : '';
@@ -678,20 +683,13 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                 }
             }
 
-            if (! empty($this->request->post['shipping_country_id'])) {
-                $countryInfo = $this->model_localisation_country->getCountry($this->request->post['shipping_country_id']);
+            $countryInfo = $this->model_localisation_country->getCountry($shippingCountryId);
 
-                if ($countryInfo) {
-                    $this->session->data['shipping_address']['country'] = $countryInfo['name'];
-                    $this->session->data['shipping_address']['iso_code_2'] = $countryInfo['iso_code_2'];
-                    $this->session->data['shipping_address']['iso_code_3'] = $countryInfo['iso_code_3'];
-                    $this->session->data['shipping_address']['address_format'] = $countryInfo['address_format'];
-                } else {
-                    $this->session->data['shipping_address']['country'] = '';
-                    $this->session->data['shipping_address']['iso_code_2'] = '';
-                    $this->session->data['shipping_address']['iso_code_3'] = '';
-                    $this->session->data['shipping_address']['address_format'] = '';
-                }
+            if ($countryInfo) {
+                $this->session->data['shipping_address']['country'] = $countryInfo['name'];
+                $this->session->data['shipping_address']['iso_code_2'] = $countryInfo['iso_code_2'];
+                $this->session->data['shipping_address']['iso_code_3'] = $countryInfo['iso_code_3'];
+                $this->session->data['shipping_address']['address_format'] = $countryInfo['address_format'];
             } else {
                 $this->session->data['shipping_address']['country'] = '';
                 $this->session->data['shipping_address']['iso_code_2'] = '';
@@ -715,7 +713,12 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
             }
 
             if (! empty($paymentAddressFields) && ! $checkboxChecked) {
-                $this->session->data['payment_address']['country_id'] = (isset($this->request->post['payment_country_id'])) ? $this->request->post['payment_country_id'] : '';
+                $paymentCountryId = (int) ($this->request->post['payment_country_id'] ?? 0);
+                if ($paymentCountryId <= 0) {
+                    $paymentCountryId = (int) $this->config->get('config_country_id');
+                }
+
+                $this->session->data['payment_address']['country_id'] = $paymentCountryId;
                 $this->session->data['payment_address']['zone_id'] = (isset($this->request->post['payment_zone_id'])) ? $this->request->post['payment_zone_id'] : '';
                 $this->session->data['payment_address']['firstname'] = (isset($this->request->post['firstname'])) ? $this->request->post['firstname'] : '';
                 $this->session->data['payment_address']['lastname'] = (isset($this->request->post['lastname'])) ? $this->request->post['lastname'] : '';
@@ -759,20 +762,13 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                     }
                 }
 
-                if (! empty($this->request->post['payment_country_id'])) {
-                    $countryInfo = $this->model_localisation_country->getCountry($this->request->post['payment_country_id']);
+                $countryInfo = $this->model_localisation_country->getCountry($paymentCountryId);
 
-                    if ($countryInfo) {
-                        $this->session->data['payment_address']['country'] = $countryInfo['name'];
-                        $this->session->data['payment_address']['iso_code_2'] = $countryInfo['iso_code_2'];
-                        $this->session->data['payment_address']['iso_code_3'] = $countryInfo['iso_code_3'];
-                        $this->session->data['payment_address']['address_format'] = $countryInfo['address_format'];
-                    } else {
-                        $this->session->data['payment_address']['country'] = '';
-                        $this->session->data['payment_address']['iso_code_2'] = '';
-                        $this->session->data['payment_address']['iso_code_3'] = '';
-                        $this->session->data['payment_address']['address_format'] = '';
-                    }
+                if ($countryInfo) {
+                    $this->session->data['payment_address']['country'] = $countryInfo['name'];
+                    $this->session->data['payment_address']['iso_code_2'] = $countryInfo['iso_code_2'];
+                    $this->session->data['payment_address']['iso_code_3'] = $countryInfo['iso_code_3'];
+                    $this->session->data['payment_address']['address_format'] = $countryInfo['address_format'];
                 } else {
                     $this->session->data['payment_address']['country'] = '';
                     $this->session->data['payment_address']['iso_code_2'] = '';

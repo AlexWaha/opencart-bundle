@@ -153,12 +153,14 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
 
         $customFields = [
             'customer' => 'customer_custom_field',
-            'address' => 'address_custom_field',
-            'payment' => 'payment_custom_field',
+            'shipping_address' => 'address_custom_field',
+            'payment_address' => 'payment_custom_field',
         ];
 
         foreach ($customFields as $type => $sessionKey) {
-            $this->session->data['guest'][$sessionKey] = $this->request->post['custom_field'][$type] ?? [];
+            if (isset($this->request->post['custom_field'][$type])) {
+                $this->session->data['guest'][$sessionKey] = $this->request->post['custom_field'][$type];
+            }
         }
 
         $this->session->data['payment_address_same_as_shipping'] = isset($this->request->post['payment_address_same_as_shipping']) ? 1 : 0;

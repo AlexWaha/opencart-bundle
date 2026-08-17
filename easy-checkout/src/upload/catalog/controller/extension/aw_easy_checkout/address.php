@@ -161,7 +161,9 @@ class ControllerExtensionAwEasyCheckoutAddress extends Controller
             $data['zones'] = $this->model_localisation_zone->getZonesByCountryId($data['country_id']);
         }
 
-        $data['address_custom_field'] = $this->session->data['guest']['address_custom_field'] = $this->request->post['custom_field']['address'] ?? ($this->session->data['guest']['address_custom_field'] ?? []);
+        $customFieldSessionKey = $sessionAddressKey === 'payment_address' ? 'payment_custom_field' : 'address_custom_field';
+
+        $data['address_custom_field'] = $this->session->data['guest'][$customFieldSessionKey] = $this->request->post['custom_field'][$sessionAddressKey] ?? ($this->session->data['guest'][$customFieldSessionKey] ?? []);
         $data['guest_custom_field'] = $data['address_custom_field'];
 
         $data['addressType'] = $addressType;

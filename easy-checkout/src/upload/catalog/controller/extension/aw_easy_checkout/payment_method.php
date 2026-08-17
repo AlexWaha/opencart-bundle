@@ -256,7 +256,7 @@ class ControllerExtensionAwEasyCheckoutPaymentMethod extends Controller
 
         $data['payment_code'] = $this->session->data['payment_method']['code'] ?? '';
 
-        $data['payment_custom_field'] = $this->session->data['guest']['payment_custom_field'] = $this->request->post['custom_field']['payment'] ?? ($this->session->data['guest']['payment_custom_field'] ?? []);
+        $data['payment_custom_field'] = $this->session->data['guest']['payment_custom_field'] = $this->request->post['custom_field']['payment_address'] ?? ($this->session->data['guest']['payment_custom_field'] ?? []);
 
         if (isset($this->request->post['comment'])) {
             $this->session->data['comment'] = $this->request->post['comment'];
