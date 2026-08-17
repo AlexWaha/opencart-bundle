@@ -23,10 +23,6 @@ class ControllerExtensionAwEasyCheckoutAddressFormat extends Controller
             return;
         }
 
-        if (! array_key_exists('payment_custom_field', $output) || ! array_key_exists('shipping_custom_field', $output)) {
-            $this->fillMissingCustomFields($output);
-        }
-
         if (array_key_exists('payment_address_format', $output)) {
             $output['payment_address_format'] = $this->addressFormat->expand(
                 (string) $output['payment_address_format'],
@@ -47,33 +43,6 @@ class ControllerExtensionAwEasyCheckoutAddressFormat extends Controller
     private function normalizeCustomField($value): array
     {
         return is_array($value) ? $value : [];
-    }
-
-    private function fillMissingCustomFields(array &$output): void
-    {
-        if (empty($output['order_id'])) {
-            return;
-        }
-
-        $sql = "SELECT payment_custom_field, shipping_custom_field FROM `" . DB_PREFIX . "order` WHERE order_id = '" . (int) $output['order_id'] . "'";
-
-        if ($this->customer->getId()) {
-            $sql .= " AND customer_id = '" . (int) $this->customer->getId() . "'";
-        }
-
-        $row = $this->db->query($sql)->row;
-
-        if (! $row) {
-            return;
-        }
-
-        if (! array_key_exists('payment_custom_field', $output)) {
-            $output['payment_custom_field'] = $this->normalizeCustomField(json_decode((string) $row['payment_custom_field'], true));
-        }
-
-        if (! array_key_exists('shipping_custom_field', $output)) {
-            $output['shipping_custom_field'] = $this->normalizeCustomField(json_decode((string) $row['shipping_custom_field'], true));
-        }
     }
 
     public function address(&$route, &$args, &$output)

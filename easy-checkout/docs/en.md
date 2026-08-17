@@ -467,6 +467,11 @@ Numeric value to determine field display order.
 > replaced - keep the events installed if you rely on this token. If the module was
 > upgraded by overwriting files instead of reinstalling, the events are not re-registered
 > automatically; open the module's settings and save them once to re-register the events.
+>
+> On a stock OpenCart install, the customer's account order view will show the address
+> without the custom fields expanded, because `catalog/model/account/order.php` does not
+> return the `payment_custom_field` / `shipping_custom_field` columns; shops that want the
+> custom fields in that view must add them to that model.
 
 #### "Region" Field
 - Depends on selected country
