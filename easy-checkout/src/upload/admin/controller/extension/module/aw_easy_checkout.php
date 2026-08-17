@@ -607,6 +607,8 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
 
             $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/' . $this->moduleName . '/main');
 
+            $this->installEvents();
+
             $this->session->data['success'] = $this->language->get('text_success');
 
             $this->response->redirect($this->url->link(
@@ -1072,12 +1074,106 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->awCore->removeConfig($this->moduleChildName);
     }
 
+    public function expandOrderAddressFormat(&$route, &$args, &$output)
+    {
+        if (! is_array($output)) {
+            return;
+        }
+
+        $addressFormat = new \Alexwaha\EasyCheckout\AddressFormat($this->registry);
+
+        if (array_key_exists('payment_address_format', $output)) {
+            $output['payment_address_format'] = $addressFormat->expand(
+                (string) $output['payment_address_format'],
+                $this->normalizeCustomField($output['payment_custom_field'] ?? []),
+                (int) ($output['payment_country_id'] ?? 0)
+            );
+        }
+
+        if (array_key_exists('shipping_address_format', $output)) {
+            $output['shipping_address_format'] = $addressFormat->expand(
+                (string) $output['shipping_address_format'],
+                $this->normalizeCustomField($output['shipping_custom_field'] ?? []),
+                (int) ($output['shipping_country_id'] ?? 0)
+            );
+        }
+    }
+
+    private function normalizeCustomField($value): array
+    {
+        return is_array($value) ? $value : [];
+    }
+
+    public function expandOrderCustomFields(&$route, &$data): void
+    {
+        if (! is_array($data) || empty($data['order_id'])) {
+            return;
+        }
+
+        $row = $this->db->query(
+            "SELECT custom_field, payment_custom_field, shipping_custom_field FROM `" . DB_PREFIX . "order` WHERE order_id = '" . (int) $data['order_id'] . "'"
+        )->row;
+
+        if (! $row) {
+            return;
+        }
+
+        $addressFormat = new \Alexwaha\EasyCheckout\AddressFormat($this->registry);
+
+        $data['account_custom_fields'] = $this->buildCustomFieldRows(
+            $addressFormat,
+            $this->normalizeCustomField(json_decode((string) $row['custom_field'], true)),
+            'account'
+        );
+
+        $data['payment_custom_fields'] = $this->buildCustomFieldRows(
+            $addressFormat,
+            $this->normalizeCustomField(json_decode((string) $row['payment_custom_field'], true)),
+            'address'
+        );
+
+        $data['shipping_custom_fields'] = $this->buildCustomFieldRows(
+            $addressFormat,
+            $this->normalizeCustomField(json_decode((string) $row['shipping_custom_field'], true)),
+            'address'
+        );
+    }
+
+    private function buildCustomFieldRows(\Alexwaha\EasyCheckout\AddressFormat $addressFormat, array $customField, string $location): array
+    {
+        $rows = [];
+
+        foreach ($addressFormat->resolve($customField) as $field) {
+            if ($field['location'] !== $location || $field['value'] === '') {
+                continue;
+            }
+
+            $rows[] = [
+                'name' => htmlspecialchars((string) $field['name'], ENT_QUOTES, 'UTF-8'),
+                'value' => htmlspecialchars((string) $field['value'], ENT_QUOTES, 'UTF-8'),
+                'sort_order' => $field['sort_order'],
+            ];
+        }
+
+        usort($rows, static function (array $a, array $b): int {
+            return $a['sort_order'] <=> $b['sort_order'];
+        });
+
+        return $rows;
+    }
+
     private function installEvents(): void
     {
         $this->load->model('setting/event');
 
         $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
         $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_checkout_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_address');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_addresses');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_admin_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_custom_fields_admin_order_info');
 
         $this->model_setting_event->addEvent(
             $this->moduleName . '_replace_cart',
@@ -1090,6 +1186,42 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
             'catalog/controller/checkout/checkout/before',
             'extension/' . $this->moduleName . '/main/replace'
         );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_address_format_checkout_order',
+            'catalog/model/checkout/order/getOrder/after',
+            'extension/' . $this->moduleName . '/address_format/order'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_address_format_account_order',
+            'catalog/model/account/order/getOrder/after',
+            'extension/' . $this->moduleName . '/address_format/order'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_address_format_account_address',
+            'catalog/model/account/address/getAddress/after',
+            'extension/' . $this->moduleName . '/address_format/address'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_address_format_account_addresses',
+            'catalog/model/account/address/getAddresses/after',
+            'extension/' . $this->moduleName . '/address_format/addresses'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_address_format_admin_order',
+            'admin/model/sale/order/getOrder/after',
+            'extension/module/' . $this->moduleName . '/expandOrderAddressFormat'
+        );
+
+        $this->model_setting_event->addEvent(
+            $this->moduleName . '_custom_fields_admin_order_info',
+            'admin/view/sale/order_info/before',
+            'extension/module/' . $this->moduleName . '/expandOrderCustomFields'
+        );
     }
 
     private function uninstallEvents(): void
@@ -1098,6 +1230,12 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
 
         $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
         $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_checkout_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_address');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_addresses');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_admin_order');
+        $this->model_setting_event->deleteEventByCode($this->moduleName . '_custom_fields_admin_order_info');
     }
 
     protected function installPermissions()

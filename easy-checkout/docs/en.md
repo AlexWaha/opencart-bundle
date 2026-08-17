@@ -451,6 +451,27 @@ Numeric value to determine field display order.
 - Region list is automatically loaded when country is selected
 - Affects shipping cost and tax calculation
 - Changes phone mask (when dynamic mask is enabled)
+- If the "Country" field is disabled in the form, the address is saved and rendered
+  using the store's default country (**Settings > General > Country**), not left empty
+
+> **Address format token:** OpenCart's country address format (**System > Localisation
+> > Countries > edit > Address Format**) accepts a `{custom_field_id_N}` token, where `N`
+> is the numeric ID of a custom field with **"Address"** location. The module expands
+> this token to the field's value wherever the address is rendered (checkout summary,
+> order confirmation email, account order history, admin order page). If the field's
+> value is empty for a given order, the token is removed together with any surrounding
+> text on that line, so the address block does not show a stray label or empty line.
+>
+> On a stock OpenCart install without this module's events registered, an unexpanded
+> `{custom_field_id_N}` token in the address format renders literally instead of being
+> replaced - keep the events installed if you rely on this token. If the module was
+> upgraded by overwriting files instead of reinstalling, the events are not re-registered
+> automatically; open the module's settings and save them once to re-register the events.
+>
+> On a stock OpenCart install, the customer's account order view will show the address
+> without the custom fields expanded, because `catalog/model/account/order.php` does not
+> return the `payment_custom_field` / `shipping_custom_field` columns; shops that want the
+> custom fields in that view must add them to that model.
 
 #### "Region" Field
 - Depends on selected country
@@ -475,6 +496,19 @@ You can add custom fields to the shipping address block:
 - Floor
 - Delivery time
 - Courier instructions
+
+**Reading the field's ID:** on the **"Shipping Address"** tab, each attached custom
+field shows its own ID as `[custom_field_id_N]` right under the field name. Copy that
+value verbatim (including the brackets) into the country's Address Format to place the
+field in the rendered address, e.g. `{address_1}` followed by `{custom_field_id_N}` on
+its own line for "Entrance".
+
+**How it reaches the rendered address:** the value the customer entered is saved with
+the order (and with the saved address, for logged-in customers), then expanded into
+`{custom_field_id_N}` on order confirmation, in the order emails, on the account order
+history/address pages and on the admin order page - one shared expansion, not a
+per-page copy. Select/radio/checkbox fields are expanded as their configured label
+text, not the stored option ID.
 
 ---
 
