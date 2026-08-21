@@ -613,7 +613,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         $url = $shopUrl . $this->request->server['REQUEST_URI'];
         $ogType = $this->microdataConfig->get('og_type', 'website');
-        $locale = strtolower($this->session->data['language'] ?? 'uk-ua');
+        $locale = strtolower($this->session->data['language'] ?? $this->config->get('config_language'));
 
         $image = '';
 
