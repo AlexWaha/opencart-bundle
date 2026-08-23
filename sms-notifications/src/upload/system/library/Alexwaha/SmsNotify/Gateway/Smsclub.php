@@ -35,7 +35,7 @@ final class SmsClub
 
     public function send()
     {
-        if (! $this->username || ! $this->password) {
+        if (! $this->username) {
             $this->log->write($this->gateName . ' Error: Authentication credentials are missing.');
 
             return false;
@@ -53,54 +53,40 @@ final class SmsClub
             return false;
         }
 
-        $balance = $this->getBalance();
+        $this->getBalance();
 
-        if ($balance > 0 || $balance !== '0.00') {
-            $numbers = $this->to;
+        $numbers = $this->to;
 
-            if ($this->copy) {
-                $numbers .= ',' . $this->copy;
-            }
+        if ($this->copy) {
+            $numbers .= ',' . $this->copy;
+        }
 
-            if (! $this->from) {
-                $this->log->write($this->gateName . ' Notice: Default Sender is not set! Please input real sender');
+        $phones = explode(',', $numbers);
 
-                return false;
-            }
+        if ($phones) {
+            $body = [
+                'phone' => $phones,
+                'message' => $this->message,
+                'src_addr' => $this->from,
+            ];
 
-            $numbersList = explode(',', $numbers);
+            $result = $this->sendSms($body);
 
-            $phones = [];
-
-            foreach ($numbersList as $number) {
-                $phones[] = $number;
-            }
-
-            if ($phones) {
-                $body = [
-                    'phone' => $phones,
-                    'message' => $this->message,
-                    'src_addr' => $this->from,
-                ];
-
-                $result = $this->sendSms($body);
-
-                if ($result['success_request']) {
-                    if ($result['success_request']['info'] && is_array($result['success_request']['info'])) {
-                        foreach ($result['success_request']['info'] as $key => $info) {
-                            $this->log->write($this->gateName . ' Message send: ID: ' . $key . ' phone:' . $info);
-                        }
-                    }
-
-                    if ($result['success_request']['add_info'] && is_array($result['success_request']['add_info'])) {
-                        foreach ($result['success_request']['add_info'] as $key => $info) {
-                            $this->log->write($this->gateName . ' Message Info: ID: ' . $key . ' phone:' . $info);
-                        }
+            if (! empty($result['success_request'])) {
+                if (! empty($result['success_request']['info']) && is_array($result['success_request']['info'])) {
+                    foreach ($result['success_request']['info'] as $key => $info) {
+                        $this->log->write($this->gateName . ' Message send: ID: ' . $key . ' phone:' . $info);
                     }
                 }
+
+                if (! empty($result['success_request']['add_info']) && is_array($result['success_request']['add_info'])) {
+                    foreach ($result['success_request']['add_info'] as $key => $info) {
+                        $this->log->write($this->gateName . ' Message Info: ID: ' . $key . ' phone:' . $info);
+                    }
+                }
+            } else {
+                $this->log->write($this->gateName . ' Error: ' . json_encode($result));
             }
-        } else {
-            $this->log->write($this->gateName . ': Unable to get balance!');
         }
 
         return true;
@@ -116,7 +102,7 @@ final class SmsClub
         $result = $this->getResponse('balance');
 
         if ($result && isset($result['success_request'])) {
-            if ($result['success_request']['info'] && is_array($result['success_request']['info'])) {
+            if (! empty($result['success_request']['info']) && is_array($result['success_request']['info'])) {
                 foreach ($result['success_request']['info'] as $key => $info) {
                     $this->log->write($this->gateName . ' Balance info: ' . $key . ' : ' . $info);
                 }
