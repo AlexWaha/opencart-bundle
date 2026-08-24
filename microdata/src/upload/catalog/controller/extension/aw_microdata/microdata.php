@@ -494,7 +494,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
     {
         $this->load->model('extension/aw_microdata/microdata');
 
-        $rating = $this->model_extension_aw_microdata_microdata->getStoreAggregateRating();
+        $rating = $this->model_extension_aw_microdata_microdata->getCompositeRating();
 
         if ($rating['count'] <= 0) {
             return [];

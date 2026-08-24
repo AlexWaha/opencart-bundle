@@ -306,16 +306,14 @@ class ModelExtensionAwMicrodataMicrodata extends Model
 
         if ($hasStoreReviews) {
             $query = $this->db->query(
-                "SELECT AVG(rating) AS avg, SUM(cnt) AS count FROM (
-                    SELECT AVG(rating) AS rating, COUNT(*) AS cnt
+                "SELECT SUM(total) / SUM(cnt) AS avg, SUM(cnt) AS count FROM (
+                    SELECT SUM(rating) AS total, COUNT(*) AS cnt
                     FROM `" . DB_PREFIX . "review`
                     WHERE status = '1'
-                    HAVING cnt > 0
                     UNION ALL
-                    SELECT AVG(rating) AS rating, COUNT(*) AS cnt
+                    SELECT SUM(rating) AS total, COUNT(*) AS cnt
                     FROM `" . DB_PREFIX . "aw_review`
                     WHERE status = '1'
-                    HAVING cnt > 0
                 ) AS combined"
             );
         } else {
