@@ -113,6 +113,26 @@ Verify correct installation:
 - Diagnostics tab shows all 12 events with status "OK"
 - No duplicate Schema.org markup warnings
 
+### Step 4: Theme Template Requirement
+
+AW Microdata renders listing and reviews JSON-LD through a single template variable, `{{ aw_microdata|raw }}`. Two catalog templates must print it:
+
+- `catalog/view/theme/<theme>/template/product/aw_landing_page.twig`
+- `catalog/view/theme/<theme>/template/product/aw_store_reviews.twig`
+
+Add the line at line 2, right after `{{ header }}`, in each file.
+
+These two templates belong to the AW Landing Pages and AW Store Reviews modules, not to AW Microdata, so this package does not ship them - the module has no way to write into another module's templates during install. This is not an oversight.
+
+The `lux` theme ships the line already. OpenCart's `default` theme does not, and any custom theme built from `default` will not have it either.
+
+Without this line:
+
+- The landing page emits no listing JSON-LD at all.
+- The reviews page emits no organization node either - worse than before the module was installed, because the module's node-id registry still reserves the `#organization` identifier for that page, and the reserved output is simply discarded by a template that never prints it.
+
+Check both templates for the theme in use before relying on landing page or reviews page markup.
+
 ---
 
 ## Configuration
@@ -335,6 +355,16 @@ Accepted payment methods (free text). Maps to `paymentAccepted` in the schema.
 Areas where you deliver goods (free text). Maps to `areaServed` in the schema.
 
 **Example:** `Kyiv, Kharkiv, Odesa, Nationwide`
+
+#### Organization Rating
+
+When enabled, adds `aggregateRating` to the Organization node. Off by default: Google treats a store rating itself as self-serving, and the reviews page already carries its own rating independently.
+
+#### Breadcrumb Home Label
+
+Name used for the first breadcrumb entry when its text is empty after tag stripping - this happens on themes that render the home crumb as an icon rather than text. Empty (default) falls back to the configured store name.
+
+Before this release the module emitted the literal string `Home` in that position, regardless of the storefront language.
 
 ---
 
@@ -571,6 +601,24 @@ Three options, selectable per listing type on the Categories, Landing Pages and 
 
 The Search Results and Specials rows show a dash instead of a select: both page types reuse their own existing price queries, so the stored `search_price_source` / `special_price_source` values have no effect on output. They stay in the configuration for forward compatibility.
 
+#### Product Mode: sku / mpn / brand
+
+Only applies when a listing type's Schema Type is set to `Product` (see the matrix above). Fills `sku`, `mpn` and `brand.name` on that listing's Product node.
+
+- `page_title` (default) - uses the page's own heading. Each city or category page gets a distinct identifier this way, so Google does not fold twenty landing pages into a single product.
+- `store_name` - uses the configured store name for all three fields.
+- `none` - omits `sku`, `mpn` and `brand.name`.
+
+#### Product Mode: image
+
+Only applies in `Product` mode. Fills the node's `image` property.
+
+- `first_product` (default) - the first product listed on the page.
+- `category_image` - the category or landing page's own image.
+- `default_image` - the module's Default Image setting (General tab).
+
+If the chosen source resolves to nothing, the module falls back to Default Image, then omits `image` entirely. An SVG is never emitted as `image`, because Google will not use one.
+
 #### Two Behavior Changes on Upgrade
 
 1. **`{type}_price_source` now defaults to `special`.** Stores with active specials will see their listing price ranges drop to the prices customers actually pay. Set the field back to `base` on any listing type to restore the previous numbers.
@@ -698,6 +746,10 @@ The default Open Graph type for pages that don't have a specific type:
 - `article` - Article
 - `product` - Product
 
+#### OG Description Limit
+
+Caps `og:description`, truncated on a word boundary with no ellipsis appended. Default `290` - previously a hardcoded value in the code, now configurable.
+
 #### Facebook App ID
 
 Your Facebook Application ID for Facebook Insights integration. Optional.
@@ -726,6 +778,12 @@ Fallback image for OpenGraph when a page doesn't have its own image. If not set,
 ### Advanced / Tricks
 
 > **Warning:** These settings can affect your SEO positively or negatively. Use with caution.
+
+#### Description Limit
+
+Caps every schema `description` the module emits, truncated on a word boundary with no ellipsis appended. `0` (default) means no cap.
+
+Exists because an uncapped category or product description can push several thousand characters into a single JSON-LD block.
 
 #### Global AggregateRating
 
