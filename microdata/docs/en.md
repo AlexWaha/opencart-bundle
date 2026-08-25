@@ -552,6 +552,36 @@ When enabled, generates `CollectionPage` schema for landing pages (if AW Landing
 
 When enabled, uses the landing page title as the `areaServed` value. Useful for location-based landing pages (e.g., "Delivery in Kyiv").
 
+#### Per-Type Listing Matrix
+
+Each of the five listing page types - Categories, Landing Pages, Manufacturer, Search Results, Specials - has its own row with four independent controls: Schema Type, Price Source, AggregateOffer toggle, and Breadcrumbs toggle. Nothing is shared between rows, so one store can run `CollectionPage` on categories and `Product` on landing pages in the same build.
+
+- **Schema Type** - `CollectionPage`, `ItemList`, `OfferCatalog`, or `Product`. `Product` on a listing page is a deliberate deviation from Google's own guidance, which reserves Product markup for a single-product page - it wins price-range rich snippets more reliably than the collection types. Default stays `CollectionPage` (the search row defaults to `SearchResultsPage`).
+- **AggregateOffer toggle** - only takes effect in `Product` mode. In `CollectionPage`, `ItemList` and `OfferCatalog` mode no `offers` key is ever emitted, regardless of the toggle, because `offers` is not a valid property of those types.
+- **Price Source** - see below.
+- **Breadcrumbs** - independent per type, evaluated only when the global breadcrumbs setting is on.
+
+#### Price Source
+
+Three options, selectable per listing type on the Categories, Landing Pages and Manufacturer rows:
+
+- `base` - the raw product price. Reproduces the module's pre-upgrade behavior.
+- `special` (default) - the active `product_special` row when one exists, otherwise the base price. This is the fix for a listing price range that used to sit above the price the customer actually sees.
+- `option_min` - the special/base price plus the sum, across required options only, of each option's cheapest modifier. Optional options contribute nothing, since the customer can decline them.
+
+The Search Results and Specials rows show a dash instead of a select: both page types reuse their own existing price queries, so the stored `search_price_source` / `special_price_source` values have no effect on output. They stay in the configuration for forward compatibility.
+
+#### Two Behavior Changes on Upgrade
+
+1. **`{type}_price_source` now defaults to `special`.** Stores with active specials will see their listing price ranges drop to the prices customers actually pay. Set the field back to `base` on any listing type to restore the previous numbers.
+2. **`organization_rating` now defaults to off.** Google treats a store rating itself as self-serving, so the organization node stops carrying `aggregateRating` out of the box. Turn it back on in the Organization tab to restore it.
+
+#### Install / Uninstall Notes
+
+- Reinstalling the module (disable, then enable again) resets every event handler it owns back to enabled. If you had manually disabled one of them under Extensions -> Modifications -> Events, reinstalling silently re-enables it.
+- Reinstalling also resets `sort_order` to `0` on every event it owns, which can reshuffle output order against another module bound to the same trigger.
+- Install creates three indexes if they do not already exist: `idx_aw_microdata_product_special_product`, `idx_aw_microdata_product_option_product`, `idx_aw_microdata_product_option_value_option`. They speed up the `special` and `option_min` price sources and are left in place on uninstall - dropping them would mean an `ALTER TABLE` on tables that may be large, triggered from the one moment (uninstall) when something is often already going wrong. Remove them by hand if you ever need to.
+
 ---
 
 ### Content Pages

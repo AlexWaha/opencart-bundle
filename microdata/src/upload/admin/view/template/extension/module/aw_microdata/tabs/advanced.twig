@@ -1,6 +1,14 @@
 <div class="alert alert-warning"><i class="fa fa-exclamation-triangle"></i> {{ text_advanced_warning }}</div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_description_limit }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="description_limit" value="{{ description_limit }}" min="0" class="form-control">
+        <p class="help-block">{{ help_description_limit }}</p>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_global_rating }}</label>
     <div class="col-sm-9">
         <label class="checkbox-switch">

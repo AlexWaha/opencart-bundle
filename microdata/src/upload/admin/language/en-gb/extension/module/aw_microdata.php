@@ -286,6 +286,43 @@ $_['help_category_aggregate_offer']     = 'Emit AggregateOffer when MIN price < 
 $_['entry_id_linking_enabled']          = '@id Hub-and-Spoke Linking';
 $_['help_id_linking_enabled']           = 'Cross-link Product, Organization, BreadcrumbList via stable @id (URL-based).';
 
+// task-0004: per-listing-type schema control
+$_['entry_listing_matrix']              = 'Listing Pages';
+$_['column_listing_page']               = 'Page type';
+$_['column_listing_schema_type']        = 'Schema type';
+$_['column_listing_price_source']       = 'Price source';
+$_['column_listing_aggregate_offer']    = 'AggregateOffer';
+$_['column_listing_breadcrumbs']        = 'Breadcrumbs';
+$_['text_listing_category']             = 'Category';
+$_['text_listing_landing']              = 'Landing page';
+$_['text_listing_manufacturer']         = 'Manufacturer';
+$_['text_listing_search']               = 'Search results';
+$_['text_listing_special']              = 'Specials';
+$_['text_price_source_base']            = 'Base price';
+$_['text_price_source_special']         = 'Special price';
+$_['text_price_source_option_min']      = 'Special price + required options minimum';
+$_['help_listing_aggregate_offer']      = 'AggregateOffer is emitted only in Product mode. CollectionPage, ItemList and OfferCatalog do not accept an offers property, so the toggle has no effect on them.';
+$_['help_listing_price_source']         = 'Price source drives the category, landing page and manufacturer ranges. Search and specials reuse their own existing queries.';
+$_['help_listing_breadcrumbs']          = 'Per-page BreadcrumbList output. Evaluated only when breadcrumbs are enabled globally.';
+$_['entry_listing_identity_source']     = 'Product Mode: sku / mpn / brand';
+$_['help_listing_identity_source']      = 'Value used for sku, mpn and brand.name when a listing page is emitted as Product.';
+$_['text_identity_page_title']          = 'Page title';
+$_['text_identity_store_name']          = 'Store name';
+$_['text_identity_none']                = 'Do not emit';
+$_['entry_listing_image_source']        = 'Product Mode: image';
+$_['help_listing_image_source']         = 'Falls back to the default image, then omits the property when nothing resolves.';
+$_['text_image_first_product']          = 'First listed product';
+$_['text_image_category_image']         = 'Category or landing page image';
+$_['text_image_default_image']          = 'Default image';
+$_['entry_description_limit']           = 'Description Limit';
+$_['help_description_limit']            = 'Caps every schema description, truncated on a word boundary. 0 means no limit.';
+$_['entry_og_description_limit']        = 'OG Description Limit';
+$_['help_og_description_limit']         = 'Caps og:description, truncated on a word boundary. 0 means no limit.';
+$_['entry_organization_rating']         = 'Organization aggregateRating';
+$_['help_organization_rating']          = 'Off by default. Google treats a store-level rating of itself as self-serving. The reviews page keeps its own rating.';
+$_['entry_breadcrumb_home_label']       = 'Breadcrumb Home Label';
+$_['help_breadcrumb_home_label']        = 'Name used when a breadcrumb has no text. Empty falls back to the store name.';
+
 // Generic UI labels
 $_['text_select']                       = '-- Select --';
 $_['text_remove']                       = 'Remove';

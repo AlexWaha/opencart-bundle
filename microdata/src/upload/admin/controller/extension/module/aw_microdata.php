@@ -149,7 +149,40 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->params['listing_return_policy'] = $this->moduleConfig->get('listing_return_policy', false);
 
         $this->params['category_schema'] = $this->moduleConfig->get('category_schema', true);
-        $this->params['category_type'] = $this->moduleConfig->get('category_type', 'CollectionPage');
+
+        // task-0004: per-listing-type schema control (FR-1 to FR-4)
+        $this->params['listing_types'] = ['category', 'landing', 'manufacturer', 'search', 'special'];
+
+        // FR-27: search and special reuse their own queries, so their price source is inert
+        $this->params['listing_types_without_price_source'] = ['search', 'special'];
+
+        foreach ($this->params['listing_types'] as $listingType) {
+            // FR-26: a search page is a SearchResultsPage, not a CollectionPage
+            $this->params[$listingType . '_type'] = $this->moduleConfig->get(
+                $listingType . '_type',
+                $listingType === 'search' ? 'SearchResultsPage' : 'CollectionPage'
+            );
+            $this->params[$listingType . '_aggregate_offer'] = $this->moduleConfig->get(
+                $listingType . '_aggregate_offer',
+                false
+            );
+            $this->params[$listingType . '_price_source'] = $this->moduleConfig->get(
+                $listingType . '_price_source',
+                'special'
+            );
+            $this->params[$listingType . '_breadcrumbs'] = $this->moduleConfig->get(
+                $listingType . '_breadcrumbs',
+                true
+            );
+        }
+
+        $this->params['listing_identity_source'] = $this->moduleConfig->get('listing_identity_source', 'page_title');
+        $this->params['listing_image_source'] = $this->moduleConfig->get('listing_image_source', 'first_product');
+        $this->params['description_limit'] = (int)$this->moduleConfig->get('description_limit', 0);
+        $this->params['og_description_limit'] = (int)$this->moduleConfig->get('og_description_limit', 290);
+        $this->params['organization_rating'] = $this->moduleConfig->get('organization_rating', false);
+        $this->params['breadcrumb_home_label'] = $this->moduleConfig->get('breadcrumb_home_label', '');
+
         $this->params['price_range'] = $this->moduleConfig->get('price_range', true);
         $this->params['product_count'] = $this->moduleConfig->get('product_count', true);
         $this->params['category_rating'] = $this->moduleConfig->get('category_rating', false);
@@ -221,7 +254,6 @@ class ControllerExtensionModuleAwMicrodata extends Controller
 
         // Category enhancements (items 28, 29)
         $this->params['category_carousel'] = $this->moduleConfig->get('category_carousel', false);
-        $this->params['category_aggregate_offer'] = $this->moduleConfig->get('category_aggregate_offer', false);
 
         // ID linking (item 18)
         $this->params['id_linking_enabled'] = $this->moduleConfig->get('id_linking_enabled', true);
@@ -596,6 +628,10 @@ class ControllerExtensionModuleAwMicrodata extends Controller
 
         $this->installPermissions();
         $this->installEvents();
+
+        // FR-29: supporting indexes for the listing price-source sub-selects
+        $this->load->model('extension/module/' . $this->moduleName);
+        $this->model_extension_module_aw_microdata->createPriceSourceIndexes();
     }
 
     public function uninstall(): void

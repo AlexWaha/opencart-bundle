@@ -21,6 +21,14 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_og_description_limit }}</label>
+    <div class="col-sm-9">
+        <input type="number" name="og_description_limit" value="{{ og_description_limit }}" min="0" class="form-control">
+        <p class="help-block">{{ help_og_description_limit }}</p>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_fb_app_id }}</label>
     <div class="col-sm-9">
         <input type="text" name="fb_app_id" value="{{ fb_app_id }}" class="form-control" placeholder="123456789012345">

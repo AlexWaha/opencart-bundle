@@ -286,6 +286,43 @@ $_['help_category_aggregate_offer']     = 'Виводити AggregateOffer ко�
 $_['entry_id_linking_enabled']          = '@id Hub-and-Spoke зв\'язки';
 $_['help_id_linking_enabled']           = 'Пов\'язувати Product, Organization, BreadcrumbList через стабільні @id (URL-based).';
 
+// task-0004: per-listing-type schema control
+$_['entry_listing_matrix']              = 'Сторінки списків';
+$_['column_listing_page']               = 'Тип сторінки';
+$_['column_listing_schema_type']        = 'Тип схеми';
+$_['column_listing_price_source']       = 'Джерело ціни';
+$_['column_listing_aggregate_offer']    = 'AggregateOffer';
+$_['column_listing_breadcrumbs']        = 'Хлібні крихти';
+$_['text_listing_category']             = 'Категорія';
+$_['text_listing_landing']              = 'Лендінг';
+$_['text_listing_manufacturer']         = 'Виробник';
+$_['text_listing_search']               = 'Результати пошуку';
+$_['text_listing_special']              = 'Акції';
+$_['text_price_source_base']            = 'Базова ціна';
+$_['text_price_source_special']         = 'Акційна ціна';
+$_['text_price_source_option_min']      = 'Акційна ціна + мінімум обов\'язкових опцій';
+$_['help_listing_aggregate_offer']      = 'AggregateOffer виводиться лише в режимі Product. CollectionPage, ItemList та OfferCatalog не приймають властивість offers, тому перемикач на них не впливає.';
+$_['help_listing_price_source']         = 'Джерело ціни застосовується до діапазонів категорії, лендінга та виробника. Пошук і акції використовують власні наявні запити.';
+$_['help_listing_breadcrumbs']          = 'Виведення BreadcrumbList за типами сторінок. Враховується лише за увімкнених хлібних крихт загалом.';
+$_['entry_listing_identity_source']     = 'Режим Product: sku / mpn / brand';
+$_['help_listing_identity_source']      = 'Значення для sku, mpn і brand.name, коли сторінка списку виводиться як Product.';
+$_['text_identity_page_title']          = 'Заголовок сторінки';
+$_['text_identity_store_name']          = 'Назва магазину';
+$_['text_identity_none']                = 'Не виводити';
+$_['entry_listing_image_source']        = 'Режим Product: image';
+$_['help_listing_image_source']         = 'За відсутності значення використовується зображення за замовчуванням, інакше властивість не виводиться.';
+$_['text_image_first_product']          = 'Перший товар у списку';
+$_['text_image_category_image']         = 'Зображення категорії або лендінга';
+$_['text_image_default_image']          = 'Зображення за замовчуванням';
+$_['entry_description_limit']           = 'Ліміт опису';
+$_['help_description_limit']            = 'Обмежує кожен опис у схемі, обрізання по межі слова. 0 - без обмеження.';
+$_['entry_og_description_limit']        = 'Ліміт OG-опису';
+$_['help_og_description_limit']         = 'Обмежує og:description, обрізання по межі слова. 0 - без обмеження.';
+$_['entry_organization_rating']         = 'aggregateRating організації';
+$_['help_organization_rating']          = 'Типово вимкнено. Google вважає рейтинг магазину про самого себе маніпулятивним. Сторінка відгуків зберігає власний рейтинг.';
+$_['entry_breadcrumb_home_label']       = 'Назва першої крихти';
+$_['help_breadcrumb_home_label']        = 'Використовується, коли крихта не має тексту. Порожнє значення замінюється назвою магазину.';
+
 // Generic UI labels
 $_['text_select']                       = '-- Обрати --';
 $_['text_remove']                       = 'Видалити';

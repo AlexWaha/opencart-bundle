@@ -10,17 +10,6 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_category_type }}</label>
-    <div class="col-sm-9">
-        <select name="category_type" class="form-control">
-            <option value="CollectionPage" {% if category_type == 'CollectionPage' %}selected{% endif %}>CollectionPage</option>
-            <option value="ItemList" {% if category_type == 'ItemList' %}selected{% endif %}>ItemList</option>
-            <option value="OfferCatalog" {% if category_type == 'OfferCatalog' %}selected{% endif %}>OfferCatalog</option>
-        </select>
-    </div>
-</div>
-
-<div class="form-group">
     <label class="col-sm-3 control-label">{{ entry_search_schema }}</label>
     <div class="col-sm-9">
         <label class="checkbox-switch">
@@ -61,6 +50,98 @@
             <input type="checkbox" name="homepage_products" value="1" {% if homepage_products %}checked{% endif %}>
             <span class="checkbox-switch-slider"></span>
         </label>
+    </div>
+</div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_listing_matrix }}</label>
+    <div class="col-sm-9">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>{{ column_listing_page }}</td>
+                    <td>{{ column_listing_schema_type }}</td>
+                    <td>{{ column_listing_price_source }}</td>
+                    <td class="text-center">{{ column_listing_aggregate_offer }}</td>
+                    <td class="text-center">{{ column_listing_breadcrumbs }}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for listing_type in listing_types %}
+                {% set type_value = attribute(_context, listing_type ~ '_type') %}
+                {% set price_source_value = attribute(_context, listing_type ~ '_price_source') %}
+                <tr>
+                    <td>{{ attribute(_context, 'text_listing_' ~ listing_type) }}</td>
+                    <td>
+                        <select name="{{ listing_type }}_type" class="form-control">
+                            <option value="CollectionPage" {% if type_value == 'CollectionPage' %}selected{% endif %}>CollectionPage</option>
+                            <option value="ItemList" {% if type_value == 'ItemList' %}selected{% endif %}>ItemList</option>
+                            <option value="OfferCatalog" {% if type_value == 'OfferCatalog' %}selected{% endif %}>OfferCatalog</option>
+                            <option value="Product" {% if type_value == 'Product' %}selected{% endif %}>Product</option>
+                            {% if listing_type == 'search' %}
+                            <option value="SearchResultsPage" {% if type_value == 'SearchResultsPage' %}selected{% endif %}>SearchResultsPage</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td>
+                        {% if listing_type in listing_types_without_price_source %}
+                        <input type="hidden" name="{{ listing_type }}_price_source" value="{{ price_source_value }}">
+                        <span class="text-muted">-</span>
+                        {% else %}
+                        <select name="{{ listing_type }}_price_source" class="form-control">
+                            <option value="base" {% if price_source_value == 'base' %}selected{% endif %}>{{ text_price_source_base }}</option>
+                            <option value="special" {% if price_source_value == 'special' %}selected{% endif %}>{{ text_price_source_special }}</option>
+                            <option value="option_min" {% if price_source_value == 'option_min' %}selected{% endif %}>{{ text_price_source_option_min }}</option>
+                        </select>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <label class="checkbox-switch">
+                            <input type="hidden" name="{{ listing_type }}_aggregate_offer" value="0">
+                            <input type="checkbox" name="{{ listing_type }}_aggregate_offer" value="1" {% if attribute(_context, listing_type ~ '_aggregate_offer') %}checked{% endif %}>
+                            <span class="checkbox-switch-slider"></span>
+                        </label>
+                    </td>
+                    <td class="text-center">
+                        <label class="checkbox-switch">
+                            <input type="hidden" name="{{ listing_type }}_breadcrumbs" value="0">
+                            <input type="checkbox" name="{{ listing_type }}_breadcrumbs" value="1" {% if attribute(_context, listing_type ~ '_breadcrumbs') %}checked{% endif %}>
+                            <span class="checkbox-switch-slider"></span>
+                        </label>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="help-block">{{ help_listing_aggregate_offer }}</p>
+        <p class="help-block">{{ help_listing_price_source }}</p>
+        <p class="help-block">{{ help_listing_breadcrumbs }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_listing_identity_source }}</label>
+    <div class="col-sm-9">
+        <select name="listing_identity_source" class="form-control">
+            <option value="page_title" {% if listing_identity_source == 'page_title' %}selected{% endif %}>{{ text_identity_page_title }}</option>
+            <option value="store_name" {% if listing_identity_source == 'store_name' %}selected{% endif %}>{{ text_identity_store_name }}</option>
+            <option value="none" {% if listing_identity_source == 'none' %}selected{% endif %}>{{ text_identity_none }}</option>
+        </select>
+        <p class="help-block">{{ help_listing_identity_source }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_listing_image_source }}</label>
+    <div class="col-sm-9">
+        <select name="listing_image_source" class="form-control">
+            <option value="first_product" {% if listing_image_source == 'first_product' %}selected{% endif %}>{{ text_image_first_product }}</option>
+            <option value="category_image" {% if listing_image_source == 'category_image' %}selected{% endif %}>{{ text_image_category_image }}</option>
+            <option value="default_image" {% if listing_image_source == 'default_image' %}selected{% endif %}>{{ text_image_default_image }}</option>
+        </select>
+        <p class="help-block">{{ help_listing_image_source }}</p>
     </div>
 </div>
 
@@ -155,17 +236,6 @@
         <label class="checkbox-switch">
             <input type="hidden" name="category_carousel" value="0">
             <input type="checkbox" name="category_carousel" value="1" {% if category_carousel %}checked{% endif %}>
-            <span class="checkbox-switch-slider"></span>
-        </label>
-    </div>
-</div>
-
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ entry_category_aggregate_offer }}</label>
-    <div class="col-sm-9">
-        <label class="checkbox-switch">
-            <input type="hidden" name="category_aggregate_offer" value="0">
-            <input type="checkbox" name="category_aggregate_offer" value="1" {% if category_aggregate_offer %}checked{% endif %}>
             <span class="checkbox-switch-slider"></span>
         </label>
     </div>

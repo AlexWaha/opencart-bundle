@@ -5,6 +5,12 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
     private string $moduleName = 'aw_microdata';
     private ?\Alexwaha\Config $microdataConfig = null;
 
+    /** Node @id values already emitted during this request */
+    private static array $emittedNodeIds = [];
+
+    /** Node @id values that already carry an aggregateRating during this request */
+    private static array $emittedRatingIds = [];
+
     public function __construct($registry)
     {
         parent::__construct($registry);
@@ -41,6 +47,112 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $text = preg_replace('/\s{2,}/', ' ', $text);
 
         return trim($text);
+    }
+
+    /**
+     * Truncate on a word boundary. A limit of zero or less means no cap.
+     */
+    private function limitText(string $text, int $limit): string
+    {
+        if ($limit <= 0 || mb_strlen($text, 'UTF-8') <= $limit) {
+            return $text;
+        }
+
+        $cut = mb_substr($text, 0, $limit, 'UTF-8');
+        $lastSpace = mb_strrpos($cut, ' ', 0, 'UTF-8');
+
+        return rtrim($lastSpace !== false ? mb_substr($cut, 0, $lastSpace, 'UTF-8') : $cut);
+    }
+
+    private function limitDescription(string $text): string
+    {
+        return $this->limitText($text, (int)$this->microdataConfig->get('description_limit', 0));
+    }
+
+    /**
+     * Reserve an @id for a node. Returns false when this request already emitted it.
+     */
+    private function claimNodeId(string $id): bool
+    {
+        if ($id === '') {
+            return true;
+        }
+
+        if (isset(self::$emittedNodeIds[$id])) {
+            return false;
+        }
+
+        self::$emittedNodeIds[$id] = true;
+
+        return true;
+    }
+
+    /**
+     * Reserve the aggregateRating slot for an @id. Returns false when it is already taken.
+     */
+    private function claimRatingId(string $id): bool
+    {
+        if (isset(self::$emittedRatingIds[$id])) {
+            return false;
+        }
+
+        self::$emittedRatingIds[$id] = true;
+
+        return true;
+    }
+
+    /**
+     * Turn a stored image path into an absolute URL. Absolute values pass through.
+     * Catalog images live under image/; logo paths are stored relative to the shop root.
+     */
+    private function resolveMediaUrl(string $path, string $baseSegment = 'image/'): string
+    {
+        $path = trim($path);
+
+        if ($path === '') {
+            return '';
+        }
+
+        // Match the scheme, not the letters - a stored file named "http-banner.png" is relative
+        if (preg_match('~^https?://~i', $path) || strpos($path, '//') === 0) {
+            return str_replace(' ', '%20', $path);
+        }
+
+        return str_replace(' ', '%20', rtrim($this->getShopUrl(), '/') . '/' . $baseSegment . ltrim($path, '/'));
+    }
+
+    /**
+     * Store logo URL: the module's own setting first, then the store's config_logo.
+     */
+    private function resolveLogoUrl(): string
+    {
+        $path = (string)($this->microdataConfig->get('logo', '') ?: $this->config->get('config_logo'));
+
+        return $this->resolveMediaUrl($path, '');
+    }
+
+    private function isSvg(string $url): bool
+    {
+        $path = (string)(parse_url($url, PHP_URL_PATH) ?: $url);
+
+        return strtolower(substr($path, -4)) === '.svg';
+    }
+
+    /**
+     * Map the current route onto one of the five configurable listing types.
+     * Returns an empty string for pages that are not listing pages.
+     */
+    private function resolveListingType(): string
+    {
+        $map = [
+            'product/category'          => 'category',
+            'product/search'            => 'search',
+            'product/manufacturer/info' => 'manufacturer',
+            'product/special'           => 'special',
+            'extension/module/aw_landing_page' => 'landing',
+        ];
+
+        return $map[(string)($this->request->get['route'] ?? '')] ?? '';
     }
 
     private function extractVideoObjects(string $html, string $fallbackName = ''): array
@@ -220,7 +332,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $org = [
             '@type'       => $storeType,
             'name'        => $storeName,
-            'description' => $description ?: $storeName,
+            'description' => $this->limitDescription($description ?: $storeName),
             'legalName'   => (string)$legalName,
             'url'         => $shopUrl,
             'email'       => $email,
@@ -235,15 +347,10 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $org['priceRange'] = $priceRange;
         }
 
-        $logoConfig = $this->microdataConfig->get('logo', '');
-        $logoPath = $logoConfig ?: $this->config->get('config_logo');
+        $logoUrl = $this->resolveLogoUrl();
 
-        if ($logoPath) {
-            if (strpos($logoPath, 'http') === 0) {
-                $org['logo'] = $logoPath;
-            } else {
-                $org['logo'] = $shopUrl . '/' . ltrim(str_replace(' ', '%20', $logoPath), '/');
-            }
+        if ($logoUrl !== '') {
+            $org['logo'] = $logoUrl;
         }
 
         if (!empty($org['logo'])) {
@@ -558,14 +665,33 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             return '';
         }
 
-        $schema = ['@context' => 'https://schema.org'] + $this->getOrganizationData();
+        $orgData = $this->getOrganizationData();
+        $orgId = (string)($orgData['@id'] ?? '');
 
-        $aggregateRating = $this->getAggregateRatingData();
-        if ($aggregateRating) {
-            $schema['aggregateRating'] = $aggregateRating;
+        // Another builder (the reviews page) already owns this node on this request
+        if (!$this->claimNodeId($orgId)) {
+            return '';
+        }
+
+        $schema = ['@context' => 'https://schema.org'] + $orgData;
+
+        if ($this->microdataConfig->get('organization_rating', false)) {
+            $aggregateRating = $this->getAggregateRatingData();
+
+            if ($aggregateRating && $this->claimRatingId($this->getOrganizationRatingKey($orgId))) {
+                $schema['aggregateRating'] = $aggregateRating;
+            }
         }
 
         return $this->buildJsonLd($schema);
+    }
+
+    /**
+     * Rating slot key for the organization entity. Stays stable when @id linking is off.
+     */
+    private function getOrganizationRatingKey(string $orgId): string
+    {
+        return $orgId !== '' ? $orgId : rtrim($this->getShopUrl(), '/') . '/#organization';
     }
 
     public function getOg($data = []): string
@@ -585,38 +711,51 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $shopUrl = rtrim($this->getShopUrl(), '/');
         $storeName = $this->cleanText($this->config->get('config_name'));
 
-        $title = isset($data['heading_title']) ? $this->cleanText($data['heading_title']) : $storeName;
-        $description = '';
+        // The header event fires for every child controller, so the event payload holds
+        // whichever widget rendered last. The Document object always holds the page's own.
+        $title = $this->cleanText((string)$this->document->getTitle()) ?: $storeName;
 
-        if (!empty($data['meta_description'])) {
-            $description = $this->cleanText($data['meta_description']);
-        } elseif (!empty($data['description'])) {
-            $desc = $this->cleanText($data['description']);
-            $description = mb_strlen($desc, 'UTF-8') > 290 ? mb_substr($desc, 0, 290, 'UTF-8') : $desc;
-        }
+        $description = $this->limitText(
+            $this->cleanText((string)$this->document->getDescription()),
+            (int)$this->microdataConfig->get('og_description_limit', 290)
+        );
 
         if (!$description) {
-            $description = $title;
+            $description = $storeName;
         }
 
         $url = $shopUrl . $this->request->server['REQUEST_URI'];
         $ogType = $this->microdataConfig->get('og_type', 'website');
         $locale = strtolower($this->session->data['language'] ?? $this->config->get('config_language'));
 
-        $image = '';
+        $imageCandidates = [];
 
-        if (!empty($data['image'])) {
-            $image = $data['image'];
-        } elseif (!empty($data['thumb'])) {
-            $image = $data['thumb'];
-        } else {
-            $logoPath = $this->config->get('config_logo');
-            if ($logoPath) {
-                $image = $shopUrl . '/image/' . $logoPath;
+        foreach ([
+            // setOgImage/getOgImage are not stock OpenCart, so never assume they exist
+            method_exists($this->document, 'getOgImage') ? (string)$this->document->getOgImage() : '',
+            (string)$this->microdataConfig->get('og_image', ''),
+            (string)$this->config->get('config_logo'),
+        ] as $candidate) {
+            $resolved = $this->resolveMediaUrl($candidate);
+
+            if ($resolved !== '') {
+                $imageCandidates[] = $resolved;
             }
         }
 
-        $image = str_replace(' ', '%20', $image);
+        $image = '';
+
+        // SVG is not a valid OG image, so prefer any raster fallback
+        foreach ($imageCandidates as $candidate) {
+            if (!$this->isSvg($candidate)) {
+                $image = $candidate;
+                break;
+            }
+        }
+
+        if (!$image && $imageCandidates) {
+            $image = $imageCandidates[0];
+        }
 
         $tags = [];
         $tags[] = '<meta property="og:title" content="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">';
@@ -883,7 +1022,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             '@context'    => 'https://schema.org',
             '@type'       => 'Product',
             'name'        => $name,
-            'description' => $description ?: $name,
+            'description' => $this->limitDescription($description ?: $name),
         ];
 
         if ($idLinking) {
@@ -1385,42 +1524,62 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         string $url,
         array $priceRange,
         array $products = [],
-        string $schemaType = 'CollectionPage'
+        string $schemaType = 'CollectionPage',
+        bool $aggregateOffer = false,
+        string $image = ''
     ): array {
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => $schemaType,
             'name'        => $name,
-            'description' => $description ?: $name,
+            'description' => $this->limitDescription($description ?: $name),
             'url'         => $url,
         ];
 
-        // AggregateOffer: emit only when admin-toggled AND MIN < MAX (#29)
-        $aggregateGateOk = $this->microdataConfig->get('category_aggregate_offer', false)
-            && $priceRange['count'] > 0
-            && $priceRange['low'] > 0
-            && $priceRange['high'] > $priceRange['low'];
+        // offers is not a valid property of CollectionPage / ItemList / OfferCatalog,
+        // so only Product mode may carry it (#29 gate kept for the price sanity check)
+        if ($schemaType === 'Product') {
+            $identity = $this->resolveListingIdentity($name);
 
-        if ($aggregateGateOk) {
-            $offer = [
-                '@type'         => 'AggregateOffer',
-                'lowPrice'      => $priceRange['low'],
-                'highPrice'     => $priceRange['high'],
-                'offerCount'    => $priceRange['count'],
-                'priceCurrency' => $this->getCurrencyCode(),
-            ];
-
-            $merchantEnabled = (bool)$this->microdataConfig->get('merchant_listings_enabled', true);
-
-            if ($merchantEnabled && $this->microdataConfig->get('listing_delivery', false)) {
-                $offer['shippingDetails'] = $this->buildOfferShippingDetails($this->getCurrencyCode());
+            if ($identity !== '') {
+                $schema['sku'] = $identity;
+                $schema['mpn'] = $identity;
+                $schema['brand'] = [
+                    '@type' => 'Brand',
+                    'name'  => $identity,
+                ];
             }
 
-            if ($merchantEnabled && $this->microdataConfig->get('listing_return_policy', false)) {
-                $offer['hasMerchantReturnPolicy'] = $this->buildMerchantReturnPolicy();
+            if ($image !== '') {
+                $schema['image'] = $image;
             }
 
-            $schema['offers'] = $offer;
+            $aggregateGateOk = $aggregateOffer
+                && $priceRange['count'] > 0
+                && $priceRange['low'] > 0
+                && $priceRange['high'] >= $priceRange['low'];
+
+            if ($aggregateGateOk) {
+                $offer = [
+                    '@type'         => 'AggregateOffer',
+                    'lowPrice'      => $priceRange['low'],
+                    'highPrice'     => $priceRange['high'],
+                    'offerCount'    => $priceRange['count'],
+                    'priceCurrency' => $this->getCurrencyCode(),
+                ];
+
+                $merchantEnabled = (bool)$this->microdataConfig->get('merchant_listings_enabled', true);
+
+                if ($merchantEnabled && $this->microdataConfig->get('listing_delivery', false)) {
+                    $offer['shippingDetails'] = $this->buildOfferShippingDetails($this->getCurrencyCode());
+                }
+
+                if ($merchantEnabled && $this->microdataConfig->get('listing_return_policy', false)) {
+                    $offer['hasMerchantReturnPolicy'] = $this->buildMerchantReturnPolicy();
+                }
+
+                $schema['offers'] = $offer;
+            }
         }
 
         if ($this->microdataConfig->get('category_carousel', false) && !empty($products)) {
@@ -1442,6 +1601,98 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         }
 
         return $schema;
+    }
+
+    /**
+     * Value used for sku, mpn and brand.name in listing Product mode.
+     */
+    private function resolveListingIdentity(string $pageTitle): string
+    {
+        switch ((string)$this->microdataConfig->get('listing_identity_source', 'page_title')) {
+            case 'store_name':
+                return $this->cleanText($this->config->get('config_name'));
+            case 'none':
+                return '';
+            default:
+                return $pageTitle;
+        }
+    }
+
+    /**
+     * Image for listing Product mode. Falls back to the configured default image,
+     * then to an empty string so the caller omits the property.
+     */
+    private function resolveListingImage(array $products, string $pageImage): string
+    {
+        $source = (string)$this->microdataConfig->get('listing_image_source', 'first_product');
+        $image = '';
+
+        if ($source === 'first_product') {
+            $first = reset($products);
+            $image = is_array($first) ? (string)($first['popup'] ?? $first['thumb'] ?? $first['image'] ?? '') : '';
+        } elseif ($source === 'category_image') {
+            $image = $pageImage;
+        }
+
+        $url = $this->resolveMediaUrl($image);
+
+        if ($url === '' || $this->isSvg($url)) {
+            $url = $this->resolveMediaUrl((string)$this->microdataConfig->get('default_image', ''));
+        }
+
+        // Google will not use an SVG product image, so omit rather than emit an unusable one
+        return $this->isSvg($url) ? '' : $url;
+    }
+
+    /**
+     * Price range for a listing type, honouring its configured price source.
+     */
+    private function getListingPriceSource(string $type): string
+    {
+        return (string)$this->microdataConfig->get($type . '_price_source', 'special');
+    }
+
+    /**
+     * Shared BreadcrumbList builder. Returns an empty string when there is nothing to emit.
+     */
+    private function buildBreadcrumbList(array $breadcrumbs): string
+    {
+        $homeLabel = $this->cleanText((string)$this->microdataConfig->get('breadcrumb_home_label', ''))
+            ?: $this->cleanText((string)$this->config->get('config_name'));
+
+        $items = [];
+        $position = 1;
+
+        foreach ($breadcrumbs as $crumb) {
+            if (empty($crumb['href'])) {
+                continue;
+            }
+
+            $text = $this->cleanText($crumb['text'] ?? '');
+
+            if (!$text) {
+                $text = $homeLabel;
+            }
+
+            $items[] = [
+                '@type'    => 'ListItem',
+                'position' => $position,
+                'name'     => $text,
+                'item'     => $crumb['href'],
+            ];
+
+            $position++;
+        }
+
+        if (empty($items)) {
+            return '';
+        }
+
+        return $this->buildJsonLd([
+            '@context'        => 'https://schema.org',
+            '@type'           => 'BreadcrumbList',
+            'itemListElement' => $items,
+        ]);
     }
 
     public function getCategory($data = []): string
@@ -1477,12 +1728,25 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $categoryId = (int)array_pop($parts);
 
             if ($categoryId) {
-                $priceRange = $this->model_extension_aw_microdata_microdata->getCategoryPriceRange($categoryId);
+                $priceRange = $this->model_extension_aw_microdata_microdata->getCategoryPriceRange(
+                    $categoryId,
+                    $this->getListingPriceSource('category')
+                );
             }
         }
 
         $products = $data['products'] ?? [];
-        $schema = $this->buildListingPageSchema($name, $description, $url, $priceRange, $products, $schemaType);
+
+        $schema = $this->buildListingPageSchema(
+            $name,
+            $description,
+            $url,
+            $priceRange,
+            $products,
+            $schemaType,
+            (bool)$this->microdataConfig->get('category_aggregate_offer', false),
+            $this->resolveListingImage($products, (string)($data['thumb'] ?? ''))
+        );
 
         return $this->buildJsonLd($schema);
     }
@@ -1516,17 +1780,38 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $landingPageId = (int)($this->request->get['landing_page_id'] ?? 0);
 
         if ($landingPageId) {
-            $priceRange = $this->model_extension_aw_microdata_microdata->getLandingPriceRange($landingPageId);
+            $priceRange = $this->model_extension_aw_microdata_microdata->getLandingPriceRange(
+                $landingPageId,
+                $this->getListingPriceSource('landing')
+            );
         }
 
         $products = $data['products'] ?? [];
-        $schema = $this->buildListingPageSchema($name, $description, $url, $priceRange, $products);
+
+        $schema = $this->buildListingPageSchema(
+            $name,
+            $description,
+            $url,
+            $priceRange,
+            $products,
+            $this->microdataConfig->get('landing_type', 'CollectionPage'),
+            (bool)$this->microdataConfig->get('landing_aggregate_offer', false),
+            $this->resolveListingImage($products, (string)($data['thumb'] ?? $data['image'] ?? ''))
+        );
 
         if ($this->microdataConfig->get('area_served', false)) {
             $schema['areaServed'] = $name;
         }
 
-        return $this->buildJsonLd($schema);
+        $output = $this->buildJsonLd($schema);
+
+        // Landing pages are rendered by their own controller, so no breadcrumb event fires
+        if ($this->microdataConfig->get('breadcrumbs_enabled', true)
+            && $this->microdataConfig->get('landing_breadcrumbs', true)) {
+            $output .= $this->buildBreadcrumbList($data['breadcrumbs'] ?? []);
+        }
+
+        return $output;
     }
 
     public function getSearchResults($data = []): string
@@ -1567,7 +1852,17 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         );
 
         $products = $data['products'] ?? [];
-        $schema = $this->buildListingPageSchema($name, $description, $url, $priceRange, $products, 'SearchResultsPage');
+
+        $schema = $this->buildListingPageSchema(
+            $name,
+            $description,
+            $url,
+            $priceRange,
+            $products,
+            $this->microdataConfig->get('search_type', 'SearchResultsPage'),
+            (bool)$this->microdataConfig->get('search_aggregate_offer', false),
+            $this->resolveListingImage($products, '')
+        );
 
         return $this->buildJsonLd($schema);
     }
@@ -1602,11 +1897,24 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $priceRange = ['low' => 0, 'high' => 0, 'count' => 0];
 
         if ($manufacturerId) {
-            $priceRange = $this->model_extension_aw_microdata_microdata->getManufacturerPriceRange($manufacturerId);
+            $priceRange = $this->model_extension_aw_microdata_microdata->getManufacturerPriceRange(
+                $manufacturerId,
+                $this->getListingPriceSource('manufacturer')
+            );
         }
 
         $products = $data['products'] ?? [];
-        $schema = $this->buildListingPageSchema($name, $description, $url, $priceRange, $products);
+
+        $schema = $this->buildListingPageSchema(
+            $name,
+            $description,
+            $url,
+            $priceRange,
+            $products,
+            $this->microdataConfig->get('manufacturer_type', 'CollectionPage'),
+            (bool)$this->microdataConfig->get('manufacturer_aggregate_offer', false),
+            $this->resolveListingImage($products, (string)($data['thumb'] ?? ''))
+        );
 
         $schema['brand'] = [
             '@type' => 'Brand',
@@ -1644,7 +1952,17 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         $priceRange = $this->model_extension_aw_microdata_microdata->getSpecialPriceRange();
 
         $products = $data['products'] ?? [];
-        $schema = $this->buildListingPageSchema($name, $description, $url, $priceRange, $products);
+
+        $schema = $this->buildListingPageSchema(
+            $name,
+            $description,
+            $url,
+            $priceRange,
+            $products,
+            $this->microdataConfig->get('special_type', 'CollectionPage'),
+            (bool)$this->microdataConfig->get('special_aggregate_offer', false),
+            $this->resolveListingImage($products, '')
+        );
 
         return $this->buildJsonLd($schema);
     }
@@ -1712,7 +2030,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             '@context'      => 'https://schema.org',
             '@type'         => $articleType,
             'headline'      => $headline,
-            'description'   => $description ?: $headline,
+            'description'   => $this->limitDescription($description ?: $headline),
             'url'           => $url ?: $shopUrl,
             'datePublished' => date('c'),
             'dateModified'  => date('c'),
@@ -1728,10 +2046,9 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             ],
         ];
 
-        $logoPath = $this->microdataConfig->get('logo', '') ?: $this->config->get('config_logo');
+        $logoUrl = $this->resolveLogoUrl();
 
-        if ($logoPath) {
-            $logoUrl = (strpos($logoPath, 'http') === 0) ? $logoPath : $shopUrl . '/' . ltrim(str_replace(' ', '%20', $logoPath), '/');
+        if ($logoUrl !== '') {
             $schema['image'] = $logoUrl;
             $schema['publisher']['logo'] = [
                 '@type' => 'ImageObject',
@@ -1789,7 +2106,7 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             '@context'    => 'https://schema.org',
             '@type'       => 'Blog',
             'name'        => $storeName . ' - Blog',
-            'description' => $storeName,
+            'description' => $this->limitDescription($storeName),
             'url'         => $shopUrl . $this->request->server['REQUEST_URI'],
         ];
 
@@ -1869,10 +2186,9 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $schema['image'] = str_replace(' ', '%20', $data['thumb']);
         }
 
-        $logoPath = $this->microdataConfig->get('logo', '') ?: $this->config->get('config_logo');
+        $logoUrl = $this->resolveLogoUrl();
 
-        if ($logoPath) {
-            $logoUrl = (strpos($logoPath, 'http') === 0) ? $logoPath : $shopUrl . '/' . ltrim(str_replace(' ', '%20', $logoPath), '/');
+        if ($logoUrl !== '') {
             $schema['publisher']['logo'] = [
                 '@type' => 'ImageObject',
                 'url'   => $logoUrl,
@@ -1979,10 +2295,18 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
         }
 
         $orgData = $this->getOrganizationData();
+        $orgId = (string)($orgData['@id'] ?? '');
+
+        // This node owns the organization @id on the reviews page. If something
+        // already emitted it, drop the identifier instead of duplicating it.
+        if (!$this->claimNodeId($orgId)) {
+            unset($orgData['@id']);
+        }
+
         $schema = ['@context' => 'https://schema.org'] + $orgData;
 
         $aggregateRating = $this->getAggregateRatingData();
-        if ($aggregateRating) {
+        if ($aggregateRating && $this->claimRatingId($this->getOrganizationRatingKey($orgId))) {
             $schema['aggregateRating'] = $aggregateRating;
         }
 
@@ -2074,6 +2398,11 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
 
         $orgData = $this->getOrganizationData();
 
+        // The footer organization node already carries this @id on the same page
+        if (!empty($orgData['@id']) && !$this->claimNodeId((string)$orgData['@id'])) {
+            unset($orgData['@id']);
+        }
+
         $schema = [
             '@context'      => 'https://schema.org',
             '@type'         => 'ContactPage',
@@ -2099,46 +2428,18 @@ class ControllerExtensionAwMicrodataMicrodata extends Controller
             $data = [];
         }
 
+        $listingType = $this->resolveListingType();
+
+        if ($listingType !== '' && !$this->microdataConfig->get($listingType . '_breadcrumbs', true)) {
+            return '';
+        }
+
         $breadcrumbs = $data['breadcrumbs'] ?? $data;
 
         if (empty($breadcrumbs) || !is_array($breadcrumbs)) {
             return '';
         }
 
-        $items = [];
-        $position = 1;
-
-        foreach ($breadcrumbs as $crumb) {
-            if (empty($crumb['href'])) {
-                continue;
-            }
-
-            $text = $this->cleanText($crumb['text'] ?? '');
-
-            if (!$text) {
-                $text = 'Home';
-            }
-
-            $items[] = [
-                '@type'    => 'ListItem',
-                'position' => $position,
-                'name'     => $text,
-                'item'     => $crumb['href'],
-            ];
-
-            $position++;
-        }
-
-        if (empty($items)) {
-            return '';
-        }
-
-        $schema = [
-            '@context'        => 'https://schema.org',
-            '@type'           => 'BreadcrumbList',
-            'itemListElement' => $items,
-        ];
-
-        return $this->buildJsonLd($schema);
+        return $this->buildBreadcrumbList($breadcrumbs);
     }
 }

@@ -286,6 +286,43 @@ $_['help_category_aggregate_offer']     = 'Выводить AggregateOffer ко�
 $_['entry_id_linking_enabled']          = '@id Hub-and-Spoke связи';
 $_['help_id_linking_enabled']           = 'Связывать Product, Organization, BreadcrumbList через стабильные @id (URL-based).';
 
+// task-0004: per-listing-type schema control
+$_['entry_listing_matrix']              = 'Страницы списков';
+$_['column_listing_page']               = 'Тип страницы';
+$_['column_listing_schema_type']        = 'Тип схемы';
+$_['column_listing_price_source']       = 'Источник цены';
+$_['column_listing_aggregate_offer']    = 'AggregateOffer';
+$_['column_listing_breadcrumbs']        = 'Хлебные крошки';
+$_['text_listing_category']             = 'Категория';
+$_['text_listing_landing']              = 'Лендинг';
+$_['text_listing_manufacturer']         = 'Производитель';
+$_['text_listing_search']               = 'Результаты поиска';
+$_['text_listing_special']              = 'Акции';
+$_['text_price_source_base']            = 'Базовая цена';
+$_['text_price_source_special']         = 'Акционная цена';
+$_['text_price_source_option_min']      = 'Акционная цена + минимум обязательных опций';
+$_['help_listing_aggregate_offer']      = 'AggregateOffer выводится только в режиме Product. CollectionPage, ItemList и OfferCatalog не принимают свойство offers, поэтому переключатель на них не влияет.';
+$_['help_listing_price_source']         = 'Источник цены применяется к диапазонам категории, лендинга и производителя. Поиск и акции используют свои существующие запросы.';
+$_['help_listing_breadcrumbs']          = 'Вывод BreadcrumbList по типам страниц. Учитывается только при включённых хлебных крошках в целом.';
+$_['entry_listing_identity_source']     = 'Режим Product: sku / mpn / brand';
+$_['help_listing_identity_source']      = 'Значение для sku, mpn и brand.name, когда страница списка выводится как Product.';
+$_['text_identity_page_title']          = 'Заголовок страницы';
+$_['text_identity_store_name']          = 'Название магазина';
+$_['text_identity_none']                = 'Не выводить';
+$_['entry_listing_image_source']        = 'Режим Product: image';
+$_['help_listing_image_source']         = 'При отсутствии значения используется изображение по умолчанию, иначе свойство не выводится.';
+$_['text_image_first_product']          = 'Первый товар в списке';
+$_['text_image_category_image']         = 'Изображение категории или лендинга';
+$_['text_image_default_image']          = 'Изображение по умолчанию';
+$_['entry_description_limit']           = 'Лимит описания';
+$_['help_description_limit']            = 'Ограничивает каждое описание в схеме, обрезка по границе слова. 0 - без ограничения.';
+$_['entry_og_description_limit']        = 'Лимит OG-описания';
+$_['help_og_description_limit']         = 'Ограничивает og:description, обрезка по границе слова. 0 - без ограничения.';
+$_['entry_organization_rating']         = 'aggregateRating организации';
+$_['help_organization_rating']          = 'По умолчанию выключено. Google считает рейтинг магазина о самом себе манипулятивным. Страница отзывов сохраняет свой рейтинг.';
+$_['entry_breadcrumb_home_label']       = 'Название первой крошки';
+$_['help_breadcrumb_home_label']        = 'Используется, когда у крошки нет текста. Пустое значение заменяется названием магазина.';
+
 // Generic UI labels
 $_['text_select']                       = '-- Выбрать --';
 $_['text_remove']                       = 'Удалить';

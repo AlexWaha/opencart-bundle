@@ -259,3 +259,25 @@
         </label>
     </div>
 </div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_organization_rating }}</label>
+    <div class="col-sm-9">
+        <label class="checkbox-switch">
+            <input type="hidden" name="organization_rating" value="0">
+            <input type="checkbox" name="organization_rating" value="1" {% if organization_rating %}checked{% endif %}>
+            <span class="checkbox-switch-slider"></span>
+        </label>
+        <p class="help-block">{{ help_organization_rating }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ entry_breadcrumb_home_label }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="breadcrumb_home_label" value="{{ breadcrumb_home_label }}" class="form-control">
+        <p class="help-block">{{ help_breadcrumb_home_label }}</p>
+    </div>
+</div>
