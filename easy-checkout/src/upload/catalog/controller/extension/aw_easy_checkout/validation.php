@@ -1331,6 +1331,16 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
 
         $this->session->data['order_id'] = $this->model_checkout_order->addOrder($orderData);
 
+        if (! empty($this->session->data['abandoned_id'])) {
+            try {
+                $this->load->model('extension/' . $this->moduleName . '/model');
+                $this->model_extension_aw_easy_checkout_model->removeAbandonedOrder($this->session->data['abandoned_id']);
+            } catch (\Throwable $e) {
+            }
+
+            unset($this->session->data['abandoned_id']);
+        }
+
         $json = [];
 
         $json['success']['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
