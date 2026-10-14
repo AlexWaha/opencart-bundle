@@ -27,29 +27,15 @@ class ModelExtensionAwEasyCheckoutModel extends Model
 
     public function editAbandonedOrder($abandoned_id, $data)
     {
-        if ($abandoned_id && $this->abandonedOrderExists($abandoned_id)) {
-            $this->db->query('UPDATE ' . DB_PREFIX . "aw_easy_abandoned SET 
-            language_id = '" . (int) $this->config->get('config_language_id') . "', 
-            email = '" . $this->db->escape($data['email']) . "', 
-            firstname = '" . $this->db->escape($data['firstname']) . "', 
-            lastname = '" . $this->db->escape($data['lastname']) . "', 
-            telephone = '" . $this->db->escape($data['telephone']) . "', 
-            products = '" . $this->db->escape(json_encode($data['products'])) . "' 
-            WHERE abandoned_id = '" . (int) $abandoned_id . "'");
-        } else {
-            $this->db->query('INSERT INTO ' . DB_PREFIX . "aw_easy_abandoned SET 
-            store_id = '" . (int) $data['store_id'] . "', 
-            customer_id = '" . (int) $data['customer_id'] . "', 
-            language_id = '" . (int) $this->config->get('config_language_id') . "', 
-            email = '" . $this->db->escape($data['email']) . "', 
-            telephone = '" . $this->db->escape($data['telephone']) . "', 
-            firstname = '" . $this->db->escape($data['firstname']) . "', 
-            lastname = '" . $this->db->escape($data['lastname']) . "', 
-            products = '" . $this->db->escape(json_encode($data['products'])) . "', 
-            created_at = NOW()");
-
-            $abandoned_id = $this->db->getLastId();
-        }
+        $this->db->query('UPDATE ' . DB_PREFIX . "aw_easy_abandoned SET
+        language_id = '" . (int) $this->config->get('config_language_id') . "',
+        email = '" . $this->db->escape($data['email']) . "',
+        firstname = '" . $this->db->escape($data['firstname']) . "',
+        lastname = '" . $this->db->escape($data['lastname']) . "',
+        telephone = '" . $this->db->escape($data['telephone']) . "',
+        products = '" . $this->db->escape(json_encode($data['products'])) . "',
+        created_at = NOW()
+        WHERE abandoned_id = '" . (int) $abandoned_id . "'");
 
         return $abandoned_id;
     }

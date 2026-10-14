@@ -13,7 +13,7 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
     {
         $sql = "SELECT a.abandoned_id, a.email, a.email_sent_at, a.sms_sent_at, a.viewed, a.telephone, CONCAT(a.firstname, ' ', a.lastname) AS customer, a.created_at FROM `" . DB_PREFIX . 'aw_easy_abandoned` a';
 
-        $conditions = [];
+        $conditions = ["(a.email <> '' OR a.telephone <> '') AND a.products <> '[]'"];
 
         if (! empty($data['filter_customer'])) {
             $conditions[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
@@ -65,7 +65,7 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
     {
         $sql = 'SELECT COUNT(*) AS total FROM `' . DB_PREFIX . 'aw_easy_abandoned`';
 
-        $conditions = [];
+        $conditions = ["(email <> '' OR telephone <> '') AND products <> '[]'"];
 
         if (! empty($data['filter_abandoned_id'])) {
             $conditions[] = "abandoned_id = '" . (int) $data['filter_abandoned_id'] . "'";
@@ -90,7 +90,7 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
 
     public function getTotalCountOrder()
     {
-        $query = $this->db->query('SELECT COUNT(*) AS total FROM ' . DB_PREFIX . 'aw_easy_abandoned WHERE viewed IS NULL AND email_sent_at IS NULL AND sms_sent_at IS NULL');
+        $query = $this->db->query('SELECT COUNT(*) AS total FROM ' . DB_PREFIX . "aw_easy_abandoned WHERE viewed IS NULL AND email_sent_at IS NULL AND sms_sent_at IS NULL AND (email <> '' OR telephone <> '') AND products <> '[]'");
 
         return $query->row['total'] ?: 0;
     }
@@ -157,7 +157,7 @@ class ModelExtensionModuleAwEasyAbandoned extends Model
     {
         $sql = "SELECT *, CONCAT(TRIM(a.firstname), ' ', TRIM(a.lastname)) AS name FROM `" . DB_PREFIX . 'aw_easy_abandoned` a';
 
-        $conditions = [];
+        $conditions = ["(a.email <> '' OR a.telephone <> '') AND a.products <> '[]'"];
 
         if (! empty($data['filter_name'])) {
             $conditions[] = "CONCAT(a.firstname, ' ', a.lastname, ' ', a.email, ' ', a.telephone) LIKE '%" . $this->db->escape($data['filter_name']) . "%'";

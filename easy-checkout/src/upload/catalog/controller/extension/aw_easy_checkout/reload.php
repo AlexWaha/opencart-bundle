@@ -174,6 +174,12 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
     public function getAbandonedOrders()
     {
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+            $abandonedId = (int) ($this->session->data['abandoned_id'] ?? 0);
+
+            if (! $abandonedId) {
+                return;
+            }
+
             $this->load->model('tool/upload');
 
             $products = [];
@@ -259,15 +265,10 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
             if (! empty($abandonedData['products']) && (! empty($abandonedData['email']) || ! empty($abandonedData['telephone']))) {
                 $this->load->model('extension/' . $this->moduleName . '/model');
 
-                if (! isset($this->session->data['abandoned_id'])) {
-                    $this->session->data['abandoned_id'] = $this->model_extension_aw_easy_checkout_model->addAbandonedOrder($abandonedData);
-                } else {
-                    $abandonedId = $this->session->data['abandoned_id'];
-                    $this->session->data['abandoned_id'] = $this->model_extension_aw_easy_checkout_model->editAbandonedOrder(
-                        $abandonedId,
-                        $abandonedData
-                    );
-                }
+                $this->model_extension_aw_easy_checkout_model->editAbandonedOrder(
+                    $abandonedId,
+                    $abandonedData
+                );
             }
         }
     }

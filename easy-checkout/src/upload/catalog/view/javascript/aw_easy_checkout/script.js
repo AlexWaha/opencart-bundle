@@ -268,6 +268,7 @@
               json['warning'] +
               '<button type="button" class="close" data-dismiss="alert"><i class="aw-icon aw-icon-close"></i></button></div>';
             self.$elem.prepend(alertHtml);
+            self.loading(false);
           }
 
           const paymentHtml = (json['success'] && json['success']['payment']) || json['payment'];
@@ -317,7 +318,7 @@
       });
     };
 
-    self.reload = function () {
+    self.reload = function (skipValueRestore = false) {
       if (self.reloadInProgress) {
         return;
       }
@@ -351,6 +352,10 @@
         complete: function () {
           self.loading(false);
           self.reloadInProgress = false;
+
+          if (skipValueRestore) {
+            return;
+          }
 
           $(self.SELECTORS.SAVE_FIELDS_DATA, self.$elem).each(function() {
             const $field = $(this);
@@ -1342,7 +1347,7 @@
               },
               success: function (json) {
                 if (json['success']) {
-                  self.reload();
+                  self.reload(true);
                 }
               },
               error: function (xhr, ajaxOptions, thrownError) {

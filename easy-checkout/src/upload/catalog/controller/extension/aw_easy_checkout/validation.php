@@ -548,7 +548,7 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
             $json['warning'] = $this->language->get('error_validation');
         }
 
-        if (! isset($json['error'])) {
+        if (! isset($json['error']) && ! isset($json['warning'])) {
             if (! empty($this->request->post['register'])) {
                 $this->session->data['account'] = 'register';
 
