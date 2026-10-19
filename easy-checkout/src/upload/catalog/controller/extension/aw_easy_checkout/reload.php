@@ -235,7 +235,7 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
             }
 
             $abandonedData = [
-                'store_id' => $this->config->get('store_id'),
+                'store_id' => $this->config->get('config_store_id'),
                 'customer_id' => $this->customer->isLogged() ? $this->customer->getId() : '',
                 'email' => '',
                 'firstname' => '',
@@ -265,10 +265,14 @@ class ControllerExtensionAwEasyCheckoutReload extends Controller
             if (! empty($abandonedData['products']) && (! empty($abandonedData['email']) || ! empty($abandonedData['telephone']))) {
                 $this->load->model('extension/' . $this->moduleName . '/model');
 
-                $this->model_extension_aw_easy_checkout_model->editAbandonedOrder(
+                $updated = $this->model_extension_aw_easy_checkout_model->editAbandonedOrder(
                     $abandonedId,
                     $abandonedData
                 );
+
+                if (! $updated) {
+                    unset($this->session->data['abandoned_id']);
+                }
             }
         }
     }

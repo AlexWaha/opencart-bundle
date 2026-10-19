@@ -32,6 +32,10 @@ class ControllerExtensionAwEasyCheckoutShippingMethod extends Controller
             return;
         }
 
+        if (! is_array($this->session->data['shipping_address'] ?? null)) {
+            unset($this->session->data['shipping_address']);
+        }
+
         $this->load->language('extension/' . $this->moduleName . '/lang');
 
         $this->load->model('account/address');

@@ -551,11 +551,16 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
                     $json['error'] = sprintf($this->language->get('text_error_email_already_sent'), $abandonedId);
                 }
 
-                if (! empty($orderInfo['products'])) {
-                    $products = json_decode($orderInfo['products'], true);
-                } else {
-                    $products = [];
+                if (($orderInfo['products'] ?? '') === '[]') {
+                    $json['error'] = $this->language->get('text_error_no_products');
+
+                    $this->response->addHeader('Content-Type: application/json');
+                    $this->response->setOutput(json_encode($json));
+
+                    return;
                 }
+
+                $products = ! empty($orderInfo['products']) ? json_decode($orderInfo['products'], true) : [];
 
                 $this->params['order_info'] = [
                     'email' => $orderInfo['email'],
@@ -650,11 +655,16 @@ class ControllerExtensionModuleAwEasyAbandoned extends Controller
                     $json['error'] = sprintf($this->language->get('text_error_sms_already_sent'), $abandonedId);
                 }
 
-                if (! empty($orderInfo['products'])) {
-                    $products = json_decode($orderInfo['products'], true);
-                } else {
-                    $products = [];
+                if (($orderInfo['products'] ?? '') === '[]') {
+                    $json['error'] = $this->language->get('text_error_no_products');
+
+                    $this->response->addHeader('Content-Type: application/json');
+                    $this->response->setOutput(json_encode($json));
+
+                    return;
                 }
+
+                $products = ! empty($orderInfo['products']) ? json_decode($orderInfo['products'], true) : [];
 
                 $this->params['order_info'] = [
                     'email' => $orderInfo['email'],

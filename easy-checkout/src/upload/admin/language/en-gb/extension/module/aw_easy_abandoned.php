@@ -81,3 +81,4 @@ $_['text_error_telephone'] = 'Invalid phone number';
 $_['text_error_sms_template'] = 'You did not fill in the SMS template!';
 $_['text_error_sms_already_sent'] = 'SMS for order №%s has already been sent!';
 $_['text_error_sms_module_not_installed'] = 'SMS notifications module is not installed!';
+$_['text_error_no_products'] = 'This abandoned order has no products!';

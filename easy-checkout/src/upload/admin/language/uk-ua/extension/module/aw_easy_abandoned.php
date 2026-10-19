@@ -81,3 +81,4 @@ $_['text_error_telephone'] = 'Некоректний номер телефону
 $_['text_error_sms_template'] = 'Ви не заповнили шаблон СМС!';
 $_['text_error_sms_already_sent'] = 'СМС по замовленню №%s вже було відправлено!';
 $_['text_error_sms_module_not_installed'] = 'Модуль SMS сповіщень не встановлено!';
+$_['text_error_no_products'] = 'У цьому кинутому замовленні немає товарів!';

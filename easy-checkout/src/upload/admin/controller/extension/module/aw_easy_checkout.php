@@ -605,7 +605,17 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
             $this->awCore->setConfig($this->moduleName, $this->request->post);
 
-            $this->awCore->setSeoUrls($this->request->post['seo_url'], 'extension/' . $this->moduleName . '/main');
+            $seoUrls = $this->request->post['seo_url'] ?? [];
+
+            foreach ($seoUrls as $storeId => $languages) {
+                foreach ($languages as $languageId => $seoUrl) {
+                    if ($seoUrl === '') {
+                        unset($seoUrls[$storeId][$languageId]);
+                    }
+                }
+            }
+
+            $this->awCore->setSeoUrls($seoUrls, 'extension/' . $this->moduleName . '/main');
 
             $this->session->data['success'] = $this->language->get('text_success');
 
@@ -958,17 +968,36 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->getFormCustomField();
     }
 
+    protected function getEnabledLanguages(): array
+    {
+        $this->load->model('localisation/language');
+
+        $enabledLanguages = [];
+
+        foreach ($this->model_localisation_language->getLanguages() as $language) {
+            if ($language['status']) {
+                $enabledLanguages[$language['language_id']] = $language;
+            }
+        }
+
+        return $enabledLanguages;
+    }
+
     protected function validateFormCustomField(): bool
     {
         if (! $this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
+        $enabledLanguages = $this->getEnabledLanguages();
+
         $descriptions = $this->request->post['custom_field_description'] ?? [];
 
         if (isset($descriptions['name'])) {
             foreach ($descriptions['name'] as $languageId => $value) {
-                if (utf8_strlen($value) < 1 || utf8_strlen($value) > 128) {
+                $required = isset($enabledLanguages[$languageId]);
+
+                if (($required && utf8_strlen($value) < 1) || utf8_strlen($value) > 128) {
                     $this->error['name'][$languageId] = $this->language->get('error_name');
                 }
             }
@@ -992,7 +1021,9 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
                     foreach (
                         $customFieldValue['custom_field_value_description'] as $languageId => $customFieldValueDescription
                     ) {
-                        if (utf8_strlen($customFieldValueDescription['name']) < 1 || utf8_strlen($customFieldValueDescription['name']) > 128) {
+                        $required = isset($enabledLanguages[$languageId]);
+
+                        if (($required && utf8_strlen($customFieldValueDescription['name']) < 1) || utf8_strlen($customFieldValueDescription['name']) > 128) {
                             $this->error['custom_field_value'][$customFieldValueId][$languageId] = $this->language->get('error_custom_value');
                         }
                     }
@@ -1012,8 +1043,12 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         }
 
         if (isset($this->request->post['seo_url'])) {
+            $enabledLanguages = $this->getEnabledLanguages();
+
             foreach ($this->request->post['seo_url'] as $storeId => $languages) {
                 foreach ($languages as $languageId => $seo_url) {
+                    $required = isset($enabledLanguages[$languageId]);
+
                     if (!empty($seo_url)) {
 
                         if (count(array_keys($languages, $seo_url)) > 1) {
@@ -1033,7 +1068,7 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
                         }
                     }
 
-                    if ((utf8_strlen($seo_url) < 1) || (utf8_strlen($seo_url) > 255)) {
+                    if (($required && utf8_strlen($seo_url) < 1) || (utf8_strlen($seo_url) > 255)) {
                         $this->error['seo_url'][$storeId][$languageId] = $this->language->get('error_seo_url');
                     }
                 }

@@ -27,6 +27,10 @@ class ModelExtensionAwEasyCheckoutModel extends Model
 
     public function editAbandonedOrder($abandoned_id, $data)
     {
+        if (! $this->abandonedOrderExists($abandoned_id)) {
+            return false;
+        }
+
         $this->db->query('UPDATE ' . DB_PREFIX . "aw_easy_abandoned SET
         language_id = '" . (int) $this->config->get('config_language_id') . "',
         email = '" . $this->db->escape($data['email']) . "',
@@ -37,7 +41,7 @@ class ModelExtensionAwEasyCheckoutModel extends Model
         created_at = NOW()
         WHERE abandoned_id = '" . (int) $abandoned_id . "'");
 
-        return $abandoned_id;
+        return true;
     }
 
     public function abandonedOrderExists($abandoned_id)

@@ -575,8 +575,10 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                     $this->session->data['customer_id'] = $customerId = $this->model_account_customer->addCustomer($customerData);
                     $this->session->data['checkout_customer_id'] = true;
 
-                    $this->load->model('account/address');
-                    $this->model_account_address->addAddress($customerId, array_merge($customerData, ['default' => true]));
+                    if (! $this->awCore->isLegacy()) {
+                        $this->load->model('account/address');
+                        $this->addAddressBook($customerId, array_merge($customerData, ['default' => true]));
+                    }
                 }
 
                 $this->customer->login($this->request->post['email'], $this->request->post['password']);
@@ -799,7 +801,7 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                 $this->load->model('account/address');
                 $addressData = $this->session->data['shipping_address'];
                 $addressData['default'] = false;
-                $addressId = $this->model_account_address->addAddress($this->customer->getId(), $addressData);
+                $addressId = $this->addAddressBook($this->customer->getId(), $addressData);
                 $this->session->data['shipping_address']['address_id'] = $addressId;
 
                 if (empty($paymentAddressFields) || $checkboxChecked) {
@@ -867,13 +869,14 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
                             $this->load->model('account/address');
                             $taxCustomer = $this->config->get('config_tax_customer');
                             $addressId = $this->customer->getAddressId();
+                            $customerAddress = $this->model_account_address->getAddress($addressId);
 
-                            if ($taxCustomer == 'payment') {
-                                $this->session->data['payment_address'] = $this->model_account_address->getAddress($addressId);
+                            if ($taxCustomer == 'payment' && $customerAddress) {
+                                $this->session->data['payment_address'] = $customerAddress;
                             }
 
-                            if ($taxCustomer == 'shipping') {
-                                $this->session->data['shipping_address'] = $this->model_account_address->getAddress($addressId);
+                            if ($taxCustomer == 'shipping' && $customerAddress) {
+                                $this->session->data['shipping_address'] = $customerAddress;
                             }
 
                             if (! empty($this->session->data['wishlist']) && is_array($this->session->data['wishlist'])) {
@@ -899,6 +902,15 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+    }
+
+    private function addAddressBook(int $customerId, array $data): int
+    {
+        if ($this->awCore->isLegacy()) {
+            return (int) $this->model_account_address->addAddress($data);
+        }
+
+        return (int) $this->model_account_address->addAddress($customerId, $data);
     }
 
     private function confirm(): array
@@ -1329,13 +1341,39 @@ class ControllerExtensionAwEasyCheckoutValidation extends Controller
 
         $this->load->model('checkout/order');
 
-        $this->session->data['order_id'] = $this->model_checkout_order->addOrder($orderData);
+        $cartSignatureRows = array_map(static fn ($product) => [
+            $product['product_id'],
+            $product['quantity'],
+            $product['total'],
+        ], $orderData['products']);
+        sort($cartSignatureRows);
+        $cartSignature = md5(json_encode($cartSignatureRows) . '|' . $orderData['total'] . '|' . $orderData['customer_id'] . '|' . $orderData['telephone'] . '|' . $orderData['email']);
+
+        $reusableOrderId = 0;
+
+        if (! empty($this->session->data['order_id']) && ($this->session->data['order_cart_signature'] ?? '') === $cartSignature) {
+            $existingOrder = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+
+            if ($existingOrder && (int) $existingOrder['order_status_id'] === 0) {
+                $reusableOrderId = (int) $this->session->data['order_id'];
+            }
+        }
+
+        if ($reusableOrderId) {
+            $this->model_checkout_order->editOrder($reusableOrderId, $orderData);
+            $this->session->data['order_id'] = $reusableOrderId;
+        } else {
+            $this->session->data['order_id'] = $this->model_checkout_order->addOrder($orderData);
+        }
+
+        $this->session->data['order_cart_signature'] = $cartSignature;
 
         if (! empty($this->session->data['abandoned_id'])) {
             try {
                 $this->load->model('extension/' . $this->moduleName . '/model');
                 $this->model_extension_aw_easy_checkout_model->removeAbandonedOrder($this->session->data['abandoned_id']);
             } catch (\Throwable $e) {
+                $this->log->write('aw_easy_checkout removeAbandonedOrder failed: ' . $e->getMessage());
             }
 
             unset($this->session->data['abandoned_id']);

@@ -68,7 +68,7 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         }
 
         $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/select2.min.js';
-        $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/script.js?v=r10';
+        $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/script.min.js?v=r11';
         $scripts[] = 'catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js';
         $scripts[] = 'catalog/view/javascript/' . $this->moduleName . '/maska.min.js';
 
@@ -143,7 +143,7 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
             $this->load->model('extension/' . $this->moduleName . '/model');
 
             $abandonedData = [
-                'store_id' => $this->config->get('store_id'),
+                'store_id' => $this->config->get('config_store_id'),
                 'customer_id' => $this->customer->isLogged() ? $this->customer->getId() : '',
                 'email' => $this->customer->isLogged() ? $this->customer->getEmail() : '',
                 'firstname' => $this->customer->isLogged() ? $this->customer->getFirstName() : '',
@@ -318,25 +318,6 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         $data['block']['comment'] = $this->load->controller('extension/' . $this->moduleName . '/comment');
         $data['block']['custom_text'] = $this->load->controller('extension/' . $this->moduleName . '/custom_text');
 
-        $summary = $this->moduleConfig->get('summary', []);
-        $langId = (int) $this->config->get('config_language_id');
-
-        $data['title_shipping_address'] = $summary['step_titles']['address'][$langId] ?? $this->language->get('title_shipping_address');
-        $data['title_shipping_method'] = $summary['step_titles']['shipping'][$langId] ?? $this->language->get('title_shipping_method');
-        $data['title_payment_method'] = $summary['step_titles']['payment'][$langId] ?? $this->language->get('title_payment_method');
-        $data['title_overview'] = $summary['step_titles']['overview'][$langId] ?? $this->language->get('title_overview');
-
-        $data['text_secure_order'] = $summary['secure_text'][$langId] ?? $this->language->get('text_secure_order');
-        $data['secure_show'] = ! isset($summary['secure_show']) || (bool) $summary['secure_show'];
-        $data['privacy_note'] = $summary['privacy_note'][$langId] ?? '';
-
-        $data['agree_show'] = ! isset($summary['agree_show']) || (bool) $summary['agree_show'];
-        $data['checkout_agree_checked'] = (bool) $this->moduleConfig->get('agree_default');
-        $data['checkout_agree_html'] = $this->buildAgreeHtml($summary, $langId);
-
-        $data['theme'] = ['payments' => $this->buildPaymentIcons($summary)];
-        $data['payments_show'] = ! isset($summary['payments_show']) || (bool) $summary['payments_show'];
-
         $data['country_id'] = $this->session->data['shipping_address']['country_id'] ?? $this->config->get('config_country_id');
 
         $maskType = $this->moduleConfig->get('mask_type', 'dynamic');
@@ -434,89 +415,4 @@ class ControllerExtensionAwEasyCheckoutMain extends Controller
         return $data;
     }
 
-    private function buildPaymentIcons(array $summary): array
-    {
-        $icons = [];
-
-        foreach ((array) ($summary['payments'] ?? []) as $row) {
-            if (! is_array($row) || (isset($row['status']) && (string) $row['status'] !== '1')) {
-                continue;
-            }
-
-            $image = preg_replace('#^\.\./#', '', ltrim((string) ($row['image'] ?? ''), '/'));
-
-            if ($image === '') {
-                continue;
-            }
-
-            if (strpos($image, 'image/') !== 0) {
-                $image = 'image/' . $image;
-            }
-
-            $icons[] = [
-                'image' => $image,
-                'sort_order' => (int) ($row['sort_order'] ?? 0),
-            ];
-        }
-
-        usort($icons, static function ($a, $b) {
-            return $a['sort_order'] <=> $b['sort_order'];
-        });
-
-        return $icons;
-    }
-
-    private function buildAgreeHtml(array $summary, int $langId): string
-    {
-        $text = $summary['agree_text'][$langId] ?? '';
-
-        if ($text === '') {
-            return '';
-        }
-
-        $text = $this->replaceInfoTag($text, 'agb', (int) ($summary['agree_agb_id'] ?? 0));
-        $text = $this->replaceInfoTag($text, 'ds', (int) ($summary['agree_ds_id'] ?? 0));
-
-        return $text;
-    }
-
-    private function replaceInfoTag(string $text, string $tag, int $infoId): string
-    {
-        return preg_replace_callback(
-            '#\[' . $tag . '\](.*?)\[/' . $tag . '\]#s',
-            static function ($matches) use ($infoId) {
-                $label = $matches[1];
-
-                if ($infoId > 0) {
-                    return '<a href="javascript:;" class="aw-info-link" data-info-id="' . $infoId . '">' . $label . '</a>';
-                }
-
-                return $label;
-            },
-            $text
-        );
-    }
-
-    public function info(): void
-    {
-        $json = ['html' => ''];
-
-        $infoId = (int) ($this->request->get['info_id'] ?? 0);
-
-        if ($infoId) {
-            $this->load->model('catalog/information');
-            $info = $this->model_catalog_information->getInformation($infoId);
-
-            if ($info) {
-                $json['html'] = '<div class="aw-info-modal">'
-                    . '<div class="aw-info-modal-head"><h3>' . $info['title'] . '</h3>'
-                    . '<button type="button" class="aw-ec-modal-close" aria-label="Close">&times;</button></div>'
-                    . '<div class="aw-info-modal-body">' . html_entity_decode($info['description'], ENT_QUOTES, 'UTF-8') . '</div>'
-                    . '</div>';
-            }
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
-    }
 }
