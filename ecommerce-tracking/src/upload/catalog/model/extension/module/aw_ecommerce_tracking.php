@@ -207,4 +207,47 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
 
         return trim($title);
     }
+
+    public function captureClientId(int $orderId, ?string $gaCookie, ?string $gaSessionCookie, ?string $fbp, ?string $fbc): void
+    {
+        $clientId = $this->extractGaClientId($gaCookie);
+        $sessionId = $this->extractGaSessionId($gaSessionCookie);
+
+        if ($clientId === null && $sessionId === null && $fbp === null && $fbc === null) {
+            return;
+        }
+
+        $clientIdSql = $clientId !== null ? "'" . $this->db->escape($clientId) . "'" : 'NULL';
+        $sessionIdSql = $sessionId !== null ? "'" . $this->db->escape($sessionId) . "'" : 'NULL';
+        $fbpSql = $fbp !== null ? "'" . $this->db->escape($fbp) . "'" : 'NULL';
+        $fbcSql = $fbc !== null ? "'" . $this->db->escape($fbc) . "'" : 'NULL';
+
+        $this->db->query("
+            INSERT INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id, ga_client_id, ga_session_id, fbp, fbc)
+            VALUES ('" . $orderId . "', " . $clientIdSql . ', ' . $sessionIdSql . ', ' . $fbpSql . ', ' . $fbcSql . ")
+            ON DUPLICATE KEY UPDATE ga_client_id = VALUES(ga_client_id), ga_session_id = VALUES(ga_session_id), fbp = VALUES(fbp), fbc = VALUES(fbc)
+        ");
+    }
+
+    private function extractGaClientId(?string $gaCookie): ?string
+    {
+        if (!$gaCookie) {
+            return null;
+        }
+
+        return preg_match('/^GA\d+\.\d+\.(\d{1,20}\.\d{1,20})$/', $gaCookie, $matches) ? $matches[1] : null;
+    }
+
+    private function extractGaSessionId(?string $gaSessionCookie): ?string
+    {
+        if (!$gaSessionCookie) {
+            return null;
+        }
+
+        $parts = explode('.', $gaSessionCookie);
+        $segment = $parts[2] ?? '';
+        $sessionId = (isset($segment[0]) && $segment[0] === 's') ? explode('$', substr($segment, 1))[0] : $segment;
+
+        return (ctype_digit($sessionId) && strlen($sessionId) <= 20) ? $sessionId : null;
+    }
 }

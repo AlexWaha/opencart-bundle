@@ -177,3 +177,4 @@ $_['error_warning'] = 'Warning: Please check the form for errors!';
 $_['error_import_failed']    = 'Import failed: %s';
 $_['error_import_read_file'] = 'Unable to read uploaded file';
 $_['error_import_file']      = 'Please select a file to import';
+$_['error_import_wrong_module'] = 'This file belongs to a different module and cannot be imported here';

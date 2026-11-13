@@ -204,7 +204,7 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
     }
 
     /**
-     * Success page — multiplexer for purchase and signup events.
+     * Success page - multiplexer for purchase and signup events.
      *
      * Both checkout/success and account/success render common/success view.
      * We distinguish by checking the current route.
@@ -214,7 +214,8 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
         $currentRoute = $this->request->get['route'] ?? '';
 
         if (strpos($currentRoute, 'checkout/success') !== false) {
-            $orderId = (int) ($this->session->data['last_order_id'] ?? 0);
+            $orderId = (int) ($this->session->data['last_order_id'] ?? $this->session->data['awEtOrderId'] ?? 0);
+            unset($this->session->data['awEtOrderId']);
 
             if (!$orderId) {
                 return;
@@ -233,6 +234,49 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
                 $this->inject($html, $output);
             }
         }
+    }
+
+    public function successBefore(&$route, &$args, &$output = null): void
+    {
+        $orderId = (int) ($this->session->data['order_id'] ?? 0);
+
+        if ($orderId) {
+            $this->session->data['awEtOrderId'] = $orderId;
+        }
+    }
+
+    public function addOrderAfter(&$route, &$args, &$output): void
+    {
+        if (!$this->registry->has('awCore') || !$this->awCore->getConfig($this->moduleName)->get('status', false)) {
+            return;
+        }
+
+        $orderId = (int) $output;
+
+        if (!$orderId) {
+            return;
+        }
+
+        $gaSessionCookie = null;
+        foreach ($this->request->cookie as $name => $value) {
+            if (is_string($name) && strpos($name, '_ga_') === 0 && is_string($value)) {
+                $gaSessionCookie = $value;
+                break;
+            }
+        }
+
+        $gaCookie = $this->request->cookie['_ga'] ?? null;
+        $fbpCookie = $this->request->cookie['_fbp'] ?? null;
+        $fbcCookie = $this->request->cookie['_fbc'] ?? null;
+
+        $this->load->model('extension/module/' . $this->moduleName);
+        $this->{'model_extension_module_' . $this->moduleName}->captureClientId(
+            $orderId,
+            is_string($gaCookie) ? $gaCookie : null,
+            $gaSessionCookie,
+            $this->validateMetaCookie(is_string($fbpCookie) ? $fbpCookie : null),
+            $this->validateMetaCookie(is_string($fbcCookie) ? $fbcCookie : null)
+        );
     }
 
     /**
@@ -347,6 +391,11 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
         if ($html) {
             $output .= $html;
         }
+    }
+
+    private function validateMetaCookie(?string $value): ?string
+    {
+        return $value !== null && preg_match('/^fb\.\d\.\d{1,20}\.[A-Za-z0-9_\-.]{1,200}$/', $value) ? $value : null;
     }
 
     /**

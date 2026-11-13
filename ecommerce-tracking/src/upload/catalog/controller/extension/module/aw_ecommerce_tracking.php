@@ -11,43 +11,60 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 {
     private string $moduleName = 'aw_ecommerce_tracking';
 
-    private \Alexwaha\Config $moduleConfig;
+    private ?\Alexwaha\Config $moduleConfig = null;
 
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
+
+        if ($this->registry->has('awCore')) {
+            $this->moduleConfig = $this->awCore->getConfig($this->moduleName);
+        }
     }
 
     public function isEnabled(): bool
     {
-        return $this->registry->has('awCore') && $this->moduleConfig->get('status', false);
+        return $this->moduleConfig !== null && $this->moduleConfig->get('status', false);
     }
 
     public function getTrackingCode(): string
     {
-        $codeConfig = (string) $this->moduleConfig->get('tracking_code', '');
-        $trackingCode = html_entity_decode($codeConfig, ENT_QUOTES, 'UTF-8');
+        if (!$this->isEnabled()) {
+            return '';
+        }
 
-        return $this->isEnabled() ? $trackingCode : '';
+        $codeConfig = (string) $this->moduleConfig->get('tracking_code', '');
+
+        return html_entity_decode($codeConfig, ENT_QUOTES, 'UTF-8');
     }
 
     public function getTrackingCodeBody(): string
     {
-        $codeConfig = (string) $this->moduleConfig->get('tracking_code_body', '');
-        $trackingCodeBody = html_entity_decode($codeConfig, ENT_QUOTES, 'UTF-8');
+        if (!$this->isEnabled()) {
+            return '';
+        }
 
-        return $this->isEnabled() ? $trackingCodeBody : '';
+        $codeConfig = (string) $this->moduleConfig->get('tracking_code_body', '');
+
+        return html_entity_decode($codeConfig, ENT_QUOTES, 'UTF-8');
     }
 
     public function getHeader(): string
     {
-        $view = $this->awCore->view->render('extension/aw_ecommerce_tracking/header', [
+        if (!$this->isEnabled()) {
+            return '';
+        }
+
+        $jsPath = 'catalog/view/javascript/' . $this->moduleName . '.js';
+        $jsFile = DIR_APPLICATION . 'view/javascript/' . $this->moduleName . '.js';
+
+        $jsVersion = (int) @filemtime($jsFile);
+
+        return $this->awCore->view->render('extension/aw_ecommerce_tracking/header', [
             'trackingCode' => $this->getTrackingCode(),
             'jsConfig' => json_encode($this->getSettingForJs(), JSON_UNESCAPED_UNICODE),
+            'jsSrc' => $jsPath . ($jsVersion ? '?v=' . $jsVersion : ''),
         ]);
-
-        return $this->isEnabled() ? $view : '';
     }
 
     public function getBody(): string
@@ -369,6 +386,10 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             return [];
         }
 
+        if ((int) ($orderInfo['order_status_id'] ?? 0) <= 0) {
+            return [];
+        }
+
         $items = [];
 
         foreach ($orderProducts as $product) {
@@ -457,7 +478,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         }
 
         return $this->awCore->view->render('extension/aw_ecommerce_tracking/tracking', [
-            'eventDataJson' => json_encode($eventData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            'eventDataJson' => json_encode($eventData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG),
             'productsDataJson' => '',
             'debug' => $this->isDebugMode(),
         ]);
@@ -503,11 +524,11 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         return $this->awCore->view->render('extension/aw_ecommerce_tracking/tracking', [
             'eventDataJson' => !empty($eventData) ? json_encode(
                 $eventData,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
             ) : '',
             'productsDataJson' => !empty($productsData) ? json_encode(
                 $productsData,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
             ) : '',
             'debug' => $this->isDebugMode(),
         ]);

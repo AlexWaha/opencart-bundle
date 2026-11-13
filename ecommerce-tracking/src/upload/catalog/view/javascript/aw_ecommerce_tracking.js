@@ -31,6 +31,20 @@
         }
     };
 
+    const parseRequestParams = function(data) {
+        const params = {};
+
+        if (typeof data !== 'string' || !data) {
+            return params;
+        }
+
+        new URLSearchParams(data).forEach(function(value, key) {
+            params[key] = value;
+        });
+
+        return params;
+    };
+
     const pushEvent = function(eventData) {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ ecommerce: null });
@@ -76,76 +90,22 @@
     }
 
     if (config.trackAddToCart) {
-        const hookCartAdd = function() {
-            if (!window.cart || !window.cart.add || window.cart._awHooked) {
-                return false;
+        const trackCartAddResponse = function(requestData, json) {
+            if (!json || !json.success) {
+                return;
             }
 
-            const originalCartAdd = window.cart.add;
-            window.cart._awHooked = true;
+            const params = parseRequestParams(requestData);
+            const productId = params.product_id;
+            const quantity = parseInt(params.quantity) || 1;
+            const productData = productId && window.awProductsData ? window.awProductsData[productId] : null;
 
-            window.cart.add = function(productId, quantity) {
-                const productData = window.awProductsData ? window.awProductsData[productId] : null;
-
-                if (productData) {
-                    const eventData = {
-                        event: 'add_to_cart',
-                        ecommerce: {
-                            currency: config.currency,
-                            value: (parseFloat(productData.price) || 0) * (parseInt(quantity) || 1),
-                            items: [{
-                                item_id: String(productData.id || productData.product_id),
-                                item_name: productData.name,
-                                price: parseFloat(productData.price) || 0,
-                                quantity: parseInt(quantity) || 1,
-                                item_brand: productData.brand || productData.manufacturer || '',
-                                item_category: productData.category || ''
-                            }]
-                        }
-                    };
-
-                    pushEvent(eventData);
-                } else {
-                    log('No product data found for productId: ' + productId);
-                }
-
-                return originalCartAdd.apply(this, arguments);
-            };
-
-            return true;
-        };
-
-        if (!hookCartAdd()) {
-            let attempts = 0;
-            const interval = setInterval(function() {
-                if (hookCartAdd() || ++attempts > 50) {
-                    clearInterval(interval);
-                }
-            }, 100);
-        }
-
-        document.addEventListener('click', function(e) {
-            const buttonCart = e.target.closest('#button-cart');
-            if (!buttonCart) return;
-
-            let productId = null;
-            const productInput = document.querySelector('input[name="product_id"]');
-            if (productInput) {
-                productId = productInput.value;
-            } else {
-                const urlParams = new URLSearchParams(window.location.search);
-                productId = urlParams.get('product_id');
+            if (!productData) {
+                log('No product data found for productId: ' + productId);
+                return;
             }
 
-            if (!productId) return;
-
-            let productData = window.awProductsData ? window.awProductsData[productId] : null;
-            if (!productData) return;
-
-            const qtyInput = document.querySelector('input[name="quantity"]');
-            const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-
-            const eventData = {
+            pushEvent({
                 event: 'add_to_cart',
                 ecommerce: {
                     currency: config.currency,
@@ -159,10 +119,45 @@
                         item_category: productData.category || ''
                     }]
                 }
-            };
+            });
+        };
 
-            pushEvent(eventData);
-        }, true);
+        const setupCartAddAjaxIntercept = function() {
+            if (!window.jQuery || window._awCartAddAjaxHooked) {
+                return false;
+            }
+
+            window._awCartAddAjaxHooked = true;
+
+            window.jQuery(document).ajaxSuccess(function(event, xhr, settings) {
+                if (!settings.url || settings.url.indexOf('checkout/cart/add') === -1) {
+                    return;
+                }
+
+                let json = xhr.responseJSON;
+
+                if (!json) {
+                    try {
+                        json = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        return;
+                    }
+                }
+
+                trackCartAddResponse(settings.data, json);
+            });
+
+            return true;
+        };
+
+        if (!setupCartAddAjaxIntercept()) {
+            let attempts = 0;
+            const interval = setInterval(function() {
+                if (setupCartAddAjaxIntercept() || ++attempts > 50) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
     }
 
     if (config.trackAddToCart || config.trackRemoveFromCart) {
