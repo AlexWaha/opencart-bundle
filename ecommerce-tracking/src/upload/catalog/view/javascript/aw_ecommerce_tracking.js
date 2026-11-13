@@ -52,6 +52,43 @@
         log('Event pushed', eventData);
     };
 
+    if (config.needsIdCapture && config.ga4MeasurementId) {
+        const requestIds = function() {
+            if (typeof window.gtag !== 'function') {
+                return;
+            }
+
+            let settled = false;
+            const timeoutId = setTimeout(function() {
+                settled = true;
+            }, 3000);
+
+            window.gtag('get', config.ga4MeasurementId, 'client_id', function(clientId) {
+                if (settled) return;
+
+                window.gtag('get', config.ga4MeasurementId, 'session_id', function(sessionId) {
+                    if (settled) return;
+                    clearTimeout(timeoutId);
+                    settled = true;
+
+                    fetch('index.php?route=extension/module/aw_ecommerce_tracking/captureIds', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        keepalive: true,
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'client_id=' + encodeURIComponent(clientId || '') + '&session_id=' + encodeURIComponent(sessionId || '')
+                    }).catch(function() {});
+                });
+            });
+        };
+
+        if (document.readyState === 'complete') {
+            requestIds();
+        } else {
+            window.addEventListener('load', requestIds, { once: true });
+        }
+    }
+
     const getProductIdFromUrl = function(url) {
         const match = url.match(/product_id=(\d+)/);
         if (match) return match[1];

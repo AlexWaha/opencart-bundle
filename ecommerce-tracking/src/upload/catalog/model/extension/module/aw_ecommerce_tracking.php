@@ -208,12 +208,23 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
         return trim($title);
     }
 
-    public function captureClientId(int $orderId, ?string $gaCookie, ?string $gaSessionCookie, ?string $fbp, ?string $fbc): void
-    {
-        $clientId = $this->extractGaClientId($gaCookie);
-        $sessionId = $this->extractGaSessionId($gaSessionCookie);
+    public function captureClientId(
+        int $orderId,
+        ?string $gaCookie,
+        ?string $gaSessionCookie,
+        ?string $capturedClientId,
+        ?string $capturedSessionId,
+        ?string $fbp,
+        ?string $fbc,
+        ?int $consentAnalytics,
+        ?int $consentAdUserData,
+        ?int $consentAdPersonalization
+    ): void {
+        $clientId = $capturedClientId !== null ? $capturedClientId : $this->extractGaClientId($gaCookie);
+        $sessionId = $capturedSessionId !== null ? $capturedSessionId : $this->extractGaSessionId($gaSessionCookie);
 
-        if ($clientId === null && $sessionId === null && $fbp === null && $fbc === null) {
+        if ($clientId === null && $sessionId === null && $fbp === null && $fbc === null
+            && $consentAnalytics === null && $consentAdUserData === null && $consentAdPersonalization === null) {
             return;
         }
 
@@ -221,11 +232,107 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
         $sessionIdSql = $sessionId !== null ? "'" . $this->db->escape($sessionId) . "'" : 'NULL';
         $fbpSql = $fbp !== null ? "'" . $this->db->escape($fbp) . "'" : 'NULL';
         $fbcSql = $fbc !== null ? "'" . $this->db->escape($fbc) . "'" : 'NULL';
+        $consentAnalyticsSql = $consentAnalytics !== null ? (string) $consentAnalytics : 'NULL';
+        $consentAdUserDataSql = $consentAdUserData !== null ? (string) $consentAdUserData : 'NULL';
+        $consentAdPersonalizationSql = $consentAdPersonalization !== null ? (string) $consentAdPersonalization : 'NULL';
+
+        try {
+            $this->db->query("
+                INSERT INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id, ga_client_id, ga_session_id, fbp, fbc, consent_analytics, consent_ad_user_data, consent_ad_personalization)
+                VALUES ('" . $orderId . "', " . $clientIdSql . ', ' . $sessionIdSql . ', ' . $fbpSql . ', ' . $fbcSql . ', ' . $consentAnalyticsSql . ', ' . $consentAdUserDataSql . ', ' . $consentAdPersonalizationSql . ")
+                ON DUPLICATE KEY UPDATE ga_client_id = VALUES(ga_client_id), ga_session_id = VALUES(ga_session_id), fbp = VALUES(fbp), fbc = VALUES(fbc), consent_analytics = VALUES(consent_analytics), consent_ad_user_data = VALUES(consent_ad_user_data), consent_ad_personalization = VALUES(consent_ad_personalization)
+            ");
+        } catch (\Throwable $e) {
+            $this->db->query("
+                INSERT INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id, ga_client_id, ga_session_id, fbp, fbc)
+                VALUES ('" . $orderId . "', " . $clientIdSql . ', ' . $sessionIdSql . ', ' . $fbpSql . ', ' . $fbcSql . ")
+                ON DUPLICATE KEY UPDATE ga_client_id = VALUES(ga_client_id), ga_session_id = VALUES(ga_session_id), fbp = VALUES(fbp), fbc = VALUES(fbc)
+            ");
+        }
+    }
+
+    public function getGaClientId(int $orderId): ?string
+    {
+        $query = $this->db->query("
+            SELECT ga_client_id
+            FROM " . DB_PREFIX . "aw_ecommerce_tracking_purchase
+            WHERE order_id = '" . $orderId . "'
+        ");
+
+        return !empty($query->row['ga_client_id']) ? $query->row['ga_client_id'] : null;
+    }
+
+    public function getGaSessionId(int $orderId): ?string
+    {
+        $query = $this->db->query("
+            SELECT ga_session_id
+            FROM " . DB_PREFIX . "aw_ecommerce_tracking_purchase
+            WHERE order_id = '" . $orderId . "'
+        ");
+
+        return !empty($query->row['ga_session_id']) ? $query->row['ga_session_id'] : null;
+    }
+
+    public function getConsent(int $orderId): array
+    {
+        $query = $this->db->query("
+            SELECT consent_analytics, consent_ad_user_data, consent_ad_personalization
+            FROM " . DB_PREFIX . "aw_ecommerce_tracking_purchase
+            WHERE order_id = '" . $orderId . "'
+        ");
+
+        $row = $query->row ?: [];
+
+        return [
+            'analytics' => isset($row['consent_analytics']) && $row['consent_analytics'] !== '' ? (int) $row['consent_analytics'] : null,
+            'ad_user_data' => isset($row['consent_ad_user_data']) && $row['consent_ad_user_data'] !== '' ? (int) $row['consent_ad_user_data'] : null,
+            'ad_personalization' => isset($row['consent_ad_personalization']) && $row['consent_ad_personalization'] !== '' ? (int) $row['consent_ad_personalization'] : null,
+        ];
+    }
+
+    public function claimPurchase(int $orderId): bool
+    {
+        $this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id) VALUES ('" . $orderId . "')");
 
         $this->db->query("
-            INSERT INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id, ga_client_id, ga_session_id, fbp, fbc)
-            VALUES ('" . $orderId . "', " . $clientIdSql . ', ' . $sessionIdSql . ', ' . $fbpSql . ', ' . $fbcSql . ")
-            ON DUPLICATE KEY UPDATE ga_client_id = VALUES(ga_client_id), ga_session_id = VALUES(ga_session_id), fbp = VALUES(fbp), fbc = VALUES(fbc)
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET sent_at = NOW()
+            WHERE order_id = '" . $orderId . "'
+              AND sent_at IS NULL
+        ");
+
+        return $this->db->countAffected() === 1;
+    }
+
+    public function releasePurchaseClaim(int $orderId): void
+    {
+        $this->db->query("
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET sent_at = NULL
+            WHERE order_id = '" . $orderId . "'
+        ");
+    }
+
+    public function claimClientPurchase(int $orderId): bool
+    {
+        $this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id) VALUES ('" . $orderId . "')");
+
+        $this->db->query("
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET client_claimed_at = NOW()
+            WHERE order_id = '" . $orderId . "'
+              AND client_claimed_at IS NULL
+        ");
+
+        return $this->db->countAffected() === 1;
+    }
+
+    public function releaseClientPurchaseClaim(int $orderId): void
+    {
+        $this->db->query("
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET client_claimed_at = NULL
+            WHERE order_id = '" . $orderId . "'
         ");
     }
 

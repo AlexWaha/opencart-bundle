@@ -40,6 +40,17 @@ $_['entry_tracking_code_body'] = 'Код GTM (Body)';
 $_['entry_tracking_code_body_help'] = 'Вставьте noscript код Google Tag Manager. Этот код будет вставлен сразу после открывающего тега &lt;body&gt;.';
 $_['entry_debug_mode'] = 'Режим отладки';
 $_['entry_debug_mode_help'] = 'При включении все события dataLayer будут выводиться в консоль браузера для отладки.';
+$_['entry_ga4_measurement_id'] = 'GA4 Measurement ID';
+$_['entry_ga4_measurement_id_help'] = 'Measurement ID вашего ресурса GA4 (начинается с G-). Нужен для серверной отправки покупок.';
+$_['entry_ga4_api_secret'] = 'GA4 API Secret';
+$_['entry_ga4_api_secret_help'] = 'API secret Measurement Protocol из GA4: Admin > Data Streams > Measurement Protocol API secrets. Оставьте поле пустым, чтобы сохранить текущее значение.';
+$_['text_secret_saved'] = 'Сохранено (оставьте пустым, чтобы не менять)';
+$_['entry_ga4_mp_debug'] = 'Режим отладки Measurement Protocol';
+$_['entry_ga4_mp_debug_help'] = 'Отправляет события покупок на отладочный эндпоинт GA4 вместо рабочего. Пока включено, реальные события не записываются.';
+$_['entry_ads_conversion_id'] = 'Google Ads Conversion ID';
+$_['entry_ads_conversion_id_help'] = 'ID конверсии Google Ads (начинается с AW-). Используется для отправки сниппета конверсии на странице успешного заказа.';
+$_['entry_ads_conversion_label'] = 'Google Ads Conversion Label';
+$_['entry_ads_conversion_label_help'] = 'Метка конверсии для действия "Покупка".';
 
 // Pages Tab
 $_['text_pages_description'] = 'Включите отслеживание для различных типов страниц. Событие <code class="badge-code">view_item_list</code> будет отправляться при посещении этих страниц.';
@@ -174,6 +185,7 @@ $_['button_import'] = 'Импорт настроек';
 // Error
 $_['error_permission'] = 'Внимание: У вас нет прав для управления этим модулем!';
 $_['error_warning'] = 'Внимание: Пожалуйста, проверьте форму на наличие ошибок!';
+$_['error_tracking_fields'] = 'Внимание: GA4 Measurement ID должен выглядеть как G-XXXXXXX, Google Ads Conversion ID как AW-XXXXXXX, а метка конверсии может содержать только буквы, цифры, подчёркивания и дефисы.';
 $_['error_import_failed']    = 'Ошибка импорта: %s';
 $_['error_import_read_file'] = 'Невозможно прочитать загруженный файл';
 $_['error_import_file']      = 'Выберите файл для импорта';

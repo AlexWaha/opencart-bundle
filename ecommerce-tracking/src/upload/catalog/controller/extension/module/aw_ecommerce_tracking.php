@@ -62,7 +62,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 
         return $this->awCore->view->render('extension/aw_ecommerce_tracking/header', [
             'trackingCode' => $this->getTrackingCode(),
-            'jsConfig' => json_encode($this->getSettingForJs(), JSON_UNESCAPED_UNICODE),
+            'jsConfig' => json_encode($this->getSettingForJs(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG),
             'jsSrc' => $jsPath . ($jsVersion ? '?v=' . $jsVersion : ''),
         ]);
     }
@@ -751,9 +751,181 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             return '';
         }
 
+        $this->load->model('extension/module/' . $this->moduleName);
+        $model = $this->{'model_extension_module_' . $this->moduleName};
+
+        if (!$model->claimClientPurchase($orderId)) {
+            return '';
+        }
+
         $eventData = $this->preparePurchase($orderId);
 
-        return $this->renderView($eventData);
+        if (empty($eventData)) {
+            $model->releaseClientPurchaseClaim($orderId);
+
+            return '';
+        }
+
+        return $this->renderView($eventData) . $this->renderAdsConversion($eventData);
+    }
+
+    private function renderAdsConversion(array $eventData): string
+    {
+        $conversionId = trim((string) $this->moduleConfig->get('ads_conversion_id', ''));
+        $conversionLabel = trim((string) $this->moduleConfig->get('ads_conversion_label', ''));
+
+        if ($conversionId === '' || $conversionLabel === '') {
+            return '';
+        }
+
+        $ecommerce = $eventData['ecommerce'] ?? [];
+
+        $conversionData = [
+            'send_to' => $conversionId . '/' . $conversionLabel,
+            'value' => $ecommerce['value'] ?? 0,
+            'currency' => $ecommerce['currency'] ?? $this->getCurrencyCode(),
+            'transaction_id' => $ecommerce['transaction_id'] ?? '',
+        ];
+
+        return $this->awCore->view->render('extension/aw_ecommerce_tracking/conversion', [
+            'conversionDataJson' => json_encode($conversionData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG),
+        ]);
+    }
+
+    public function captureIds(): void
+    {
+        if ($this->isEnabled()) {
+            $clientId = (string) ($this->request->post['client_id'] ?? '');
+            $sessionId = (string) ($this->request->post['session_id'] ?? '');
+
+            if (preg_match('/^\d{1,20}\.\d{1,20}$/', $clientId)) {
+                $this->session->data['awGa4ClientId'] = $clientId;
+            }
+
+            if (preg_match('/^\d{1,20}$/', $sessionId)) {
+                $this->session->data['awGa4SessionId'] = $sessionId;
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode(['success' => true]));
+    }
+
+    public function sendGaPurchase(array $args): string
+    {
+        $orderId = (int) ($args['order_id'] ?? 0);
+
+        if (!$orderId || !$this->isEnabled() || !$this->moduleConfig->get('track_purchase', true)) {
+            return '';
+        }
+
+        $measurementId = trim((string) $this->moduleConfig->get('ga4_measurement_id', ''));
+        $apiSecret = trim((string) $this->moduleConfig->get('ga4_api_secret', ''));
+
+        if ($measurementId === '' || $apiSecret === '') {
+            return '';
+        }
+
+        $this->load->model('extension/module/' . $this->moduleName);
+        $model = $this->{'model_extension_module_' . $this->moduleName};
+
+        $orderInfo = $model->getOrderInfo($orderId);
+
+        if (empty($orderInfo) || !in_array((int) $orderInfo['order_status_id'], $this->getSuccessfulOrderStatuses(), true)) {
+            return '';
+        }
+
+        $consent = $model->getConsent($orderId);
+        $gdprEnabled = (bool) $this->awCore->getConfig('aw_gdpr_consent')->get('status', false);
+
+        if ($gdprEnabled && $consent['analytics'] !== 1) {
+            return '';
+        }
+
+        if (!$model->claimPurchase($orderId)) {
+            return '';
+        }
+
+        $prepared = $this->preparePurchase($orderId);
+
+        if (empty($prepared)) {
+            $model->releasePurchaseClaim($orderId);
+
+            return '';
+        }
+
+        $clientId = $model->getGaClientId($orderId) ?: ('offline.' . $orderId);
+        $sessionId = $model->getGaSessionId($orderId);
+
+        $eventParams = $prepared['ecommerce'];
+
+        if ($sessionId) {
+            $eventParams['session_id'] = $sessionId;
+            $eventParams['engagement_time_msec'] = 1;
+        }
+
+        $payload = [
+            'client_id' => $clientId,
+            'events' => [[
+                'name' => 'purchase',
+                'params' => $eventParams,
+            ]],
+            'consent' => [
+                'ad_user_data' => $consent['ad_user_data'] === 0 ? 'DENIED' : 'GRANTED',
+                'ad_personalization' => $consent['ad_personalization'] === 0 ? 'DENIED' : 'GRANTED',
+            ],
+        ];
+
+        $debug = (bool) $this->moduleConfig->get('ga4_mp_debug', false);
+
+        $endpoint = ($debug
+            ? 'https://www.google-analytics.com/debug/mp/collect'
+            : 'https://www.google-analytics.com/mp/collect')
+            . '?measurement_id=' . rawurlencode($measurementId)
+            . '&api_secret=' . rawurlencode($apiSecret);
+
+        $result = $this->postJson($endpoint, $payload);
+
+        if ($debug || !$result['ok']) {
+            $model->releasePurchaseClaim($orderId);
+        }
+
+        return '';
+    }
+
+    private function getSuccessfulOrderStatuses(): array
+    {
+        $statuses = array_unique(array_map('intval', array_merge(
+            (array) $this->config->get('config_processing_status'),
+            (array) $this->config->get('config_complete_status')
+        )));
+
+        return array_values(array_diff($statuses, [(int) $this->config->get('config_order_status_id')]));
+    }
+
+    private function postJson(string $url, array $payload): array
+    {
+        $curl = curl_init($url);
+
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT => 4,
+        ]);
+
+        $body = curl_exec($curl);
+        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        return [
+            'ok' => $error === '' && $httpCode > 0 && $httpCode < 300,
+            'http_code' => $httpCode,
+            'body' => is_string($body) ? $body : '',
+        ];
     }
 
     public function setLoginFlag(): string
@@ -1069,6 +1241,8 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             'trackCoupon' => (bool) $config->get('track_coupon', true),
             'trackShippingInfo' => (bool) $config->get('track_shipping_info', true),
             'trackPaymentInfo' => (bool) $config->get('track_payment_info', true),
+            'ga4MeasurementId' => trim((string) $config->get('ga4_measurement_id', '')),
+            'needsIdCapture' => empty($this->session->data['awGa4ClientId']),
         ];
     }
 

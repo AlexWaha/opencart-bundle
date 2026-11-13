@@ -40,6 +40,17 @@ $_['entry_tracking_code_body'] = 'Код GTM (Body)';
 $_['entry_tracking_code_body_help'] = 'Вставте noscript код Google Tag Manager. Цей код буде вставлено відразу після відкриваючого тега &lt;body&gt;.';
 $_['entry_debug_mode'] = 'Режим налагодження';
 $_['entry_debug_mode_help'] = 'При увімкненні всі події dataLayer будуть виводитися в консоль браузера для налагодження.';
+$_['entry_ga4_measurement_id'] = 'GA4 Measurement ID';
+$_['entry_ga4_measurement_id_help'] = 'Measurement ID вашого ресурсу GA4 (починається з G-). Потрібен для серверної відправки покупок.';
+$_['entry_ga4_api_secret'] = 'GA4 API Secret';
+$_['entry_ga4_api_secret_help'] = 'API secret Measurement Protocol з GA4: Admin > Data Streams > Measurement Protocol API secrets. Залиште поле порожнім, щоб зберегти поточне значення.';
+$_['text_secret_saved'] = 'Збережено (залиште порожнім, щоб не змінювати)';
+$_['entry_ga4_mp_debug'] = 'Режим налагодження Measurement Protocol';
+$_['entry_ga4_mp_debug_help'] = 'Надсилає події покупок на тестовий ендпоінт GA4 замість робочого. Поки увімкнено, реальні події не записуються.';
+$_['entry_ads_conversion_id'] = 'Google Ads Conversion ID';
+$_['entry_ads_conversion_id_help'] = 'ID конверсії Google Ads (починається з AW-). Використовується для надсилання сніпета конверсії на сторінці успішного замовлення.';
+$_['entry_ads_conversion_label'] = 'Google Ads Conversion Label';
+$_['entry_ads_conversion_label_help'] = 'Метка конверсії для дії "Покупка".';
 
 // Pages Tab
 $_['text_pages_description'] = 'Увімкніть відстеження для різних типів сторінок. Подія <code class="badge-code">view_item_list</code> буде надсилатися при відвідуванні цих сторінок.';
@@ -174,6 +185,7 @@ $_['button_import'] = 'Імпорт налаштувань';
 // Error
 $_['error_permission'] = 'Увага: У вас немає прав для керування цим модулем!';
 $_['error_warning'] = 'Увага: Будь ласка, перевірте форму на наявність помилок!';
+$_['error_tracking_fields'] = 'Увага: GA4 Measurement ID повинен виглядати як G-XXXXXXX, Google Ads Conversion ID як AW-XXXXXXX, а мітка конверсії може містити лише букви, цифри, підкреслення та дефіси.';
 $_['error_import_failed']    = 'Помилка імпорту: %s';
 $_['error_import_read_file'] = 'Неможливо прочитати завантажений файл';
 $_['error_import_file']      = 'Оберіть файл для імпорту';

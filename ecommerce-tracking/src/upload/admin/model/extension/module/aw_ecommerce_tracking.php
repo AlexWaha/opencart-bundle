@@ -22,6 +22,23 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
             `meta_sent_at` DATETIME NULL DEFAULT NULL,
             PRIMARY KEY (`order_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $this->addColumnIfMissing('consent_analytics', 'TINYINT(1) NULL DEFAULT NULL');
+        $this->addColumnIfMissing('consent_ad_user_data', 'TINYINT(1) NULL DEFAULT NULL');
+        $this->addColumnIfMissing('consent_ad_personalization', 'TINYINT(1) NULL DEFAULT NULL');
+    }
+
+    private function addColumnIfMissing(string $column, string $definition): void
+    {
+        if (!preg_match('/^[a-z_]+$/', $column)) {
+            return;
+        }
+
+        $exists = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` LIKE '" . $this->db->escape($column) . "'");
+
+        if (!$exists->num_rows) {
+            $this->db->query("ALTER TABLE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` ADD `" . $column . "` " . $definition);
+        }
     }
 
     public function getRegisteredEvents(string $codePrefix): array

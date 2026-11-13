@@ -221,18 +221,8 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
                 return;
             }
 
-            $flagKey = 'awTrackPurchaseFired_' . $orderId;
-            if (!empty($this->session->data[$flagKey])) {
-                return;
-            }
-
-            $args = ['order_id' => $orderId];
-            $html = $this->load->controller($this->controllerRoute . '/success', $args);
-
-            if ($html) {
-                $this->session->data[$flagKey] = true;
-                $this->inject($html, $output);
-            }
+            $html = $this->load->controller($this->controllerRoute . '/success', ['order_id' => $orderId]);
+            $this->inject($html, $output);
         }
     }
 
@@ -247,36 +237,104 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
 
     public function addOrderAfter(&$route, &$args, &$output): void
     {
-        if (!$this->registry->has('awCore') || !$this->awCore->getConfig($this->moduleName)->get('status', false)) {
+        if (!$this->registry->has('awCore')) {
             return;
         }
 
-        $orderId = (int) $output;
+        try {
+            $config = $this->awCore->getConfig($this->moduleName);
 
-        if (!$orderId) {
-            return;
-        }
-
-        $gaSessionCookie = null;
-        foreach ($this->request->cookie as $name => $value) {
-            if (is_string($name) && strpos($name, '_ga_') === 0 && is_string($value)) {
-                $gaSessionCookie = $value;
-                break;
+            if (!$config->get('status', false)) {
+                return;
             }
+
+            $orderId = (int) $output;
+
+            if (!$orderId) {
+                return;
+            }
+
+            $measurementId = trim((string) $config->get('ga4_measurement_id', ''));
+            $cookieSuffix = (strpos($measurementId, 'G-') === 0) ? substr($measurementId, 2) : '';
+            $gaSessionCookie = $cookieSuffix !== '' ? ($this->request->cookie['_ga_' . $cookieSuffix] ?? null) : null;
+
+            if ($gaSessionCookie === null) {
+                foreach ($this->request->cookie as $name => $value) {
+                    if (is_string($name) && strpos($name, '_ga_') === 0 && is_string($value)) {
+                        $gaSessionCookie = $value;
+                        break;
+                    }
+                }
+            }
+
+            $gaCookie = $this->request->cookie['_ga'] ?? null;
+            $fbpCookie = $this->request->cookie['_fbp'] ?? null;
+            $fbcCookie = $this->request->cookie['_fbc'] ?? null;
+
+            $capturedClientId = $this->session->data['awGa4ClientId'] ?? null;
+            $capturedSessionId = $this->session->data['awGa4SessionId'] ?? null;
+
+            [$consentAnalytics, $consentAdUserData, $consentAdPersonalization] = $this->getConsentState();
+
+            $this->load->model('extension/module/' . $this->moduleName);
+            $this->{'model_extension_module_' . $this->moduleName}->captureClientId(
+                $orderId,
+                is_string($gaCookie) ? $gaCookie : null,
+                is_string($gaSessionCookie) ? $gaSessionCookie : null,
+                is_string($capturedClientId) ? $capturedClientId : null,
+                is_string($capturedSessionId) ? $capturedSessionId : null,
+                $this->validateMetaCookie(is_string($fbpCookie) ? $fbpCookie : null),
+                $this->validateMetaCookie(is_string($fbcCookie) ? $fbcCookie : null),
+                $consentAnalytics,
+                $consentAdUserData,
+                $consentAdPersonalization
+            );
+        } catch (\Throwable $e) {
+            return;
+        }
+    }
+
+    public function addOrderHistoryAfter(&$route, &$args, &$output): void
+    {
+        $orderId = (int) ($args[0] ?? 0);
+
+        if (!$orderId || !$this->registry->has('awCore')) {
+            return;
         }
 
-        $gaCookie = $this->request->cookie['_ga'] ?? null;
-        $fbpCookie = $this->request->cookie['_fbp'] ?? null;
-        $fbcCookie = $this->request->cookie['_fbc'] ?? null;
+        try {
+            if (!$this->awCore->getConfig($this->moduleName)->get('status', false)) {
+                return;
+            }
 
-        $this->load->model('extension/module/' . $this->moduleName);
-        $this->{'model_extension_module_' . $this->moduleName}->captureClientId(
-            $orderId,
-            is_string($gaCookie) ? $gaCookie : null,
-            $gaSessionCookie,
-            $this->validateMetaCookie(is_string($fbpCookie) ? $fbpCookie : null),
-            $this->validateMetaCookie(is_string($fbcCookie) ? $fbcCookie : null)
-        );
+            $this->load->controller($this->controllerRoute . '/sendGaPurchase', ['order_id' => $orderId]);
+        } catch (\Throwable $e) {
+            return;
+        }
+    }
+
+    private function getConsentState(): array
+    {
+        if (!$this->registry->has('awCore')) {
+            return [null, null, null];
+        }
+
+        $gdprConfig = $this->awCore->getConfig('aw_gdpr_consent');
+
+        if (!$gdprConfig->get('status', false)) {
+            return [null, null, null];
+        }
+
+        return [
+            $this->consentFlag('analytics_storage'),
+            $this->consentFlag('ad_user_data'),
+            $this->consentFlag('ad_personalization'),
+        ];
+    }
+
+    private function consentFlag(string $cookieName): int
+    {
+        return (($this->request->cookie[$cookieName] ?? '') === 'granted') ? 1 : 0;
     }
 
     /**

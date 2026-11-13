@@ -88,6 +88,12 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $this->params['trackingCodeBody'] = $this->moduleConfig->get('tracking_code_body', '');
         $this->params['debugMode'] = $this->moduleConfig->get('debug_mode', false);
 
+        $this->params['ga4MeasurementId'] = $this->moduleConfig->get('ga4_measurement_id', '');
+        $this->params['ga4ApiSecretSet'] = ($this->moduleConfig->all()['ga4_api_secret'] ?? '') !== '';
+        $this->params['ga4MpDebug'] = $this->moduleConfig->get('ga4_mp_debug', false);
+        $this->params['adsConversionId'] = $this->moduleConfig->get('ads_conversion_id', '');
+        $this->params['adsConversionLabel'] = $this->moduleConfig->get('ads_conversion_label', '');
+
         $this->params['trackCategory'] = $this->moduleConfig->get('track_category', true);
         $this->params['trackSearch'] = $this->moduleConfig->get('track_search', true);
         $this->params['trackManufacturer'] = $this->moduleConfig->get('track_manufacturer', true);
@@ -133,7 +139,12 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
     public function store(): void
     {
         if (($this->request->server['REQUEST_METHOD'] === 'POST') && $this->validate()) {
-            $this->awCore->setConfig($this->moduleName, $this->request->post);
+            $data = $this->request->post;
+
+            $newSecret = trim((string) ($data['ga4_api_secret'] ?? ''));
+            $data['ga4_api_secret'] = $newSecret !== '' ? $newSecret : (string) ($this->moduleConfig->all()['ga4_api_secret'] ?? '');
+
+            $this->awCore->setConfig($this->moduleName, $data);
 
             $this->session->data['success'] = $this->language->get('text_success');
 
@@ -167,6 +178,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             'catalog/view/common/success/after',
             'catalog/controller/checkout/success/before',
             'catalog/model/checkout/order/addOrder/after',
+            'catalog/model/checkout/order/addOrderHistory/after',
             'catalog/controller/account/login/after',
             'catalog/controller/account/register/after',
             'catalog/view/extension/module/featured/after',
@@ -246,7 +258,16 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         }
 
         try {
-            $jsonData = $this->awCore->exportConfig($this->moduleName);
+            $data = $this->moduleConfig->all();
+            unset($data['ga4_api_secret']);
+
+            $exportData = [
+                'module' => $this->moduleName,
+                'export_date' => date('Y-m-d H:i:s'),
+                'data' => $data,
+            ];
+
+            $jsonData = json_encode($exportData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             $filename = $this->moduleName . '_settings_' . date('Y-m-d_H-i-s') . '.json';
 
             $this->response->addHeader('Content-Type: application/json');
@@ -289,6 +310,9 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
                         throw new Exception($this->language->get('error_warning'));
                     }
 
+                    $importedSecret = trim((string) ($importData['data']['ga4_api_secret'] ?? ''));
+                    $importData['data']['ga4_api_secret'] = $importedSecret !== '' ? $importedSecret : (string) ($this->moduleConfig->all()['ga4_api_secret'] ?? '');
+
                     $this->awCore->setConfig($this->moduleName, $importData['data']);
                     $json['success'] = $this->language->get('text_import_success');
                 } catch (Exception $e) {
@@ -313,6 +337,27 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             }
         }
 
+        return $this->validateTrackingFields($data);
+    }
+
+    private function validateTrackingFields(array $data): bool
+    {
+        $measurementId = trim((string) ($data['ga4_measurement_id'] ?? ''));
+        $adsConversionId = trim((string) ($data['ads_conversion_id'] ?? ''));
+        $adsConversionLabel = trim((string) ($data['ads_conversion_label'] ?? ''));
+
+        if ($measurementId !== '' && !preg_match('/^G-[A-Za-z0-9]+$/', $measurementId)) {
+            return false;
+        }
+
+        if ($adsConversionId !== '' && !preg_match('/^AW-[A-Za-z0-9]+$/', $adsConversionId)) {
+            return false;
+        }
+
+        if ($adsConversionLabel !== '' && !preg_match('/^[A-Za-z0-9_-]+$/', $adsConversionLabel)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -322,6 +367,10 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 
         if (!$this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
             $this->error['warning'] = $this->language->get('error_permission');
+        }
+
+        if (!$this->error && $this->request->server['REQUEST_METHOD'] === 'POST' && !$this->validateTrackingFields($this->request->post)) {
+            $this->error['warning'] = $this->language->get('error_tracking_fields');
         }
 
         if ($this->error && !isset($this->error['warning'])) {
@@ -374,6 +423,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             ['aw_et_success',        'catalog/view/common/success/after',              'extension/aw_ecommerce_tracking/event/viewSuccessAfter'],
             ['aw_et_success_before', 'catalog/controller/checkout/success/before',     'extension/aw_ecommerce_tracking/event/successBefore'],
             ['aw_et_capture_ids',    'catalog/model/checkout/order/addOrder/after',    'extension/aw_ecommerce_tracking/event/addOrderAfter'],
+            ['aw_et_history',        'catalog/model/checkout/order/addOrderHistory/after', 'extension/aw_ecommerce_tracking/event/addOrderHistoryAfter'],
 
             ['aw_et_login',          'catalog/controller/account/login/after',         'extension/aw_ecommerce_tracking/event/controllerLoginAfter'],
             ['aw_et_register',       'catalog/controller/account/register/after',      'extension/aw_ecommerce_tracking/event/controllerRegisterAfter'],
@@ -472,6 +522,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             'aw_et_success',
             'aw_et_success_before',
             'aw_et_capture_ids',
+            'aw_et_history',
             'aw_et_login',
             'aw_et_register',
             'aw_et_mod_featured',

@@ -40,6 +40,17 @@ $_['entry_tracking_code_body'] = 'GTM Code (Body)';
 $_['entry_tracking_code_body_help'] = 'Paste your Google Tag Manager noscript code here. This code will be inserted immediately after the opening &lt;body&gt; tag.';
 $_['entry_debug_mode'] = 'Debug Mode';
 $_['entry_debug_mode_help'] = 'When enabled, all dataLayer events will be logged to the browser console for debugging purposes.';
+$_['entry_ga4_measurement_id'] = 'GA4 Measurement ID';
+$_['entry_ga4_measurement_id_help'] = 'Your GA4 property Measurement ID (starts with G-). Required for server-side purchase tracking.';
+$_['entry_ga4_api_secret'] = 'GA4 API Secret';
+$_['entry_ga4_api_secret_help'] = 'Measurement Protocol API secret, created in GA4 Admin > Data Streams > Measurement Protocol API secrets. Leave empty to keep the current value.';
+$_['text_secret_saved'] = 'Saved (leave empty to keep)';
+$_['entry_ga4_mp_debug'] = 'Measurement Protocol Debug Mode';
+$_['entry_ga4_mp_debug_help'] = 'Sends purchase events to the GA4 debug/validation endpoint instead of the live one. No real events are recorded while enabled.';
+$_['entry_ads_conversion_id'] = 'Google Ads Conversion ID';
+$_['entry_ads_conversion_id_help'] = 'Your Google Ads conversion ID (starts with AW-). Used to fire the conversion snippet on the order success page.';
+$_['entry_ads_conversion_label'] = 'Google Ads Conversion Label';
+$_['entry_ads_conversion_label_help'] = 'The conversion label for your purchase conversion action.';
 
 // Pages Tab
 $_['text_pages_description'] = 'Enable tracking for different page types. The <code class="badge-code">view_item_list</code> event will be sent when users visit these pages.';
@@ -174,6 +185,7 @@ $_['button_import'] = 'Import Settings';
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify this module!';
 $_['error_warning'] = 'Warning: Please check the form for errors!';
+$_['error_tracking_fields'] = 'Warning: GA4 Measurement ID must look like G-XXXXXXX, Google Ads Conversion ID like AW-XXXXXXX, and the Conversion Label must contain only letters, digits, underscores and hyphens.';
 $_['error_import_failed']    = 'Import failed: %s';
 $_['error_import_read_file'] = 'Unable to read uploaded file';
 $_['error_import_file']      = 'Please select a file to import';

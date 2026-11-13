@@ -32,3 +32,48 @@
         <p class="help-block">{{ entry_debug_mode_help }}</p>
     </div>
 </div>
+
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="ga4_measurement_id">{{ entry_ga4_measurement_id }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="ga4_measurement_id" id="ga4_measurement_id" value="{{ ga4MeasurementId|e('html_attr') }}" class="form-control" placeholder="G-XXXXXXXXXX">
+        <p class="help-block">{{ entry_ga4_measurement_id_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="ga4_api_secret">{{ entry_ga4_api_secret }}</label>
+    <div class="col-sm-9">
+        <input type="password" name="ga4_api_secret" id="ga4_api_secret" value="" autocomplete="new-password" class="form-control" placeholder="{{ (ga4ApiSecretSet ? text_secret_saved : '')|e('html_attr') }}">
+        <p class="help-block">{{ entry_ga4_api_secret_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_ga4_mp_debug }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="ga4_mp_debug">
+        <input type="hidden" name="ga4_mp_debug" value="0" id="ga4_mp_debug-off" {% if not ga4MpDebug %}checked="checked"{% endif %} />
+        <input type="checkbox" name="ga4_mp_debug" value="1" id="ga4_mp_debug" {% if ga4MpDebug %}checked="checked"{% endif %} />
+    </label>
+    <div class="col-xs-12 col-sm-offset-3 col-sm-9">
+        <p class="help-block">{{ entry_ga4_mp_debug_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="ads_conversion_id">{{ entry_ads_conversion_id }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="ads_conversion_id" id="ads_conversion_id" value="{{ adsConversionId|e('html_attr') }}" class="form-control" placeholder="AW-XXXXXXXXX">
+        <p class="help-block">{{ entry_ads_conversion_id_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="ads_conversion_label">{{ entry_ads_conversion_label }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="ads_conversion_label" id="ads_conversion_label" value="{{ adsConversionLabel|e('html_attr') }}" class="form-control">
+        <p class="help-block">{{ entry_ads_conversion_label_help }}</p>
+    </div>
+</div>
