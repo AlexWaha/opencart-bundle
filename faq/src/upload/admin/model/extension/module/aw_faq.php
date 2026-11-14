@@ -217,7 +217,9 @@ class ModelExtensionModuleAwFaq extends Model
             WHERE information_id = '10'");
 
         // Delete SEO URLs for old FAQ page
-        $this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url`
+        $seoUrlTable = $this->awCore->isLegacy() ? 'url_alias' : 'seo_url';
+
+        $this->db->query("DELETE FROM `" . DB_PREFIX . $seoUrlTable . "`
             WHERE query = 'information_id=10'");
     }
 }

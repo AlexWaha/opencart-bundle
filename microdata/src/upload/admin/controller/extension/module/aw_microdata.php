@@ -9,6 +9,8 @@
 
 class ControllerExtensionModuleAwMicrodata extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_microdata';
     private \Alexwaha\Config $moduleConfig;
     private \Alexwaha\Language $language;
@@ -28,6 +30,7 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
         $this->params['module_name'] = $this->moduleName;
+        $this->params['module_version'] = self::VERSION;
 
         $this->routeExtension = $this->awCore->isLegacy()
             ? 'extension/extension'
@@ -41,6 +44,10 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->document->addScript('view/javascript/jquery/datetimepicker/moment/moment.min.js');
         $this->document->addScript('view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js');
         $this->document->addStyle('view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css');
+
+        if ($this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $this->repairEvents();
+        }
 
         $this->params['success'] = $this->session->data['success'] ?? '';
         unset($this->session->data['success']);
@@ -326,6 +333,8 @@ class ControllerExtensionModuleAwMicrodata extends Controller
             'catalog/view/blog/article/after',
             'catalog/view/blog/category/after',
         ];
+
+        $expectedTriggers = array_map([$this, 'legacyViewTrigger'], $expectedTriggers);
 
         $eventRows = $this->model_extension_module_aw_microdata->getRegisteredEvents('aw_microdata_');
 
@@ -642,11 +651,9 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         $this->uninstallEvents();
     }
 
-    private function installEvents(): void
+    private function eventDefinitions(): array
     {
-        $this->load->model('setting/event');
-
-        $events = [
+        return [
             ['aw_microdata_og_header',     'catalog/view/common/header/after',           'extension/aw_microdata/event/viewHeaderAfter'],
             ['aw_microdata_org_footer',    'catalog/view/common/footer/after',           'extension/aw_microdata/event/viewFooterAfter'],
             ['aw_microdata_website_home',  'catalog/view/common/home/after',             'extension/aw_microdata/event/viewHomeAfter'],
@@ -660,16 +667,82 @@ class ControllerExtensionModuleAwMicrodata extends Controller
             ['aw_microdata_blog_article',  'catalog/view/blog/article/after',            'extension/aw_microdata/event/viewBlogArticleAfter'],
             ['aw_microdata_blog_category', 'catalog/view/blog/category/after',           'extension/aw_microdata/event/viewBlogCategoryAfter'],
         ];
+    }
 
-        foreach ($events as $event) {
-            $this->model_setting_event->deleteEventByCode($event[0]);
-            $this->model_setting_event->addEvent($event[0], $event[1], $event[2]);
+    private function loadEventModel(): string
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->load->model('extension/event');
+
+            return 'model_extension_event';
+        }
+
+        $this->load->model('setting/event');
+
+        return 'model_setting_event';
+    }
+
+    private function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
+    }
+
+    private function legacyViewTrigger(string $trigger): string
+    {
+        if ($this->awCore->isLegacy() && preg_match('#^catalog/view/(.+)/after$#', $trigger, $matches)) {
+            return 'catalog/view/*/template/' . $matches[1] . '/after';
+        }
+
+        return $trigger;
+    }
+
+    private function installEvents(): void
+    {
+        $model = $this->loadEventModel();
+
+        foreach ($this->eventDefinitions() as $event) {
+            $this->deleteEventByCode($model, $event[0]);
+            $this->{$model}->addEvent($event[0], $this->legacyViewTrigger($event[1]), $event[2]);
+        }
+    }
+
+    private function repairEvents(): void
+    {
+        $this->load->model('extension/module/' . $this->moduleName);
+        $registered = [];
+
+        foreach ($this->model_extension_module_aw_microdata->getRegisteredEvents('aw_microdata_') as $row) {
+            $registered[$row['code']] = $row;
+        }
+
+        $model = null;
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $trigger = $this->legacyViewTrigger($trigger);
+
+            if (isset($registered[$code]) && $registered[$code]['trigger'] === $trigger) {
+                continue;
+            }
+
+            if ($model === null) {
+                $model = $this->loadEventModel();
+            }
+
+            $status = isset($registered[$code]) ? (int) $registered[$code]['status'] : 1;
+
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $trigger, $action, $status);
         }
     }
 
     private function uninstallEvents(): void
     {
-        $this->load->model('setting/event');
+        $model = $this->loadEventModel();
 
         $codes = [
             'aw_microdata_og_header',
@@ -688,7 +761,7 @@ class ControllerExtensionModuleAwMicrodata extends Controller
         ];
 
         foreach ($codes as $code) {
-            $this->model_setting_event->deleteEventByCode($code);
+            $this->deleteEventByCode($model, $code);
         }
     }
 

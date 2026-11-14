@@ -329,3 +329,4 @@ $_['text_remove']                       = 'Видалити';
 
 // Error
 $_['error_permission']          = 'У вас недостатньо прав!';
+$_['text_module_version'] = 'Версія модуля';

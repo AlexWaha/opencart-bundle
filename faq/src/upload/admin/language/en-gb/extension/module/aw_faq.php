@@ -75,3 +75,4 @@ $_['error_warning']      = 'Warning: Please check the form carefully for errors!
 $_['error_question']     = 'Question must be between 1 and 500 characters!';
 $_['error_answer']       = 'Answer is required!';
 $_['error_not_found']    = 'FAQ item not found!';
+$_['text_module_version'] = 'Module version';

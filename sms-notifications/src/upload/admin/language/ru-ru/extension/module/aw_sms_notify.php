@@ -266,3 +266,4 @@ $_['text_diag_otp_templates_ok'] = 'Все шаблоны OTP заполнены
 $_['text_diag_otp_templates_missing'] = 'Часть шаблонов OTP не заполнена';
 $_['text_diag_otp_modal_custom'] = 'Заголовок и текст модалки настроены';
 $_['text_diag_otp_modal_defaults'] = 'Модалка: используются дефолты из языкового файла';
+$_['text_module_version'] = 'Версия модуля';

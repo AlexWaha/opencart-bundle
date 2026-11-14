@@ -61,3 +61,4 @@ $_['error_import_file'] = 'Warning: Please select a valid JSON file to import!';
 $_['error_import_read_file'] = 'Failed to read the uploaded file!';
 $_['error_import_failed'] = 'Import failed: %s';
 $_['error_warning'] = 'Warning: Please check the form carefully for errors!';
+$_['text_module_version'] = 'Module version';

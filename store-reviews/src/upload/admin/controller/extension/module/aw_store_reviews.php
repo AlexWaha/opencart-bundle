@@ -9,6 +9,8 @@
 
 class ControllerExtensionModuleAwStoreReviews extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_store_reviews';
     private \Alexwaha\Config $moduleConfig;
     private \Alexwaha\Language $language;
@@ -28,6 +30,7 @@ class ControllerExtensionModuleAwStoreReviews extends Controller
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
         $this->params['module_name'] = $this->moduleName;
+        $this->params['module_version'] = self::VERSION;
 
         $this->routeExtension = $this->awCore->isLegacy()
             ? 'extension/extension'
@@ -557,12 +560,34 @@ class ControllerExtensionModuleAwStoreReviews extends Controller
         $this->awCore->removeConfig($this->moduleName);
     }
 
-    private function installEvents(): void
+    private function loadEventModel(): string
     {
+        if ($this->awCore->isLegacy()) {
+            $this->load->model('extension/event');
+
+            return 'model_extension_event';
+        }
+
         $this->load->model('setting/event');
 
-        $this->model_setting_event->deleteEventByCode('aw_store_reviews_sitemap');
-        $this->model_setting_event->addEvent(
+        return 'model_setting_event';
+    }
+
+    private function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
+    }
+
+    private function installEvents(): void
+    {
+        $model = $this->loadEventModel();
+
+        $this->deleteEventByCode($model, 'aw_store_reviews_sitemap');
+        $this->{$model}->addEvent(
             'aw_store_reviews_sitemap',
             'catalog/controller/extension/feed/google_sitemap/after',
             'extension/aw_store_reviews/event/sitemapAfter'
@@ -571,8 +596,8 @@ class ControllerExtensionModuleAwStoreReviews extends Controller
 
     private function uninstallEvents(): void
     {
-        $this->load->model('setting/event');
-        $this->model_setting_event->deleteEventByCode('aw_store_reviews_sitemap');
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, 'aw_store_reviews_sitemap');
     }
 
     protected function installPermissions(): void

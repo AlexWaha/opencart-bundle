@@ -263,3 +263,4 @@ $_['text_diag_otp_templates_ok'] = 'All OTP templates filled';
 $_['text_diag_otp_templates_missing'] = 'Some OTP templates missing';
 $_['text_diag_otp_modal_custom'] = 'Modal title/text customized';
 $_['text_diag_otp_modal_defaults'] = 'Modal i18n: using language defaults';
+$_['text_module_version'] = 'Module version';

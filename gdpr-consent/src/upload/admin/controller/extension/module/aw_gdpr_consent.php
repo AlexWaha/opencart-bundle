@@ -10,6 +10,8 @@
 
 class ControllerExtensionModuleAwGdprConsent extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_gdpr_consent';
 
     private \Alexwaha\Config $moduleConfig;
@@ -35,6 +37,7 @@ class ControllerExtensionModuleAwGdprConsent extends Controller
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
         $this->params['module_name'] = $this->moduleName;
+        $this->params['module_version'] = self::VERSION;
 
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
     }
@@ -43,6 +46,10 @@ class ControllerExtensionModuleAwGdprConsent extends Controller
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
         $this->awCore->addStyles();
+
+        if ($this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $this->repairEvents();
+        }
 
         if ($this->config->get('config_editor_default')) {
             $this->document->addScript('view/javascript/ckeditor/ckeditor.js');
@@ -216,38 +223,130 @@ class ControllerExtensionModuleAwGdprConsent extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('module_' . $this->moduleName);
-        $this->getEventModel()->deleteEventByCode($this->moduleName);
+
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, $this->moduleName);
+
+        foreach ($this->eventDefinitions() as $event) {
+            $this->deleteEventByCode($model, $event[0]);
+        }
+
         $this->awCore->removeConfig($this->moduleName);
+    }
+
+    protected function eventDefinitions(): array
+    {
+        return [
+            ['aw_gdpr_consent_header', 'catalog/view/common/header/after', 'extension/module/' . $this->moduleName . '/head'],
+            ['aw_gdpr_consent_footer', 'catalog/view/common/footer/after', 'extension/module/' . $this->moduleName . '/footer'],
+        ];
     }
 
     protected function installEvents()
     {
-        $model = $this->getEventModel();
-        $model->deleteEventByCode($this->moduleName);
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, $this->moduleName);
 
-        $model->addEvent(
-            $this->moduleName,
-            'catalog/view/common/header/after',
-            'extension/module/' . $this->moduleName . '/head'
-        );
-        $model->addEvent(
-            $this->moduleName,
-            'catalog/view/common/footer/after',
-            'extension/module/' . $this->moduleName . '/footer'
-        );
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $this->legacyViewTrigger($trigger), $action);
+        }
     }
 
-    protected function getEventModel()
+    protected function repairEvents(): void
+    {
+        $this->load->model('extension/module/' . $this->moduleName);
+        $registered = [];
+        $sharedRows = [];
+
+        foreach ($this->model_extension_module_aw_gdpr_consent->getRegisteredEvents($this->moduleName) as $row) {
+            if ($row['code'] === $this->moduleName) {
+                $sharedRows[] = $row;
+            } else {
+                $registered[$row['code']] = $row;
+            }
+        }
+
+        $sharedHasDisabled = false;
+
+        foreach ($sharedRows as $row) {
+            if ((int) $row['status'] === 0) {
+                $sharedHasDisabled = true;
+            }
+        }
+
+        $model = null;
+
+        if ($sharedRows) {
+            $model = $this->loadEventModel();
+            $this->deleteEventByCode($model, $this->moduleName);
+            $registered = [];
+        }
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $trigger = $this->legacyViewTrigger($trigger);
+
+            if (isset($registered[$code]) && $registered[$code]['trigger'] === $trigger) {
+                continue;
+            }
+
+            if ($model === null) {
+                $model = $this->loadEventModel();
+            }
+
+            $status = $this->resolveEventStatus($registered, $code, $sharedRows, $trigger, $sharedHasDisabled);
+
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $trigger, $action, $status);
+        }
+    }
+
+    protected function resolveEventStatus(array $registered, string $code, array $sharedRows, string $trigger, bool $sharedHasDisabled): int
+    {
+        if (isset($registered[$code])) {
+            return (int) $registered[$code]['status'];
+        }
+
+        foreach ($sharedRows as $row) {
+            if ($row['trigger'] === $trigger) {
+                return (int) $row['status'];
+            }
+        }
+
+        return $sharedHasDisabled ? 0 : 1;
+    }
+
+    protected function loadEventModel(): string
     {
         if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
 
-            return $this->model_extension_event;
+            return 'model_extension_event';
         }
 
         $this->load->model('setting/event');
 
-        return $this->model_setting_event;
+        return 'model_setting_event';
+    }
+
+    protected function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
+    }
+
+    protected function legacyViewTrigger(string $trigger): string
+    {
+        if ($this->awCore->isLegacy() && preg_match('#^catalog/view/(.+)/after$#', $trigger, $matches)) {
+            return 'catalog/view/*/template/' . $matches[1] . '/after';
+        }
+
+        return $trigger;
     }
 
     protected function installPermissions()

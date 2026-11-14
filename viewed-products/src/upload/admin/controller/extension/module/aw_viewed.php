@@ -9,6 +9,8 @@
 
 class ControllerExtensionModuleAwViewed extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_viewed';
 
     private \Alexwaha\Config $moduleConfig;
@@ -37,6 +39,10 @@ class ControllerExtensionModuleAwViewed extends Controller
 
         $this->document->setTitle($this->language->get('heading_main_title'));
         $this->awCore->addStyles();
+
+        if ($this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $this->repairEvents();
+        }
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
             $instance = [
@@ -159,7 +165,12 @@ class ControllerExtensionModuleAwViewed extends Controller
 
     public function uninstall(): void
     {
-        $this->getEventModel()->deleteEventByCode($this->moduleName);
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, $this->moduleName);
+
+        foreach ($this->eventDefinitions() as $event) {
+            $this->deleteEventByCode($model, $event[0]);
+        }
 
         $this->load->model('extension/module/' . $this->moduleName);
         $this->model_extension_module_aw_viewed->dropTable();
@@ -167,28 +178,121 @@ class ControllerExtensionModuleAwViewed extends Controller
         $this->awCore->removeConfig($this->moduleName);
     }
 
-    private function installEvents(): void
+    private function eventDefinitions(): array
     {
-        $model = $this->getEventModel();
-        $model->deleteEventByCode($this->moduleName);
-
-        $model->addEvent($this->moduleName, 'catalog/controller/product/product/before', 'extension/module/' . $this->moduleName . '/track');
-        $model->addEvent($this->moduleName, 'catalog/controller/account/account/before', 'extension/module/' . $this->moduleName . '/accountLogin');
-        $model->addEvent($this->moduleName, 'catalog/view/extension/module/account/after', 'extension/module/' . $this->moduleName . '/accountMenu');
-        $model->addEvent($this->moduleName, 'catalog/view/account/account/after', 'extension/module/' . $this->moduleName . '/accountList');
+        return [
+            ['aw_viewed_track', 'catalog/controller/product/product/before', 'extension/module/' . $this->moduleName . '/track'],
+            ['aw_viewed_account_login', 'catalog/controller/account/account/before', 'extension/module/' . $this->moduleName . '/accountLogin'],
+            ['aw_viewed_account_menu', 'catalog/view/extension/module/account/after', 'extension/module/' . $this->moduleName . '/accountMenu'],
+            ['aw_viewed_account_list', 'catalog/view/account/account/after', 'extension/module/' . $this->moduleName . '/accountList'],
+        ];
     }
 
-    private function getEventModel()
+    private function installEvents(): void
+    {
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, $this->moduleName);
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $this->legacyViewTrigger($trigger), $action);
+        }
+    }
+
+    private function repairEvents(): void
+    {
+        $this->load->model('extension/module/' . $this->moduleName);
+        $registered = [];
+        $sharedRows = [];
+
+        foreach ($this->model_extension_module_aw_viewed->getRegisteredEvents($this->moduleName) as $row) {
+            if ($row['code'] === $this->moduleName) {
+                $sharedRows[] = $row;
+            } else {
+                $registered[$row['code']] = $row;
+            }
+        }
+
+        $sharedHasDisabled = false;
+
+        foreach ($sharedRows as $row) {
+            if ((int) $row['status'] === 0) {
+                $sharedHasDisabled = true;
+            }
+        }
+
+        $model = null;
+
+        if ($sharedRows) {
+            $model = $this->loadEventModel();
+            $this->deleteEventByCode($model, $this->moduleName);
+            $registered = [];
+        }
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $trigger = $this->legacyViewTrigger($trigger);
+
+            if (isset($registered[$code]) && $registered[$code]['trigger'] === $trigger) {
+                continue;
+            }
+
+            if ($model === null) {
+                $model = $this->loadEventModel();
+            }
+
+            $status = $this->resolveEventStatus($registered, $code, $sharedRows, $trigger, $sharedHasDisabled);
+
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $trigger, $action, $status);
+        }
+    }
+
+    private function resolveEventStatus(array $registered, string $code, array $sharedRows, string $trigger, bool $sharedHasDisabled): int
+    {
+        if (isset($registered[$code])) {
+            return (int) $registered[$code]['status'];
+        }
+
+        foreach ($sharedRows as $row) {
+            if ($row['trigger'] === $trigger) {
+                return (int) $row['status'];
+            }
+        }
+
+        return $sharedHasDisabled ? 0 : 1;
+    }
+
+    private function loadEventModel(): string
     {
         if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
 
-            return $this->model_extension_event;
+            return 'model_extension_event';
         }
 
         $this->load->model('setting/event');
 
-        return $this->model_setting_event;
+        return 'model_setting_event';
+    }
+
+    private function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
+    }
+
+    private function legacyViewTrigger(string $trigger): string
+    {
+        if ($this->awCore->isLegacy() && preg_match('#^catalog/view/(.+)/after$#', $trigger, $matches)) {
+            return 'catalog/view/*/template/' . $matches[1] . '/after';
+        }
+
+        return $trigger;
     }
 
     private function installPermissions(): void

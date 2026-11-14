@@ -14,6 +14,8 @@ use Alexwaha\SmsNotify\SmsDispatcher;
 
 class ControllerExtensionModuleAwSmsNotify extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_sms_notify';
     private \Alexwaha\Config $moduleConfig;
     private \Alexwaha\Language $language;
@@ -32,6 +34,7 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
+        $this->params['module_version'] = self::VERSION;
         $this->routeExtension = $this->awCore->isLegacy()
             ? 'extension/extension'
             : 'marketplace/extension';

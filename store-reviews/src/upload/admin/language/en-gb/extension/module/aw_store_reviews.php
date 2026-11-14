@@ -85,3 +85,4 @@ $_['error_not_found']    = 'Review not found!';
 $_['error_seo_url']         = 'SEO URL must be between 1 and 255 characters!';
 $_['error_seo_url_unique']  = 'SEO URL must be unique per language!';
 $_['error_seo_url_exists']  = 'SEO URL is already in use!';
+$_['text_module_version'] = 'Module version';

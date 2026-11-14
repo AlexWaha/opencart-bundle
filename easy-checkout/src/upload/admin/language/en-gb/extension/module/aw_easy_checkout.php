@@ -273,3 +273,4 @@ $_['error_import_file'] = 'Please select a file to import!';
 $_['error_import_invalid'] = 'Invalid file format. JSON file with module settings expected.';
 $_['error_import_failed'] = 'Error importing settings: %s';
 $_['error_import_read_file'] = 'Failed to read uploaded file';
+$_['text_module_version'] = 'Module version';

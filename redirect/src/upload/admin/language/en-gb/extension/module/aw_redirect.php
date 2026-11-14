@@ -102,3 +102,4 @@ $_['error_duplicate'] = 'A redirect with this source already exists for this sto
 $_['error_not_found'] = 'Warning: Redirect not found!';
 $_['error_import_file'] = 'Warning: Please select a valid CSV file!';
 $_['error_import_format'] = 'Warning: Invalid CSV - the first column must be "source"!';
+$_['text_module_version'] = 'Module version';

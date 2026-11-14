@@ -61,3 +61,4 @@ $_['error_import_file'] = 'Увага: виберіть коректний JSON-
 $_['error_import_read_file'] = 'Не вдалося прочитати завантажений файл!';
 $_['error_import_failed'] = 'Помилка імпорту: %s';
 $_['error_warning'] = 'Увага: уважно перевірте форму на помилки!';
+$_['text_module_version'] = 'Версія модуля';

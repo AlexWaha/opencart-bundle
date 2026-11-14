@@ -85,3 +85,4 @@ $_['error_not_found']    = 'Відгук не знайдено!';
 $_['error_seo_url']         = 'SEO URL повинен бути від 1 до 255 символів!';
 $_['error_seo_url_unique']  = 'SEO URL повинен бути унікальним для кожної мови!';
 $_['error_seo_url_exists']  = 'SEO URL вже використовується!';
+$_['text_module_version'] = 'Версія модуля';

@@ -67,6 +67,15 @@ class ModelExtensionModuleAwEasyCheckout extends Model
         $this->db->query('DELETE FROM ' . DB_PREFIX . "setting WHERE store_id = '" . (int) $store_id . "' AND `code` = '" . $this->db->escape($code) . "'");
     }
 
+    public function getRegisteredEvents(string $codePrefix): array
+    {
+        $query = $this->db->query(
+            "SELECT `code`, `trigger`, `action`, `status` FROM `" . DB_PREFIX . "event` WHERE `code` LIKE '" . $this->db->escape($codePrefix) . "%' ORDER BY `event_id`"
+        );
+
+        return $query->rows;
+    }
+
     public function install()
     {
         $this->db->query('CREATE TABLE IF NOT EXISTS ' . DB_PREFIX . 'aw_easy_abandoned (`abandoned_id` int(11) NOT NULL AUTO_INCREMENT,`store_id` int(11),`customer_id` int(11),`email` varchar(765),`email_sent_at` datetime,`sms_sent_at` datetime,`telephone` varchar(765),`firstname` varchar(96),`lastname` varchar(96),`products` text,`language_id` int(11),`viewed` int(1),`created_at` datetime,PRIMARY KEY (`abandoned_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;');

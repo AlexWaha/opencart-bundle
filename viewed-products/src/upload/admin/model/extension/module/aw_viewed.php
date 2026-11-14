@@ -29,4 +29,13 @@ class ModelExtensionModuleAwViewed extends Model
     {
         $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "aw_viewed`");
     }
+
+    public function getRegisteredEvents(string $codePrefix): array
+    {
+        $query = $this->db->query(
+            "SELECT `code`, `trigger`, `action`, `status` FROM `" . DB_PREFIX . "event` WHERE `code` LIKE '" . $this->db->escape($codePrefix) . "%' ORDER BY `event_id`"
+        );
+
+        return $query->rows;
+    }
 }

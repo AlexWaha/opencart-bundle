@@ -329,3 +329,4 @@ $_['text_remove']                       = 'Remove';
 
 // Error
 $_['error_permission']          = 'Warning: You do not have permission!';
+$_['text_module_version'] = 'Module version';

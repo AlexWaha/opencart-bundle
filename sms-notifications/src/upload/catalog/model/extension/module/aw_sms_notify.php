@@ -87,20 +87,30 @@ class ModelExtensionModuleAwSmsNotify extends Model
                     $payment_viber_template = $this->moduleConfig->get('sms_notify_payment_viber_template');
 
                     if ($check_customer) {
-                        $message['sms'] = $this->prepareMessage(
+                        $smsText = $this->prepareMessage(
                             $order_info,
-                            $payment_template[$order_info['payment_code']][$language_id],
+                            $payment_template[$order_info['payment_code']][$language_id] ?? '',
                             '',
                             $order_info['comment']
                         );
-                        $message['viber'] = $this->prepareMessage(
+                        $viberText = $this->prepareMessage(
                             $order_info,
-                            $payment_viber_template[$order_info['payment_code']][$language_id],
+                            $payment_viber_template[$order_info['payment_code']][$language_id] ?? '',
                             '',
                             $order_info['comment']
                         );
 
-                        $this->sendMessage($phone, $message);
+                        if ($smsText !== '') {
+                            $message['sms'] = $smsText;
+                        }
+
+                        if ($viberText !== '') {
+                            $message['viber'] = $viberText;
+                        }
+
+                        if ($message) {
+                            $this->sendMessage($phone, $message);
+                        }
                     }
                 }
             } else {
@@ -109,20 +119,30 @@ class ModelExtensionModuleAwSmsNotify extends Model
                     $client_viber_template = $this->moduleConfig->get('sms_notify_client_viber_template');
 
                     if ($check_customer) {
-                        $message['sms'] = $this->prepareMessage(
+                        $smsText = $this->prepareMessage(
                             $order_info,
-                            $client_template[$language_id],
+                            $client_template[$language_id] ?? '',
                             '',
                             $order_info['comment']
                         );
-                        $message['viber'] = $this->prepareMessage(
+                        $viberText = $this->prepareMessage(
                             $order_info,
-                            $client_viber_template[$language_id],
+                            $client_viber_template[$language_id] ?? '',
                             '',
                             $order_info['comment']
                         );
 
-                        $this->sendMessage($phone, $message);
+                        if ($smsText !== '') {
+                            $message['sms'] = $smsText;
+                        }
+
+                        if ($viberText !== '') {
+                            $message['viber'] = $viberText;
+                        }
+
+                        if ($message) {
+                            $this->sendMessage($phone, $message);
+                        }
                     }
                 }
             }
@@ -137,12 +157,14 @@ class ModelExtensionModuleAwSmsNotify extends Model
                     $order_info['comment']
                 );
 
-                $message = [
-                    'sms' => $text,
-                    'viber' => $text,
-                ];
+                if ($text !== '') {
+                    $message = [
+                        'sms' => $text,
+                        'viber' => $text,
+                    ];
 
-                $this->sendMessage($phone, $message, $this->moduleConfig->get('sms_notify_copy'));
+                    $this->sendMessage($phone, $message, $this->moduleConfig->get('sms_notify_copy'));
+                }
             }
 
             // Telegram (admin) — parallel channel, fires for new order regardless of SMS settings
@@ -171,32 +193,43 @@ class ModelExtensionModuleAwSmsNotify extends Model
                 if (in_array($order_status_id, $this->moduleConfig->get('sms_notify_order_status'))) {
                     $sms_template = $this->moduleConfig->get('sms_notify_status_template');
 
-                    $message['sms'] = $this->prepareMessage(
+                    $smsText = $this->prepareMessage(
                         $order_info,
-                        $sms_template[$order_status_id][$language_id],
+                        $sms_template[$order_status_id][$language_id] ?? '',
                         $order_status_id,
                         $comment
                     );
 
                     $viber_template = $this->moduleConfig->get('sms_notify_viber_template');
 
-                    $message['viber'] = $this->prepareMessage(
+                    $viberText = $this->prepareMessage(
                         $order_info,
-                        $viber_template[$order_status_id][$language_id],
+                        $viber_template[$order_status_id][$language_id] ?? '',
                         $order_status_id,
                         $comment
                     );
+
+                    if ($smsText !== '') {
+                        $message['sms'] = $smsText;
+                    }
+
+                    if ($viberText !== '') {
+                        $message['viber'] = $viberText;
+                    }
+
                     $check_customer = $this->customerGroup($order_info);
 
                     if ($check_customer) {
-                        if ($message['sms'] && isset($message['viber'])) {
+                        if ($smsText !== '' && $viberText !== '') {
                             $this->addOrderHistory(
                                 $order_id,
                                 $order_status_id,
-                                'SMS ' . $message['sms'] . PHP_EOL . 'Viber ' . $message['viber']
+                                'SMS ' . $smsText . PHP_EOL . 'Viber ' . $viberText
                             );
-                        } else {
-                            $this->addOrderHistory($order_id, $order_status_id, 'SMS ' . $message['sms']);
+                        } elseif ($smsText !== '') {
+                            $this->addOrderHistory($order_id, $order_status_id, 'SMS ' . $smsText);
+                        } elseif ($viberText !== '') {
+                            $this->addOrderHistory($order_id, $order_status_id, 'Viber ' . $viberText);
                         }
 
                         if ($message) {
@@ -243,7 +276,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
             $data['product_sku'] = $data['product']['sku'];
             $data['date'] = $data['product']['date'];
 
-            $text = $this->awCore->render($template, $data, true);
+            $text = (is_string($template) && $template !== '') ? $this->awCore->render($template, $data, true) : '';
 
             if ($this->moduleConfig->get('sms_notify_translit')) {
                 $text = $this->awCore->cyrillicToLatin($text);
@@ -254,7 +287,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
                 'viber' => $text,
             ];
 
-            if ($this->moduleConfig->get('sms_notify_reviews')) {
+            if ($text !== '' && $this->moduleConfig->get('sms_notify_reviews')) {
                 $phone = $this->awCore->prepareNumber($this->moduleConfig->get('sms_notify_to'));
 
                 $this->sendMessage($phone, $message);
@@ -291,7 +324,11 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
                 $language_id = $this->config->get('config_language_id');
 
-                $text = $this->awCore->render($template[$language_id], $data, true);
+                $languageTemplate = is_array($template) ? ($template[$language_id] ?? '') : '';
+
+                $text = (is_string($languageTemplate) && $languageTemplate !== '')
+                    ? $this->awCore->render($languageTemplate, $data, true)
+                    : '';
 
                 $message = [];
 
@@ -306,7 +343,9 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
                 $phone = $this->awCore->prepareNumber($customer['telephone']);
 
-                $this->sendMessage($phone, $message);
+                if ($message) {
+                    $this->sendMessage($phone, $message);
+                }
             }
 
             // Telegram (admin) — parallel channel for new registration
@@ -316,6 +355,10 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
     private function prepareMessage($order_data, $template, $order_status_id = false, $comment = false)
     {
+        if (!is_string($template) || $template === '') {
+            return '';
+        }
+
         $this->load->model('checkout/order');
 
         if ($order_status_id) {
@@ -447,6 +490,13 @@ class ModelExtensionModuleAwSmsNotify extends Model
 
     private function sendMessage($phone, $message, $copy = false)
     {
+        $smsText = $message['sms'] ?? '';
+        $viberText = $message['viber'] ?? '';
+
+        if ($smsText === '' && $viberText === '') {
+            return;
+        }
+
         $this->load->model('tool/image');
 
         $viber_image_src = $this->moduleConfig->get('sms_notify_viber_image');
@@ -460,9 +510,9 @@ class ModelExtensionModuleAwSmsNotify extends Model
         }
 
         $viber_options = [
-            'status' => $this->moduleConfig->get('sms_notify_viber_alert'),
+            'status' => $viberText !== '' ? $this->moduleConfig->get('sms_notify_viber_alert') : 0,
             'sender' => $this->moduleConfig->get('sms_notify_viber_sender'),
-            'message' => $message['viber'],
+            'message' => $viberText,
             'ttl' => $this->moduleConfig->get('sms_notify_viber_ttl'),
             'image_url' => $viber_image ?: false,
             'caption' => $this->moduleConfig->get('sms_notify_viber_caption'),
@@ -475,7 +525,7 @@ class ModelExtensionModuleAwSmsNotify extends Model
             'from' => $this->moduleConfig->get('sms_notify_from'),
             'username' => $this->moduleConfig->get('sms_notify_gate_username'),
             'password' => $this->moduleConfig->get('sms_notify_gate_password'),
-            'message' => $message['sms'],
+            'message' => $smsText,
             'viber' => $viber_options,
         ];
 

@@ -27,63 +27,75 @@ class ControllerExtensionModuleAwSmsNotify extends Controller
 
     public function order(&$route, &$args)
     {
-        $order_id = $args[0] ?? 0;
+        try {
+            $order_id = $args[0] ?? 0;
 
-        $order_status_id = $args[1] ?? 0;
+            $order_status_id = $args[1] ?? 0;
 
-        $comment = $args[2] ?? '';
+            $comment = $args[2] ?? '';
 
-        $post = $this->request->post;
+            $post = $this->request->post;
 
-        if (isset($post['sendsms'])) {
-            $sendsms = (int) $post['sendsms'];
-        } else {
-            $sendsms = $this->moduleConfig->get('sms_notify_force') ? 1 : 0;
-        }
-
-        $admin_order = ! empty($post['admin_order']) ? 1 : 0;
-
-        $this->load->model('extension/module/' . $this->moduleName);
-        $this->load->model('checkout/order');
-
-        $order_info = $this->model_checkout_order->getOrder($order_id);
-
-        if ($order_info) {
-            if (! $order_info['order_status_id'] && ! $admin_order && ! $sendsms) {
-                $this->model_extension_module_aw_sms_notify->sendServiceSms($order_info['order_id']);
+            if (isset($post['sendsms'])) {
+                $sendsms = (int) $post['sendsms'];
+            } else {
+                $sendsms = $this->moduleConfig->get('sms_notify_force') ? 1 : 0;
             }
 
-            if ($order_status_id && $admin_order && $sendsms) {
-                $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_id, $order_status_id, $comment, $sendsms);
-            } elseif ($order_status_id && ! $admin_order && $this->moduleConfig->get('sms_notify_force')) {
-                $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_info['order_id'], $order_status_id, $comment, true);
+            $admin_order = ! empty($post['admin_order']) ? 1 : 0;
+
+            $this->load->model('extension/module/' . $this->moduleName);
+            $this->load->model('checkout/order');
+
+            $order_info = $this->model_checkout_order->getOrder($order_id);
+
+            if ($order_info) {
+                if (! $order_info['order_status_id'] && ! $admin_order && ! $sendsms) {
+                    $this->model_extension_module_aw_sms_notify->sendServiceSms($order_info['order_id']);
+                }
+
+                if ($order_status_id && $admin_order && $sendsms) {
+                    $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_id, $order_status_id, $comment, $sendsms);
+                } elseif ($order_status_id && ! $admin_order && $this->moduleConfig->get('sms_notify_force')) {
+                    $this->model_extension_module_aw_sms_notify->sendOrderStatusSms($order_info['order_id'], $order_status_id, $comment, true);
+                }
             }
+        } catch (\Throwable $e) {
+            return;
         }
     }
 
     public function register(&$route, &$args, &$output)
     {
-        $customer_id = $output ?? 0;
+        try {
+            $customer_id = $output ?? 0;
 
-        if (isset($args[0])) {
-            $password = $args[0]['password'] ?? '';
-        } else {
-            $password = '';
+            if (isset($args[0])) {
+                $password = $args[0]['password'] ?? '';
+            } else {
+                $password = '';
+            }
+
+            $this->load->model('extension/module/' . $this->moduleName);
+
+            $this->model_extension_module_aw_sms_notify->sendRegisterSms($customer_id, $password);
+        } catch (\Throwable $e) {
+            return;
         }
-
-        $this->load->model('extension/module/' . $this->moduleName);
-
-        $this->model_extension_module_aw_sms_notify->sendRegisterSms($customer_id, $password);
     }
 
     public function review(&$route, &$args)
     {
-        $product_id = $args[0] ?? 0;
-        $review_data = $args[1] ?? [];
+        try {
+            $product_id = $args[0] ?? 0;
+            $review_data = $args[1] ?? [];
 
-        $this->load->model('extension/module/' . $this->moduleName);
+            $this->load->model('extension/module/' . $this->moduleName);
 
-        $this->model_extension_module_aw_sms_notify->sendReviewsSms($product_id, $review_data);
+            $this->model_extension_module_aw_sms_notify->sendReviewsSms($product_id, $review_data);
+        } catch (\Throwable $e) {
+            return;
+        }
     }
 
     /**

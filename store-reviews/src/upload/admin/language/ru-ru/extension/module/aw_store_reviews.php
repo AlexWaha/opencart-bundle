@@ -85,3 +85,4 @@ $_['error_not_found']    = 'Отзыв не найден!';
 $_['error_seo_url']         = 'SEO URL должен быть от 1 до 255 символов!';
 $_['error_seo_url_unique']  = 'SEO URL должен быть уникальным для каждого языка!';
 $_['error_seo_url_exists']  = 'SEO URL уже используется!';
+$_['text_module_version'] = 'Версия модуля';

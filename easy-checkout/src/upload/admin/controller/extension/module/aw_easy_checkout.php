@@ -9,6 +9,8 @@
 
 class ControllerExtensionModuleAwEasyCheckout extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_easy_checkout';
 
     private string $moduleChildName = 'aw_easy_abandoned';
@@ -35,6 +37,7 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         $this->params = $this->language->load('extension/module/' . $this->moduleName);
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
+        $this->params['module_version'] = self::VERSION;
 
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
     }
@@ -43,6 +46,10 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
     {
         $this->document->setTitle($this->language->get('heading_main_title'));
         $this->awCore->addStyles();
+
+        if ($this->user->hasPermission('modify', 'extension/module/' . $this->moduleName)) {
+            $this->repairEvents();
+        }
 
         $this->load->model('setting/setting');
         $this->load->model('extension/module/' . $this->moduleName);
@@ -1195,80 +1202,151 @@ class ControllerExtensionModuleAwEasyCheckout extends Controller
         return $rows;
     }
 
-    private function installEvents(): void
+    private function loadEventModel(): string
     {
+        if ($this->awCore->isLegacy()) {
+            $this->load->model('extension/event');
+
+            return 'model_extension_event';
+        }
+
         $this->load->model('setting/event');
 
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_checkout_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_address');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_addresses');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_admin_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_custom_fields_admin_order_info');
+        return 'model_setting_event';
+    }
 
-        $this->model_setting_event->addEvent(
+    private function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
+    }
+
+    private function eventDefinitions(): array
+    {
+        return [
+            ['aw_ec_replace_cart', 'catalog/controller/checkout/cart/before', 'extension/' . $this->moduleName . '/main/replace'],
+            ['aw_ec_replace_checkout', 'catalog/controller/checkout/checkout/before', 'extension/' . $this->moduleName . '/main/replace'],
+            ['aw_ec_addr_checkout_order', 'catalog/model/checkout/order/getOrder/after', 'extension/' . $this->moduleName . '/address_format/order'],
+            ['aw_ec_addr_account_order', 'catalog/model/account/order/getOrder/after', 'extension/' . $this->moduleName . '/address_format/order'],
+            ['aw_ec_addr_account_address', 'catalog/model/account/address/getAddress/after', 'extension/' . $this->moduleName . '/address_format/address'],
+            ['aw_ec_addr_account_addresses', 'catalog/model/account/address/getAddresses/after', 'extension/' . $this->moduleName . '/address_format/addresses'],
+            ['aw_ec_addr_admin_order', 'admin/model/sale/order/getOrder/after', 'extension/module/' . $this->moduleName . '/expandOrderAddressFormat'],
+            ['aw_ec_custom_fields_order', 'admin/view/sale/order_info/before', 'extension/module/' . $this->moduleName . '/expandOrderCustomFields'],
+        ];
+    }
+
+    private function oldEventCodes(): array
+    {
+        $codes = [
             $this->moduleName . '_replace_cart',
-            'catalog/controller/checkout/cart/before',
-            'extension/' . $this->moduleName . '/main/replace'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_replace_checkout',
-            'catalog/controller/checkout/checkout/before',
-            'extension/' . $this->moduleName . '/main/replace'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_address_format_checkout_order',
-            'catalog/model/checkout/order/getOrder/after',
-            'extension/' . $this->moduleName . '/address_format/order'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_address_format_account_order',
-            'catalog/model/account/order/getOrder/after',
-            'extension/' . $this->moduleName . '/address_format/order'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_address_format_account_address',
-            'catalog/model/account/address/getAddress/after',
-            'extension/' . $this->moduleName . '/address_format/address'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_address_format_account_addresses',
-            'catalog/model/account/address/getAddresses/after',
-            'extension/' . $this->moduleName . '/address_format/addresses'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_address_format_admin_order',
-            'admin/model/sale/order/getOrder/after',
-            'extension/module/' . $this->moduleName . '/expandOrderAddressFormat'
-        );
-
-        $this->model_setting_event->addEvent(
             $this->moduleName . '_custom_fields_admin_order_info',
-            'admin/view/sale/order_info/before',
-            'extension/module/' . $this->moduleName . '/expandOrderCustomFields'
-        );
+        ];
+
+        foreach ($codes as $code) {
+            $codes[] = substr($code, 0, 32);
+        }
+
+        return array_unique($codes);
+    }
+
+    private function installEvents(): void
+    {
+        $model = $this->loadEventModel();
+
+        foreach ($this->oldEventCodes() as $code) {
+            $this->deleteEventByCode($model, $code);
+        }
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $trigger, $action);
+        }
+    }
+
+    private function repairEvents(): void
+    {
+        $this->load->model('extension/module/' . $this->moduleName);
+
+        $oldCodes = $this->oldEventCodes();
+        $oldRows = [];
+        $registered = [];
+
+        foreach ($this->model_extension_module_aw_easy_checkout->getRegisteredEvents($this->moduleName) as $row) {
+            if (in_array($row['code'], $oldCodes, true)) {
+                $oldRows[] = $row;
+            }
+        }
+
+        foreach ($this->model_extension_module_aw_easy_checkout->getRegisteredEvents('aw_ec_') as $row) {
+            $registered[$row['code']] = $row;
+        }
+
+        $model = null;
+
+        if ($oldRows) {
+            $model = $this->loadEventModel();
+
+            foreach ($oldCodes as $code) {
+                $this->deleteEventByCode($model, $code);
+            }
+
+            $registered = [];
+        }
+
+        foreach ($this->eventDefinitions() as $event) {
+            [$code, $trigger, $action] = $event;
+
+            if (isset($registered[$code]) && $registered[$code]['trigger'] === $trigger) {
+                continue;
+            }
+
+            if ($model === null) {
+                $model = $this->loadEventModel();
+            }
+
+            $status = $this->resolveEventStatus($registered, $code, $oldRows, $trigger);
+
+            $this->deleteEventByCode($model, $code);
+            $this->{$model}->addEvent($code, $trigger, $action, $status);
+        }
+    }
+
+    private function resolveEventStatus(array $registered, string $code, array $oldRows, string $trigger): int
+    {
+        if (isset($registered[$code])) {
+            return (int) $registered[$code]['status'];
+        }
+
+        foreach ($oldRows as $row) {
+            if ($row['trigger'] === $trigger) {
+                return (int) $row['status'];
+            }
+        }
+
+        return 1;
     }
 
     private function uninstallEvents(): void
     {
-        $this->load->model('setting/event');
+        $model = $this->loadEventModel();
 
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_cart');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_replace_checkout');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_checkout_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_address');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_account_addresses');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_address_format_admin_order');
-        $this->model_setting_event->deleteEventByCode($this->moduleName . '_custom_fields_admin_order_info');
+        foreach ($this->oldEventCodes() as $code) {
+            $this->deleteEventByCode($model, $code);
+        }
+
+        foreach ($this->eventDefinitions() as $event) {
+            $this->deleteEventByCode($model, $event[0]);
+        }
     }
 
     protected function installPermissions()

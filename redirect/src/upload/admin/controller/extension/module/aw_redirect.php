@@ -10,6 +10,8 @@
 
 class ControllerExtensionModuleAwRedirect extends Controller
 {
+    public const VERSION = '1.0.1';
+
     private string $moduleName = 'aw_redirect';
 
     private \Alexwaha\Config $moduleConfig;
@@ -37,6 +39,7 @@ class ControllerExtensionModuleAwRedirect extends Controller
         $this->params['token'] = $this->tokenData['token'];
         $this->params['token_param'] = $this->tokenData['param'];
         $this->params['module_name'] = $this->moduleName;
+        $this->params['module_version'] = self::VERSION;
 
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
     }
@@ -596,7 +599,7 @@ class ControllerExtensionModuleAwRedirect extends Controller
 
     public function uninstall(): void
     {
-        $this->getEventModel()->deleteEventByCode($this->moduleName);
+        $this->deleteEventByCode($this->loadEventModel(), $this->moduleName);
 
         $this->load->model('extension/module/' . $this->moduleName);
         $this->model_extension_module_aw_redirect->dropTables();
@@ -610,25 +613,34 @@ class ControllerExtensionModuleAwRedirect extends Controller
 
     private function installEvents(): void
     {
-        $model = $this->getEventModel();
-        $model->deleteEventByCode($this->moduleName);
+        $model = $this->loadEventModel();
+        $this->deleteEventByCode($model, $this->moduleName);
 
-        $model->addEvent($this->moduleName, 'catalog/controller/*/before', 'extension/module/' . $this->moduleName . '/redirect');
-        $model->addEvent($this->moduleName, 'catalog/controller/error/not_found/before', 'extension/module/' . $this->moduleName . '/notFound');
-        $model->addEvent($this->moduleName, 'admin/view/common/column_left/before', 'extension/module/' . $this->moduleName . '/menu');
+        $this->{$model}->addEvent($this->moduleName, 'catalog/controller/*/before', 'extension/module/' . $this->moduleName . '/redirect');
+        $this->{$model}->addEvent($this->moduleName, 'catalog/controller/error/not_found/before', 'extension/module/' . $this->moduleName . '/notFound');
+        $this->{$model}->addEvent($this->moduleName, 'admin/view/common/column_left/before', 'extension/module/' . $this->moduleName . '/menu');
     }
 
-    private function getEventModel()
+    private function loadEventModel(): string
     {
         if ($this->awCore->isLegacy()) {
             $this->load->model('extension/event');
 
-            return $this->model_extension_event;
+            return 'model_extension_event';
         }
 
         $this->load->model('setting/event');
 
-        return $this->model_setting_event;
+        return 'model_setting_event';
+    }
+
+    private function deleteEventByCode(string $model, string $code): void
+    {
+        if ($this->awCore->isLegacy()) {
+            $this->{$model}->deleteEvent($code);
+        } else {
+            $this->{$model}->deleteEventByCode($code);
+        }
     }
 
     protected function installPermissions(): void
