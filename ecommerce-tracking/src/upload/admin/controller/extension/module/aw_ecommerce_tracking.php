@@ -9,6 +9,8 @@
 
 class ControllerExtensionModuleAwEcommerceTracking extends Controller
 {
+    public const VERSION = '2.0.0';
+
     private string $moduleName = 'aw_ecommerce_tracking';
 
     private \Alexwaha\Config $moduleConfig;
@@ -36,6 +38,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 
         $this->routeExtension = $this->awCore->isLegacy() ? 'extension/extension' : 'marketplace/extension';
         $this->params['module_name'] = $this->moduleName;
+        $this->params['module_version'] = self::VERSION;
     }
 
     public function index(): void
@@ -94,6 +97,10 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $this->params['adsConversionId'] = $this->moduleConfig->get('ads_conversion_id', '');
         $this->params['adsConversionLabel'] = $this->moduleConfig->get('ads_conversion_label', '');
 
+        $this->params['metaPixelId'] = $this->moduleConfig->get('meta_pixel_id', '');
+        $this->params['metaCapiTokenSet'] = ($this->moduleConfig->all()['meta_capi_token'] ?? '') !== '';
+        $this->params['metaTestEventCode'] = $this->moduleConfig->get('meta_test_event_code', '');
+
         $this->params['trackCategory'] = $this->moduleConfig->get('track_category', true);
         $this->params['trackSearch'] = $this->moduleConfig->get('track_search', true);
         $this->params['trackManufacturer'] = $this->moduleConfig->get('track_manufacturer', true);
@@ -144,6 +151,14 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             $newSecret = trim((string) ($data['ga4_api_secret'] ?? ''));
             $data['ga4_api_secret'] = $newSecret !== '' ? $newSecret : (string) ($this->moduleConfig->all()['ga4_api_secret'] ?? '');
 
+            if (!empty($data['meta_capi_token_clear'])) {
+                $data['meta_capi_token'] = '';
+            } else {
+                $newMetaToken = trim((string) ($data['meta_capi_token'] ?? ''));
+                $data['meta_capi_token'] = $newMetaToken !== '' ? $newMetaToken : (string) ($this->moduleConfig->all()['meta_capi_token'] ?? '');
+            }
+            unset($data['meta_capi_token_clear']);
+
             $this->awCore->setConfig($this->moduleName, $data);
 
             $this->session->data['success'] = $this->language->get('text_success');
@@ -179,8 +194,8 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             'catalog/controller/checkout/success/before',
             'catalog/model/checkout/order/addOrder/after',
             'catalog/model/checkout/order/addOrderHistory/after',
-            'catalog/controller/account/login/after',
-            'catalog/controller/account/register/after',
+            'catalog/model/account/customer/deleteLoginAttempts/after',
+            'catalog/model/account/customer/addCustomer/after',
             'catalog/view/extension/module/featured/after',
             'catalog/view/extension/module/latest/after',
             'catalog/view/extension/module/bestseller/after',
@@ -259,7 +274,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 
         try {
             $data = $this->moduleConfig->all();
-            unset($data['ga4_api_secret']);
+            unset($data['ga4_api_secret'], $data['meta_capi_token']);
 
             $exportData = [
                 'module' => $this->moduleName,
@@ -313,6 +328,9 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
                     $importedSecret = trim((string) ($importData['data']['ga4_api_secret'] ?? ''));
                     $importData['data']['ga4_api_secret'] = $importedSecret !== '' ? $importedSecret : (string) ($this->moduleConfig->all()['ga4_api_secret'] ?? '');
 
+                    $importedMetaToken = trim((string) ($importData['data']['meta_capi_token'] ?? ''));
+                    $importData['data']['meta_capi_token'] = $importedMetaToken !== '' ? $importedMetaToken : (string) ($this->moduleConfig->all()['meta_capi_token'] ?? '');
+
                     $this->awCore->setConfig($this->moduleName, $importData['data']);
                     $json['success'] = $this->language->get('text_import_success');
                 } catch (Exception $e) {
@@ -355,6 +373,17 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         }
 
         if ($adsConversionLabel !== '' && !preg_match('/^[A-Za-z0-9_-]+$/', $adsConversionLabel)) {
+            return false;
+        }
+
+        $metaPixelId = trim((string) ($data['meta_pixel_id'] ?? ''));
+        $metaTestEventCode = trim((string) ($data['meta_test_event_code'] ?? ''));
+
+        if ($metaPixelId !== '' && !preg_match('/^\d{5,20}$/', $metaPixelId)) {
+            return false;
+        }
+
+        if ($metaTestEventCode !== '' && !preg_match('/^[A-Za-z0-9_-]+$/', $metaTestEventCode)) {
             return false;
         }
 
@@ -425,8 +454,8 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             ['aw_et_capture_ids',    'catalog/model/checkout/order/addOrder/after',    'extension/aw_ecommerce_tracking/event/addOrderAfter'],
             ['aw_et_history',        'catalog/model/checkout/order/addOrderHistory/after', 'extension/aw_ecommerce_tracking/event/addOrderHistoryAfter'],
 
-            ['aw_et_login',          'catalog/controller/account/login/after',         'extension/aw_ecommerce_tracking/event/controllerLoginAfter'],
-            ['aw_et_register',       'catalog/controller/account/register/after',      'extension/aw_ecommerce_tracking/event/controllerRegisterAfter'],
+            ['aw_et_login',          'catalog/model/account/customer/deleteLoginAttempts/after', 'extension/aw_ecommerce_tracking/event/customerLoginAfter'],
+            ['aw_et_register',       'catalog/model/account/customer/addCustomer/after',          'extension/aw_ecommerce_tracking/event/customerRegisterAfter'],
 
             ['aw_et_mod_featured',   'catalog/view/extension/module/featured/after',   'extension/aw_ecommerce_tracking/event/viewModuleFeaturedAfter'],
             ['aw_et_mod_latest',     'catalog/view/extension/module/latest/after',     'extension/aw_ecommerce_tracking/event/viewModuleLatestAfter'],
@@ -473,7 +502,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $registered = [];
 
         foreach ($this->{'model_extension_module_' . $this->moduleName}->getRegisteredEvents('aw_et_') as $row) {
-            $registered[$row['code']] = $row['trigger'];
+            $registered[$row['code']] = $row;
         }
 
         $model = null;
@@ -482,7 +511,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             [$code, $trigger, $action] = $event;
             $trigger = $this->legacyViewTrigger($trigger);
 
-            if (isset($registered[$code]) && $registered[$code] === $trigger) {
+            if (isset($registered[$code]) && $registered[$code]['trigger'] === $trigger) {
                 continue;
             }
 
@@ -490,8 +519,10 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
                 $model = $this->loadEventModel();
             }
 
+            $status = isset($registered[$code]) ? (int) $registered[$code]['status'] : 1;
+
             $this->deleteEventByCode($model, $code);
-            $this->{$model}->addEvent($code, $trigger, $action);
+            $this->{$model}->addEvent($code, $trigger, $action, $status);
         }
     }
 

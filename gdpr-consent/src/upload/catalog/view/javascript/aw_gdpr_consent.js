@@ -91,6 +91,13 @@
 
         const finish = (grantedCategories) => {
             apply(grantedCategories);
+
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'consent_update_done' });
+
+            window.awMetaQueue = window.awMetaQueue || [];
+            window.awMetaQueue.push({ event: 'consent_update_done' });
+
             hideBar();
         };
 

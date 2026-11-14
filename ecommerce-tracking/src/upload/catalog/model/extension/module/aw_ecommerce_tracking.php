@@ -9,6 +9,45 @@
 
 class ModelExtensionModuleAwEcommerceTracking extends Model
 {
+    private const META_GRAPH_API_VERSION = 'v21.0';
+
+    private const CALLING_CODES = [
+        'US' => '1', 'CA' => '1', 'RU' => '7', 'KZ' => '7', 'EG' => '20', 'ZA' => '27', 'GR' => '30',
+        'NL' => '31', 'BE' => '32', 'FR' => '33', 'ES' => '34', 'HU' => '36', 'IT' => '39', 'RO' => '40',
+        'CH' => '41', 'AT' => '43', 'GB' => '44', 'DK' => '45', 'SE' => '46', 'NO' => '47', 'PL' => '48',
+        'DE' => '49', 'PE' => '51', 'MX' => '52', 'CU' => '53', 'AR' => '54', 'BR' => '55', 'CL' => '56',
+        'CO' => '57', 'VE' => '58', 'MY' => '60', 'AU' => '61', 'ID' => '62', 'PH' => '63', 'NZ' => '64',
+        'SG' => '65', 'TH' => '66', 'JP' => '81', 'KR' => '82', 'VN' => '84', 'CN' => '86', 'TR' => '90',
+        'IN' => '91', 'PK' => '92', 'AF' => '93', 'LK' => '94', 'MM' => '95', 'IR' => '98', 'SS' => '211',
+        'MA' => '212', 'DZ' => '213', 'TN' => '216', 'LY' => '218', 'GM' => '220', 'SN' => '221',
+        'MR' => '222', 'ML' => '223', 'GN' => '224', 'CI' => '225', 'BF' => '226', 'NE' => '227',
+        'TG' => '228', 'BJ' => '229', 'MU' => '230', 'LR' => '231', 'SL' => '232', 'GH' => '233',
+        'NG' => '234', 'TD' => '235', 'CF' => '236', 'CM' => '237', 'CV' => '238', 'ST' => '239',
+        'GQ' => '240', 'GA' => '241', 'CG' => '242', 'CD' => '243', 'AO' => '244', 'GW' => '245',
+        'IO' => '246', 'SC' => '248', 'SD' => '249', 'RW' => '250', 'ET' => '251', 'SO' => '252',
+        'DJ' => '253', 'KE' => '254', 'TZ' => '255', 'UG' => '256', 'BI' => '257', 'MZ' => '258',
+        'ZM' => '260', 'MG' => '261', 'RE' => '262', 'ZW' => '263', 'NA' => '264', 'MW' => '265',
+        'LS' => '266', 'BW' => '267', 'SZ' => '268', 'KM' => '269', 'SH' => '290', 'ER' => '291',
+        'AW' => '297', 'FO' => '298', 'GL' => '299', 'GI' => '350', 'PT' => '351', 'LU' => '352',
+        'IE' => '353', 'IS' => '354', 'AL' => '355', 'MT' => '356', 'CY' => '357', 'FI' => '358',
+        'BG' => '359', 'LT' => '370', 'LV' => '371', 'EE' => '372', 'MD' => '373', 'AM' => '374',
+        'BY' => '375', 'AD' => '376', 'MC' => '377', 'SM' => '378', 'VA' => '379', 'UA' => '380',
+        'RS' => '381', 'ME' => '382', 'XK' => '383', 'HR' => '385', 'SI' => '386', 'BA' => '387',
+        'MK' => '389', 'CZ' => '420', 'SK' => '421', 'LI' => '423', 'FK' => '500', 'BZ' => '501',
+        'GT' => '502', 'SV' => '503', 'HN' => '504', 'NI' => '505', 'CR' => '506', 'PA' => '507',
+        'PM' => '508', 'HT' => '509', 'GP' => '590', 'BO' => '591', 'GY' => '592', 'EC' => '593',
+        'GF' => '594', 'PY' => '595', 'MQ' => '596', 'SR' => '597', 'UY' => '598', 'CW' => '599',
+        'TL' => '670', 'NF' => '672', 'BN' => '673', 'NR' => '674', 'PG' => '675', 'TO' => '676',
+        'SB' => '677', 'VU' => '678', 'FJ' => '679', 'PW' => '680', 'WF' => '681', 'CK' => '682',
+        'NU' => '683', 'WS' => '685', 'KI' => '686', 'NC' => '687', 'TV' => '688', 'PF' => '689',
+        'TK' => '690', 'FM' => '691', 'MH' => '692', 'KP' => '850', 'HK' => '852', 'MO' => '853',
+        'KH' => '855', 'LA' => '856', 'BD' => '880', 'TW' => '886', 'MV' => '960', 'LB' => '961',
+        'JO' => '962', 'SY' => '963', 'IQ' => '964', 'KW' => '965', 'SA' => '966', 'YE' => '967',
+        'OM' => '968', 'PS' => '970', 'AE' => '971', 'IL' => '972', 'BH' => '973', 'QA' => '974',
+        'BT' => '975', 'MN' => '976', 'NP' => '977', 'TJ' => '992', 'TM' => '993', 'AZ' => '994',
+        'GE' => '995', 'KG' => '996', 'UZ' => '998',
+    ];
+
     public function getCategoryName(int $productId): string
     {
         $query = $this->db->query("
@@ -334,6 +373,234 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
             SET client_claimed_at = NULL
             WHERE order_id = '" . $orderId . "'
         ");
+    }
+
+    private function claimMetaPurchase(int $orderId): bool
+    {
+        $this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "aw_ecommerce_tracking_purchase` (order_id) VALUES ('" . $orderId . "')");
+
+        $this->db->query("
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET meta_sent_at = NOW()
+            WHERE order_id = '" . $orderId . "'
+              AND meta_sent_at IS NULL
+        ");
+
+        return $this->db->countAffected() === 1;
+    }
+
+    private function releaseMetaPurchaseClaim(int $orderId): void
+    {
+        $this->db->query("
+            UPDATE `" . DB_PREFIX . "aw_ecommerce_tracking_purchase`
+            SET meta_sent_at = NULL
+            WHERE order_id = '" . $orderId . "'
+        ");
+    }
+
+    public function sendMetaCapiPurchase(int $orderId): void
+    {
+        $config = $this->awCore->getConfig('aw_ecommerce_tracking');
+
+        $pixelId = trim((string) $config->get('meta_pixel_id', ''));
+        $capiToken = trim((string) ($config->all()['meta_capi_token'] ?? ''));
+
+        if ($pixelId === '' || $capiToken === '') {
+            return;
+        }
+
+        $order = $this->getMetaOrderData($orderId);
+
+        if (empty($order) || !in_array((int) $order['order_status_id'], $this->getSuccessfulOrderStatuses(), true)) {
+            return;
+        }
+
+        $gdprConfig = $this->awCore->getConfig('aw_gdpr_consent');
+
+        if ($gdprConfig->get('status', false) && $this->getConsent($orderId)['ad_user_data'] !== 1) {
+            return;
+        }
+
+        if (!$this->claimMetaPurchase($orderId)) {
+            return;
+        }
+
+        $items = $this->getOrderProducts($orderId);
+
+        if (empty($items)) {
+            $this->releaseMetaPurchaseClaim($orderId);
+
+            return;
+        }
+
+        $event = $this->buildMetaPurchaseEvent($orderId, $order, $items);
+        $testEventCode = trim((string) $config->get('meta_test_event_code', ''));
+
+        if (!$this->sendMetaCapiRequest($pixelId, $capiToken, $event, $testEventCode)) {
+            $this->releaseMetaPurchaseClaim($orderId);
+        }
+    }
+
+    public function getSuccessfulOrderStatuses(): array
+    {
+        $statuses = array_unique(array_map('intval', array_merge(
+            (array) $this->config->get('config_processing_status'),
+            (array) $this->config->get('config_complete_status')
+        )));
+
+        return array_values(array_diff($statuses, [(int) $this->config->get('config_order_status_id')]));
+    }
+
+    private function getMetaOrderData(int $orderId): array
+    {
+        $query = $this->db->query("
+            SELECT o.order_id, o.order_status_id, o.date_added, o.email, o.telephone, o.firstname, o.lastname, o.customer_id,
+                o.ip, o.user_agent, o.payment_city, o.payment_postcode, o.currency_code, o.total,
+                c.iso_code_2 AS payment_iso_code_2, p.fbp, p.fbc
+            FROM " . DB_PREFIX . "order o
+            LEFT JOIN " . DB_PREFIX . "country c ON (c.country_id = o.payment_country_id)
+            LEFT JOIN " . DB_PREFIX . "aw_ecommerce_tracking_purchase p ON (p.order_id = o.order_id)
+            WHERE o.order_id = '" . $orderId . "'
+        ");
+
+        return $query->row ?: [];
+    }
+
+    private function buildMetaPurchaseEvent(int $orderId, array $order, array $items): array
+    {
+        $contentIds = [];
+        $contents = [];
+
+        foreach ($items as $item) {
+            $contentIds[] = (string) $item['product_id'];
+            $contents[] = [
+                'id' => (string) $item['product_id'],
+                'quantity' => (int) $item['quantity'],
+                'item_price' => (float) $item['price'],
+            ];
+        }
+
+        $userData = [
+            'client_ip_address' => (string) ($order['ip'] ?? ''),
+            'client_user_agent' => (string) ($order['user_agent'] ?? ''),
+        ];
+
+        $this->addHashedField($userData, 'em', (string) ($order['email'] ?? ''));
+        $this->addHashedField($userData, 'ph', $this->normalizeMetaPhone((string) ($order['telephone'] ?? ''), (string) ($order['payment_iso_code_2'] ?? '')));
+        $this->addHashedField($userData, 'fn', (string) ($order['firstname'] ?? ''));
+        $this->addHashedField($userData, 'ln', (string) ($order['lastname'] ?? ''));
+        $this->addHashedField($userData, 'ct', $this->normalizeMetaCity((string) ($order['payment_city'] ?? '')));
+        $this->addHashedField($userData, 'zp', (string) ($order['payment_postcode'] ?? ''));
+        $this->addHashedField($userData, 'country', (string) ($order['payment_iso_code_2'] ?? ''));
+
+        $customerId = (int) ($order['customer_id'] ?? 0);
+        if ($customerId > 0) {
+            $this->addHashedField($userData, 'external_id', (string) $customerId);
+        }
+
+        if (!empty($order['fbp'])) {
+            $userData['fbp'] = $order['fbp'];
+        }
+
+        if (!empty($order['fbc'])) {
+            $userData['fbc'] = $order['fbc'];
+        }
+
+        return [
+            'event_name' => 'Purchase',
+            'event_time' => strtotime((string) ($order['date_added'] ?? '')) ?: time(),
+            'event_id' => (string) $orderId,
+            'action_source' => 'website',
+            'event_source_url' => rtrim((string) HTTPS_SERVER, '/') . '/index.php?route=checkout/success',
+            'user_data' => $userData,
+            'custom_data' => [
+                'currency' => (string) ($order['currency_code'] ?? ''),
+                'value' => (float) ($order['total'] ?? 0),
+                'content_ids' => $contentIds,
+                'contents' => $contents,
+                'content_type' => 'product',
+                'num_items' => count($contents),
+                'order_id' => (string) $orderId,
+            ],
+        ];
+    }
+
+    private function addHashedField(array &$userData, string $key, string $value): void
+    {
+        $normalized = $this->normalizeMetaValue($value);
+
+        if ($normalized !== '') {
+            $userData[$key] = hash('sha256', $normalized);
+        }
+    }
+
+    private function normalizeMetaValue(string $value): string
+    {
+        return trim(mb_strtolower($value, 'UTF-8'));
+    }
+
+    private function normalizeMetaCity(string $city): string
+    {
+        return preg_replace('/[^a-z0-9]/u', '', $this->normalizeMetaValue($city)) ?? '';
+    }
+
+    private function normalizeMetaPhone(string $phone, string $isoCode2): string
+    {
+        $digits = preg_replace('/\D/', '', $phone) ?? '';
+
+        if ($digits === '') {
+            return '';
+        }
+
+        $callingCode = self::CALLING_CODES[strtoupper($isoCode2)] ?? '';
+
+        if ($callingCode !== '' && strpos($digits, $callingCode) !== 0) {
+            $digits = ltrim($digits, '0');
+            $digits = $callingCode . $digits;
+        }
+
+        return $digits;
+    }
+
+    private function sendMetaCapiRequest(string $pixelId, string $capiToken, array $event, string $testEventCode): bool
+    {
+        $endpoint = 'https://graph.facebook.com/' . self::META_GRAPH_API_VERSION . '/' . rawurlencode($pixelId) . '/events';
+
+        $payload = [
+            'data' => [$event],
+            'access_token' => $capiToken,
+        ];
+
+        if ($testEventCode !== '') {
+            $payload['test_event_code'] = $testEventCode;
+        }
+
+        return $this->postJson($endpoint, $payload)['ok'];
+    }
+
+    public function postJson(string $url, array $payload): array
+    {
+        $curl = curl_init($url);
+
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT => 4,
+        ]);
+
+        $body = curl_exec($curl);
+        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        return [
+            'ok' => $error === '' && $httpCode > 0 && $httpCode < 300,
+            'http_code' => $httpCode,
+            'body' => is_string($body) ? $body : '',
+        ];
     }
 
     private function extractGaClientId(?string $gaCookie): ?string

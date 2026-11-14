@@ -22,6 +22,7 @@ $_['tab_support'] = 'Support';
 $_['tab_ga4_reference'] = 'GA4 Reference';
 $_['tab_import_export'] = 'Import / Export';
 $_['tab_diagnostics'] = 'Diagnostics';
+$_['tab_meta'] = 'Meta Pixel';
 
 // Text
 $_['text_extension'] = 'Extensions';
@@ -51,6 +52,15 @@ $_['entry_ads_conversion_id'] = 'Google Ads Conversion ID';
 $_['entry_ads_conversion_id_help'] = 'Your Google Ads conversion ID (starts with AW-). Used to fire the conversion snippet on the order success page.';
 $_['entry_ads_conversion_label'] = 'Google Ads Conversion Label';
 $_['entry_ads_conversion_label_help'] = 'The conversion label for your purchase conversion action.';
+
+$_['text_meta_description'] = 'Configure the Meta (Facebook/Instagram) browser pixel and server-side Conversions API purchase event.';
+$_['entry_meta_pixel_id'] = 'Pixel ID';
+$_['entry_meta_pixel_id_help'] = 'The Meta pixel/dataset ID, digits only. Found in Meta Events Manager &gt; your dataset &gt; Settings.';
+$_['entry_meta_capi_token'] = 'Conversions API Access Token';
+$_['entry_meta_capi_token_help'] = 'Generated in Meta Business settings &gt; System Users &gt; Conversions API System User &gt; Generate token. Leave empty to keep the current value.';
+$_['entry_meta_capi_token_clear'] = 'Clear stored token';
+$_['entry_meta_test_event_code'] = 'Test Event Code';
+$_['entry_meta_test_event_code_help'] = 'Optional. When set, Conversions API requests carry this code so they show up in Meta Events Manager &gt; Test Events instead of production data.';
 
 // Pages Tab
 $_['text_pages_description'] = 'Enable tracking for different page types. The <code class="badge-code">view_item_list</code> event will be sent when users visit these pages.';
@@ -185,8 +195,10 @@ $_['button_import'] = 'Import Settings';
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify this module!';
 $_['error_warning'] = 'Warning: Please check the form for errors!';
-$_['error_tracking_fields'] = 'Warning: GA4 Measurement ID must look like G-XXXXXXX, Google Ads Conversion ID like AW-XXXXXXX, and the Conversion Label must contain only letters, digits, underscores and hyphens.';
+$_['error_tracking_fields'] = 'Warning: GA4 Measurement ID must look like G-XXXXXXX, Google Ads Conversion ID like AW-XXXXXXX, the Conversion Label must contain only letters, digits, underscores and hyphens, the Meta Pixel ID must be 5-20 digits, and the Meta Test Event Code must contain only letters, digits, underscores and hyphens.';
 $_['error_import_failed']    = 'Import failed: %s';
 $_['error_import_read_file'] = 'Unable to read uploaded file';
 $_['error_import_file']      = 'Please select a file to import';
 $_['error_import_wrong_module'] = 'This file belongs to a different module and cannot be imported here';
+
+$_['text_module_version'] = 'Module version';

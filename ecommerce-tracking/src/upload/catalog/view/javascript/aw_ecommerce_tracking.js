@@ -49,8 +49,109 @@
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ ecommerce: null });
         window.dataLayer.push(eventData);
+        window.awMetaQueue = window.awMetaQueue || [];
+        window.awMetaQueue.push(eventData);
         log('Event pushed', eventData);
     };
+
+    if (config.metaEnabled && config.metaPixelId) {
+        const metaEventMap = {
+            view_item: 'ViewContent',
+            add_to_cart: 'AddToCart',
+            begin_checkout: 'InitiateCheckout',
+            purchase: 'Purchase'
+        };
+
+        let metaLoaded = false;
+        let metaBuffer = [];
+
+        const getCookieValue = function(name) {
+            const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : null;
+        };
+
+        const hasMetaConsent = function() {
+            return config.metaConsentOptIn || getCookieValue('ad_storage') === 'granted';
+        };
+
+        const sendToMeta = function(data) {
+            const fbEvent = metaEventMap[data.event];
+            if (!fbEvent || typeof window.fbq !== 'function') return;
+
+            const ecommerce = data.ecommerce || {};
+            const params = {
+                currency: ecommerce.currency || config.currency,
+                value: ecommerce.value || 0,
+                content_ids: (ecommerce.items || []).map(function(item) { return item.item_id; }),
+                content_type: 'product'
+            };
+
+            const options = (fbEvent === 'Purchase' && ecommerce.transaction_id) ? { eventID: String(ecommerce.transaction_id) } : {};
+
+            window.fbq('track', fbEvent, params, options);
+        };
+
+        const loadMetaPixel = function() {
+            if (metaLoaded) return;
+            metaLoaded = true;
+
+            (function(f, b, e, v) {
+                if (f.fbq) return;
+                const n = f.fbq = function() {
+                    n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+                };
+                if (!f._fbq) f._fbq = n;
+                n.push = n;
+                n.loaded = true;
+                n.version = '2.0';
+                n.queue = [];
+                const t = b.createElement(e);
+                t.async = true;
+                t.src = v;
+                const s = b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t, s);
+            })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+            window.fbq('init', config.metaPixelId);
+            window.fbq('track', 'PageView');
+
+            metaBuffer.forEach(sendToMeta);
+            metaBuffer = [];
+        };
+
+        const processMetaQueueItem = function(data) {
+            if (!data) return;
+
+            if (data.event === 'consent_update_done') {
+                if (hasMetaConsent()) {
+                    loadMetaPixel();
+                }
+                return;
+            }
+
+            if (!metaLoaded) {
+                if (hasMetaConsent()) {
+                    loadMetaPixel();
+                } else {
+                    metaBuffer.push(data);
+                    return;
+                }
+            }
+
+            sendToMeta(data);
+        };
+
+        window.awMetaQueue = window.awMetaQueue || [];
+        window.awMetaQueue.forEach(processMetaQueueItem);
+        window.awMetaQueue.push = function(item) {
+            Array.prototype.push.call(this, item);
+            processMetaQueueItem(item);
+        };
+
+        if (hasMetaConsent()) {
+            loadMetaPixel();
+        }
+    }
 
     if (config.needsIdCapture && config.ga4MeasurementId) {
         const requestIds = function() {

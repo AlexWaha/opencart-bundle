@@ -10,7 +10,7 @@
 
 class ControllerExtensionModuleAwGdprConsent extends Controller
 {
-    public const VERSION = '1.0.1';
+    public const VERSION = '1.1.0';
 
     private string $moduleName = 'aw_gdpr_consent';
 

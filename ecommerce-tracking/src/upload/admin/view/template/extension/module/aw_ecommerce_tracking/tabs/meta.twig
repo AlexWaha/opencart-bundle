@@ -1,0 +1,37 @@
+<div class="alert-box alert-box-info">
+    <i class="fa fa-info-circle"></i> {{ text_meta_description }}
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="meta_pixel_id">{{ entry_meta_pixel_id }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="meta_pixel_id" id="meta_pixel_id" value="{{ metaPixelId|e('html_attr') }}" class="form-control" autocomplete="off" placeholder="1234567890123">
+        <p class="help-block">{{ entry_meta_pixel_id_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="meta_capi_token">{{ entry_meta_capi_token }}</label>
+    <div class="col-sm-9">
+        <input type="password" name="meta_capi_token" id="meta_capi_token" value="" autocomplete="new-password" class="form-control" placeholder="{{ (metaCapiTokenSet ? text_secret_saved : '')|e('html_attr') }}">
+        <p class="help-block">{{ entry_meta_capi_token_help }}</p>
+    </div>
+</div>
+
+{% if metaCapiTokenSet %}
+<div class="form-group">
+    <div class="col-sm-3 control-label">{{ entry_meta_capi_token_clear }}</div>
+    <label class="col-xs-9 col-sm-6 checkbox-switch" for="meta_capi_token_clear">
+        <input type="hidden" name="meta_capi_token_clear" value="0" id="meta_capi_token_clear-off" checked="checked" />
+        <input type="checkbox" name="meta_capi_token_clear" value="1" id="meta_capi_token_clear" />
+    </label>
+</div>
+{% endif %}
+
+<div class="form-group">
+    <label class="col-sm-3 control-label" for="meta_test_event_code">{{ entry_meta_test_event_code }}</label>
+    <div class="col-sm-9">
+        <input type="text" name="meta_test_event_code" id="meta_test_event_code" value="{{ metaTestEventCode|e('html_attr') }}" class="form-control" autocomplete="off">
+        <p class="help-block">{{ entry_meta_test_event_code_help }}</p>
+    </div>
+</div>

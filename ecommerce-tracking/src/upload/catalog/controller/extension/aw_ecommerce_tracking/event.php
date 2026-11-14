@@ -308,6 +308,9 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
             }
 
             $this->load->controller($this->controllerRoute . '/sendGaPurchase', ['order_id' => $orderId]);
+
+            $this->load->model('extension/module/' . $this->moduleName);
+            $this->{'model_extension_module_' . $this->moduleName}->sendMetaCapiPurchase($orderId);
         } catch (\Throwable $e) {
             return;
         }
@@ -337,23 +340,31 @@ class ControllerExtensionAwEcommerceTrackingEvent extends Controller
         return (($this->request->cookie[$cookieName] ?? '') === 'granted') ? 1 : 0;
     }
 
-    /**
-     * Controller event: set login session flag after successful login.
-     */
-    public function controllerLoginAfter(&$route, &$data, &$output): void
+    public function customerLoginAfter(&$route, &$args, &$output): void
     {
-        if ($this->customer->isLogged()) {
-            $this->load->controller($this->controllerRoute . '/setLoginFlag');
+        if (!$this->registry->has('awCore')) {
+            return;
+        }
+
+        try {
+            if ($this->customer->isLogged()) {
+                $this->load->controller($this->controllerRoute . '/setLoginFlag');
+            }
+        } catch (\Throwable $e) {
+            return;
         }
     }
 
-    /**
-     * Controller event: set signup session flag after successful registration.
-     */
-    public function controllerRegisterAfter(&$route, &$data, &$output): void
+    public function customerRegisterAfter(&$route, &$args, &$output): void
     {
-        if ($this->customer->isLogged()) {
+        if (!$this->registry->has('awCore')) {
+            return;
+        }
+
+        try {
             $this->load->controller($this->controllerRoute . '/setSignupFlag');
+        } catch (\Throwable $e) {
+            return;
         }
     }
 

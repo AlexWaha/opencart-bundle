@@ -22,6 +22,7 @@ $_['tab_support'] = 'Підтримка';
 $_['tab_ga4_reference'] = 'Довідник GA4';
 $_['tab_import_export'] = 'Імпорт / Експорт';
 $_['tab_diagnostics'] = 'Діагностика';
+$_['tab_meta'] = 'Meta Pixel';
 
 // Text
 $_['text_extension'] = 'Розширення';
@@ -51,6 +52,15 @@ $_['entry_ads_conversion_id'] = 'Google Ads Conversion ID';
 $_['entry_ads_conversion_id_help'] = 'ID конверсії Google Ads (починається з AW-). Використовується для надсилання сніпета конверсії на сторінці успішного замовлення.';
 $_['entry_ads_conversion_label'] = 'Google Ads Conversion Label';
 $_['entry_ads_conversion_label_help'] = 'Метка конверсії для дії "Покупка".';
+
+$_['text_meta_description'] = 'Налаштуйте браузерний піксель Meta (Facebook/Instagram) та серверну подію покупки Conversions API.';
+$_['entry_meta_pixel_id'] = 'ID пікселя';
+$_['entry_meta_pixel_id_help'] = 'ID пікселя/набору даних Meta, лише цифри. Знаходиться в Meta Events Manager &gt; ваш набір даних &gt; Налаштування.';
+$_['entry_meta_capi_token'] = 'Токен доступу Conversions API';
+$_['entry_meta_capi_token_help'] = 'Створюється в налаштуваннях Meta Business &gt; Системні користувачі &gt; Системний користувач Conversions API &gt; Створити токен. Залиште поле порожнім, щоб зберегти поточне значення.';
+$_['entry_meta_capi_token_clear'] = 'Видалити збережений токен';
+$_['entry_meta_test_event_code'] = 'Код тестової події';
+$_['entry_meta_test_event_code_help'] = 'Необов\'язково. Якщо вказано, запити Conversions API будуть позначені цим кодом і відображатимуться в Meta Events Manager &gt; Test Events замість робочих даних.';
 
 // Pages Tab
 $_['text_pages_description'] = 'Увімкніть відстеження для різних типів сторінок. Подія <code class="badge-code">view_item_list</code> буде надсилатися при відвідуванні цих сторінок.';
@@ -185,8 +195,10 @@ $_['button_import'] = 'Імпорт налаштувань';
 // Error
 $_['error_permission'] = 'Увага: У вас немає прав для керування цим модулем!';
 $_['error_warning'] = 'Увага: Будь ласка, перевірте форму на наявність помилок!';
-$_['error_tracking_fields'] = 'Увага: GA4 Measurement ID повинен виглядати як G-XXXXXXX, Google Ads Conversion ID як AW-XXXXXXX, а мітка конверсії може містити лише букви, цифри, підкреслення та дефіси.';
+$_['error_tracking_fields'] = 'Увага: GA4 Measurement ID повинен виглядати як G-XXXXXXX, Google Ads Conversion ID як AW-XXXXXXX, мітка конверсії може містити лише букви, цифри, підкреслення та дефіси, ID пікселя Meta повинен складатися з 5-20 цифр, а код тестової події Meta може містити лише букви, цифри, підкреслення та дефіси.';
 $_['error_import_failed']    = 'Помилка імпорту: %s';
 $_['error_import_read_file'] = 'Неможливо прочитати завантажений файл';
 $_['error_import_file']      = 'Оберіть файл для імпорту';
 $_['error_import_wrong_module'] = 'Цей файл належить іншому модулю і не може бути імпортований тут';
+
+$_['text_module_version'] = 'Версія модуля';

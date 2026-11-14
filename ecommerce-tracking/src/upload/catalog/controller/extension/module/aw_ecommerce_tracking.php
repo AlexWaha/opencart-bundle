@@ -831,14 +831,13 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
 
         $orderInfo = $model->getOrderInfo($orderId);
 
-        if (empty($orderInfo) || !in_array((int) $orderInfo['order_status_id'], $this->getSuccessfulOrderStatuses(), true)) {
+        if (empty($orderInfo) || !in_array((int) $orderInfo['order_status_id'], $model->getSuccessfulOrderStatuses(), true)) {
             return '';
         }
 
         $consent = $model->getConsent($orderId);
-        $gdprEnabled = (bool) $this->awCore->getConfig('aw_gdpr_consent')->get('status', false);
 
-        if ($gdprEnabled && $consent['analytics'] !== 1) {
+        if ($this->isGdprConsentActive() && $consent['analytics'] !== 1) {
             return '';
         }
 
@@ -884,48 +883,13 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             . '?measurement_id=' . rawurlencode($measurementId)
             . '&api_secret=' . rawurlencode($apiSecret);
 
-        $result = $this->postJson($endpoint, $payload);
+        $result = $model->postJson($endpoint, $payload);
 
         if ($debug || !$result['ok']) {
             $model->releasePurchaseClaim($orderId);
         }
 
         return '';
-    }
-
-    private function getSuccessfulOrderStatuses(): array
-    {
-        $statuses = array_unique(array_map('intval', array_merge(
-            (array) $this->config->get('config_processing_status'),
-            (array) $this->config->get('config_complete_status')
-        )));
-
-        return array_values(array_diff($statuses, [(int) $this->config->get('config_order_status_id')]));
-    }
-
-    private function postJson(string $url, array $payload): array
-    {
-        $curl = curl_init($url);
-
-        curl_setopt_array($curl, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 2,
-            CURLOPT_TIMEOUT => 4,
-        ]);
-
-        $body = curl_exec($curl);
-        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $error = curl_error($curl);
-        curl_close($curl);
-
-        return [
-            'ok' => $error === '' && $httpCode > 0 && $httpCode < 300,
-            'http_code' => $httpCode,
-            'body' => is_string($body) ? $body : '',
-        ];
     }
 
     public function setLoginFlag(): string
@@ -1243,7 +1207,20 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             'trackPaymentInfo' => (bool) $config->get('track_payment_info', true),
             'ga4MeasurementId' => trim((string) $config->get('ga4_measurement_id', '')),
             'needsIdCapture' => empty($this->session->data['awGa4ClientId']),
+            'metaEnabled' => $this->isMetaEnabled(),
+            'metaPixelId' => trim((string) $config->get('meta_pixel_id', '')),
+            'metaConsentOptIn' => !$this->isGdprConsentActive(),
         ];
+    }
+
+    private function isMetaEnabled(): bool
+    {
+        return trim((string) $this->moduleConfig->get('meta_pixel_id', '')) !== '';
+    }
+
+    private function isGdprConsentActive(): bool
+    {
+        return $this->registry->has('awCore') && (bool) $this->awCore->getConfig('aw_gdpr_consent')->get('status', false);
     }
 
     private function cleanText(string $text): string
