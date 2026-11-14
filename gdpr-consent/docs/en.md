@@ -56,6 +56,17 @@ By default every non-essential category is **off** (GDPR opt-in).
 
 ---
 
+## Updating from an Older Version
+
+Updating an existing installation does not require a reinstall, your settings are kept.
+
+1. Download the new `aw_gdpr_consent_oc2.3-3.x.ocmod.zip` and replace the module files with the ones from the archive (via **Extensions → Installer**, or by uploading over FTP)
+2. Open **Extensions → Modules → alexwaha.com - GDPR Consent** once as an administrator and save the settings
+
+The module registers any new events by itself the moment the settings page opens. No manual reinstall, no modification cache refresh.
+
+---
+
 ## Configuration
 
 ### Module Settings
@@ -97,6 +108,10 @@ Save the configuration. The banner appears on the storefront until the visitor m
 - Works on OpenCart 2.3 and 3.x
 
 > **Note:** This module manages the consent signals only. The Google Tag / GA4 / Ads tags themselves are added separately (theme, another module or the OpenCart analytics section).
+
+### Works together with E-commerce Tracking (GA4)
+
+If the **alexwaha.com - E-commerce Tracking (GA4)** module is also installed and enabled, it automatically reads the consent signals this module sets: the Meta browser pixel only loads after the visitor grants the marketing category, and the server-side GA4 Measurement Protocol / Meta Conversions API purchase sends only fire if the matching consent was granted at the time of the order. No extra configuration is needed on either module, just have both enabled.
 
 ---
 
