@@ -116,6 +116,7 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
                 'model' => $row['model'],
                 'quantity' => $row['quantity'],
                 'price' => $row['price'],
+                'tax' => $row['tax'],
                 'tax_class_id' => $row['tax_class_id'] ?? 0,
                 'manufacturer' => $row['manufacturer'] ?? '',
             ];
@@ -433,7 +434,9 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
             return;
         }
 
-        $event = $this->buildMetaPurchaseEvent($orderId, $order, $items);
+        $purchaseValueMode = (string) $config->get('purchase_value_mode', 'order_total');
+        $priceWithTax = (bool) $config->get('price_with_tax', true);
+        $event = $this->buildMetaPurchaseEvent($orderId, $order, $items, $purchaseValueMode, $priceWithTax);
         $testEventCode = trim((string) $config->get('meta_test_event_code', ''));
 
         if (!$this->sendMetaCapiRequest($pixelId, $capiToken, $event, $testEventCode)) {
@@ -455,7 +458,7 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
     {
         $query = $this->db->query("
             SELECT o.order_id, o.order_status_id, o.date_added, o.email, o.telephone, o.firstname, o.lastname, o.customer_id,
-                o.ip, o.user_agent, o.payment_city, o.payment_postcode, o.currency_code, o.total,
+                o.ip, o.user_agent, o.payment_city, o.payment_postcode, o.currency_code, o.currency_value, o.total,
                 c.iso_code_2 AS payment_iso_code_2, p.fbp, p.fbc
             FROM " . DB_PREFIX . "order o
             LEFT JOIN " . DB_PREFIX . "country c ON (c.country_id = o.payment_country_id)
@@ -466,17 +469,29 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
         return $query->row ?: [];
     }
 
-    private function buildMetaPurchaseEvent(int $orderId, array $order, array $items): array
+    private function buildMetaPurchaseEvent(int $orderId, array $order, array $items, string $purchaseValueMode, bool $priceWithTax): array
     {
+        $currencyValue = (float) ($order['currency_value'] ?? 0) ?: 1.0;
+
         $contentIds = [];
         $contents = [];
+        $itemsValueExTax = 0;
 
         foreach ($items as $item) {
+            $quantity = (int) $item['quantity'];
+            $priceExTax = (float) ($item['price'] ?? 0);
+            $displayPrice = ($purchaseValueMode !== 'items_only' && $priceWithTax)
+                ? $priceExTax + (float) ($item['tax'] ?? 0)
+                : $priceExTax;
+
+            $price = round($displayPrice * $currencyValue, 2);
+            $itemsValueExTax += $priceExTax * $currencyValue * $quantity;
+
             $contentIds[] = (string) $item['product_id'];
             $contents[] = [
                 'id' => (string) $item['product_id'],
-                'quantity' => (int) $item['quantity'],
-                'item_price' => (float) $item['price'],
+                'quantity' => $quantity,
+                'item_price' => $price,
             ];
         }
 
@@ -515,7 +530,9 @@ class ModelExtensionModuleAwEcommerceTracking extends Model
             'user_data' => $userData,
             'custom_data' => [
                 'currency' => (string) ($order['currency_code'] ?? ''),
-                'value' => (float) ($order['total'] ?? 0),
+                'value' => $purchaseValueMode === 'items_only'
+                    ? round($itemsValueExTax, 2)
+                    : round((float) ($order['total'] ?? 0) * $currencyValue, 2),
                 'content_ids' => $contentIds,
                 'contents' => $contents,
                 'content_type' => 'product',

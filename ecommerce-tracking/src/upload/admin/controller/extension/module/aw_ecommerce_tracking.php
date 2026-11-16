@@ -9,7 +9,7 @@
 
 class ControllerExtensionModuleAwEcommerceTracking extends Controller
 {
-    public const VERSION = '2.0.0';
+    public const VERSION = '2.1.0';
 
     private string $moduleName = 'aw_ecommerce_tracking';
 
@@ -121,6 +121,7 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         $this->params['trackShippingInfo'] = $this->moduleConfig->get('track_shipping_info', true);
         $this->params['trackPaymentInfo'] = $this->moduleConfig->get('track_payment_info', true);
         $this->params['trackPurchase'] = $this->moduleConfig->get('track_purchase', true);
+        $this->params['purchaseValueMode'] = $this->moduleConfig->get('purchase_value_mode', 'order_total');
         $this->params['includeTax'] = $this->moduleConfig->get('include_tax', true);
         $this->params['includeShipping'] = $this->moduleConfig->get('include_shipping', true);
         $this->params['includeCoupons'] = $this->moduleConfig->get('include_coupons', true);
@@ -147,6 +148,10 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
     {
         if (($this->request->server['REQUEST_METHOD'] === 'POST') && $this->validate()) {
             $data = $this->request->post;
+
+            $data['purchase_value_mode'] = in_array($data['purchase_value_mode'] ?? '', ['order_total', 'items_only'], true)
+                ? $data['purchase_value_mode']
+                : 'order_total';
 
             $newSecret = trim((string) ($data['ga4_api_secret'] ?? ''));
             $data['ga4_api_secret'] = $newSecret !== '' ? $newSecret : (string) ($this->moduleConfig->all()['ga4_api_secret'] ?? '');

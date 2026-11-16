@@ -154,7 +154,8 @@ Tracking `view_item_list` for modules:
 | Purchase | `purchase` | Order success page, any payment method, duplicate-safe |
 
 **Additional:**
-- Include tax in prices
+- **Purchase Value** - what the `value` parameter of the purchase event represents: *Order total* (default, includes tax and shipping; item prices in the `items` array follow "Prices with Tax") or *Items only* (sum of item price x quantity, no shipping, handling or any coupon/voucher/reward discount; both `value` and the item prices in `items` are always without tax in this mode, regardless of "Prices with Tax", so `value` equals the sum of the items). Applies to the client-side purchase event, the GA4 Measurement Protocol send, the Google Ads conversion and the Meta Conversions API send
+- Include tax - adds the order tax amount as the separate `tax` parameter on the purchase event (not about item prices)
 - Track shipping cost
 - Track coupons/discounts
 

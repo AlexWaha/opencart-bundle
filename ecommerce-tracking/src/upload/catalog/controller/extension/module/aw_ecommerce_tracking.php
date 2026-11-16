@@ -390,28 +390,37 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
             return [];
         }
 
+        $currencyValue = (float) ($orderInfo['currency_value'] ?? 0) ?: 1.0;
+        $purchaseValueMode = (string) $this->moduleConfig->get('purchase_value_mode', 'order_total');
+
         $items = [];
+        $itemsValueExTax = 0;
 
         foreach ($orderProducts as $product) {
-            $items[] = $this->prepareItemData($product);
+            $item = $this->preparePurchaseItemData($product, $currencyValue, $purchaseValueMode);
+            $items[] = $item;
+            $itemsValueExTax += (float) ($product['price'] ?? 0) * $currencyValue * $item['quantity'];
         }
+
+        $orderTotalValue = round((float) $orderTotals['total'] * $currencyValue, 2);
+        $value = $purchaseValueMode === 'items_only' ? round($itemsValueExTax, 2) : $orderTotalValue;
 
         $data = [
             'event' => 'purchase',
             'ecommerce' => [
                 'transaction_id' => (string) $orderId,
                 'currency' => $orderInfo['currency_code'] ?? $this->getCurrencyCode(),
-                'value' => round((float) $orderTotals['total'], 2),
+                'value' => $value,
                 'items' => $items,
             ],
         ];
 
         if ($this->moduleConfig->get('include_tax', true) && $orderTotals['tax'] > 0) {
-            $data['ecommerce']['tax'] = round((float) $orderTotals['tax'], 2);
+            $data['ecommerce']['tax'] = round((float) $orderTotals['tax'] * $currencyValue, 2);
         }
 
         if ($this->moduleConfig->get('include_shipping', true) && $orderTotals['shipping'] > 0) {
-            $data['ecommerce']['shipping'] = round((float) $orderTotals['shipping'], 2);
+            $data['ecommerce']['shipping'] = round((float) $orderTotals['shipping'] * $currencyValue, 2);
         }
 
         if ($this->moduleConfig->get('include_coupons', true) && !empty($orderTotals['coupons'])) {
@@ -419,6 +428,21 @@ class ControllerExtensionModuleAwEcommerceTracking extends Controller
         }
 
         return $data;
+    }
+
+    private function preparePurchaseItemData(array $product, float $currencyValue, string $purchaseValueMode): array
+    {
+        $item = $this->prepareItemData($product);
+
+        $price = (float) ($product['price'] ?? 0);
+
+        if ($purchaseValueMode !== 'items_only' && $this->moduleConfig->get('price_with_tax', true)) {
+            $price += (float) ($product['tax'] ?? 0);
+        }
+
+        $item['price'] = round($price * $currencyValue, 2);
+
+        return $item;
     }
 
     public function prepareLogin(): array

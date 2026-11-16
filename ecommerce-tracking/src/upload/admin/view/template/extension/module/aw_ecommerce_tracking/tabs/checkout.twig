@@ -82,6 +82,17 @@
 <hr>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label" for="purchase_value_mode">{{ entry_purchase_value_mode }}</label>
+    <div class="col-sm-9">
+        <select name="purchase_value_mode" id="purchase_value_mode" class="form-control">
+            <option value="order_total" {% if purchaseValueMode == 'order_total' %}selected{% endif %}>{{ text_purchase_value_mode_order_total }}</option>
+            <option value="items_only" {% if purchaseValueMode == 'items_only' %}selected{% endif %}>{{ text_purchase_value_mode_items_only }}</option>
+        </select>
+        <p class="help-block">{{ entry_purchase_value_mode_help }}</p>
+    </div>
+</div>
+
+<div class="form-group">
     <div class="col-sm-3 control-label">{{ entry_include_tax }}</div>
     <label class="col-xs-9 col-sm-6 checkbox-switch" for="include_tax">
         <input type="hidden" name="include_tax" value="0" {% if not includeTax %}checked="checked"{% endif %} />
